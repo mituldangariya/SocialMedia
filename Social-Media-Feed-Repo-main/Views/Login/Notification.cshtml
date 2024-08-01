@@ -1,0 +1,70 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Notification</title>
+    <link rel="stylesheet" href="~/Css/main.min.css">
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/color.css">
+    <link rel="stylesheet" href="~/css/responsive.css">
+    <link href="~/Css/AboutPage.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+
+    <script src="~/JavaScript/HomePage.js"></script>
+</head>
+<body>
+    <div> 
+     <script>
+
+         function displayNotifications() {
+             var userId = sessionStorage.getItem('userId');
+             $.ajax({
+                 url: '/api/WebApi/notifications',
+                 method: 'GET',
+                 success: function (data) {
+                     console.log("got notification data:", data);
+                     var notificationsHtml = '';
+                     data.forEach(function (notification) {
+                         notificationsHtml += `
+                            <div class="notification-box">
+                                <ul>
+                                    <li>
+                                        <div class="notifi-meta">
+                                            <p>${notification.NotificationText}</p>
+                                            <span>${new Date(notification.NotificationTimestamp).toLocaleString()}</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>`;
+                     });
+                     $('.Notifition').html(notificationsHtml);
+                     $('.class="loadMore"').show(); // Show the notifications section
+                 },
+                 error: function (xhr, status, error) {
+                     console.error("Error fetching notifications:", error);
+                 }
+             });
+         }
+
+         $(document).ready(function () {
+             // Click event for notification link
+             $('#notificationLink').click(function (event) {
+                 event.preventDefault(); // Prevent default link behavior
+
+                 // Toggle slide effect to show/hide notification container
+                 $('#notificationContainer').slideToggle('fast');
+             });
+         });
+
+     </script>
+    </div>
+</body>
+</html>

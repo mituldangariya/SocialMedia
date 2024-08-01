@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="df2f396417b84fa7ba3c475db3514be9" Name="Diagram1" ZoomLevel="60">
+        <EntityTypeShape EntityType="SocialMediaAppModel.UserData" Width="1.5" PointX="0.75" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="SocialMediaAppModel.UserPost" Width="1.5" PointX="3.375" PointY="3.375" IsExpanded="true" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__UserPosts__UserI__5DCAEF64" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="SocialMediaAppModel.PostComment" Width="1.5" PointX="6.75" PointY="5.25" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__PostComme__PostI__03F0984C" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__PostComme__UserI__04E4BC85" />
+        <EntityTypeShape EntityType="SocialMediaAppModel.PostLike" Width="1.5" PointX="5.625" PointY="1.25" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__PostLikes__PostI__5EBF139D" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__PostLikes__UserI__5DCAEF64" />
+        <EntityTypeShape EntityType="SocialMediaAppModel.PostLikeRequest" PointX="8.625" PointY="1.375" Width="1.5" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__PostLikeR__PostI__6FE99F9F" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__PostLikeR__UserI__70DDC3D8" />
+        <AssociationConnector Association="SocialMediaAppModel.FK_ParentCommentId_CommentId" />
+        <EntityTypeShape EntityType="SocialMediaAppModel.Notification" Width="1.5" PointX="3" PointY="8.25" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__Notificat__UserI__793DFFAF" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__Notificat__UserI__7FEAFD3E" />
+        <EntityTypeShape EntityType="SocialMediaAppModel.UserFriend" Width="1.5" PointX="3" PointY="12.75" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__UserFrien__Follo__11158940" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__UserFrien__UserI__10216507" />
+        <AssociationConnector Association="SocialMediaAppModel.FK_Notifications_PostPhoto" />
+        <EntityTypeShape EntityType="SocialMediaAppModel.PasswordReset" Width="1.5" PointX="9.375" PointY="4.75" />
+        <EntityTypeShape EntityType="SocialMediaAppModel.PasswordChangeHistory" Width="1.5" PointX="3" PointY="0.75" />
+        <AssociationConnector Association="SocialMediaAppModel.FK__PasswordC__UserI__67DE6983" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

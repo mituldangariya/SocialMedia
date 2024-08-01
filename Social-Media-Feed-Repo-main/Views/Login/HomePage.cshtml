@@ -1,0 +1,417 @@
+﻿
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <title>Social Media  WebApplication </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/jquery-3.4.1.slim.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+
+    <style>
+
+        #ProfilePhoto {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+
+        .blue-icon {
+            color: blue;
+        }
+        /* Add your CSS styles here */
+        .friendz-list {
+            list-style: none;
+            padding: 0;
+        }
+
+            .friendz-list li {
+                margin-bottom: 10px;
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 10px;
+                display: flex;
+                align-items: center;
+            }
+
+                .friendz-list li figure {
+                    margin-right: 10px;
+                }
+
+        .friendz-meta {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-follow {
+            background-color: #212529;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 60px;
+            border-radius: 10px;
+        }
+
+            .btn-follow.unfollow {
+                background-color: #212529;
+            }
+
+
+        .zoomable {
+            cursor: pointer;
+            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+            .zoomable:hover {
+                transform: scale(1.9);
+                width: 120px;
+                height: 120px;
+            }
+
+        .liked {
+            color: red;
+        }
+        /* Dark mode styles */
+        .dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+
+
+        /* CSS to style the notification panel */
+        .notification-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: -5px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            transform: translateX(100%);
+        }
+
+        .notification-list {
+            padding: 20px;
+
+            /* Add more styles as needed */
+        }
+        .notifications {
+            display: none; /* Initially hide notifications */
+            /* Add your styles for the notification panel */
+        }
+        .notification-sidebar {
+            position: fixed;
+            width: 92%;
+            height: 100vh;
+            transition: right 0.3s ease;
+            right: -50px;
+
+        }
+        .newpst-input textarea:required {
+            border: 1px solid #212529;
+        }
+        .invalid {
+            border: 1px solid red;
+        }
+
+        .notification-content {
+            padding: 20px;
+        }
+
+        .notification-link {
+            text-decoration: none;
+            color: #000;
+            cursor: pointer;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            text-align: center;
+        }
+
+            .modal-content button {
+                margin: 5px;
+                display: inline-block; /* Added to display buttons inline */
+            }
+
+                .modal-content button:hover {
+                    background-color: #ddd;
+                }
+        .error-message {
+            color: red;
+            font-size: 14px;
+        }
+
+
+        .like-button {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+            .like-button .fa-heart {
+                color: gray;
+                transition: color 0.3s;
+            }
+
+                .like-button .fa-heart.liked {
+                    color: red;
+                }
+        /* Regular heart icon */
+        .fa-regular.fa-heart {
+            color: grey;
+        }
+
+        /* Liked heart icon */
+        .fa-solid.fa-heart.liked {
+            color: red;
+        }
+        .liked {
+            color: red;
+        }
+
+
+    </style>
+
+    <link href="~/Css/main.min.css" rel="stylesheet" />
+    <link href="~/Css/style.css" rel="stylesheet" />
+    <link href="~/Css/color.css" rel="stylesheet" />
+    <link href="~/Css/responsive.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="~/JavaScript/HomePage.js"></script>
+</head>
+<body>
+    <script>
+        $(document).ready(function () {
+            $("#submitButton").click(function () {
+                var postContent = $("#postContent").val().trim();
+                if (postContent === "") {
+                    $("#postContent").addClass("invalid");
+                    return false; // Prevent form submission
+                }
+            });
+        });
+
+    </script>
+    <div class="theme-layout">
+        <div class="topbar stick">
+            <div class="logo">
+                <a title="" href="/Login/HomePage"><img src="~/images/twitter.jpg" alt="" height="95" width="108"></a>
+               
+            </div>
+            <div class="top-area">
+                <div class="user-img">
+                  
+
+                    <span class="status f-online"></span>
+                    <div class="user-setting">
+                        <a href="#" title="" id="logoutButton"><i class="fa-solid fa-arrow-right-from-bracket"></i>Log out</a>
+                    </div>
+                </div>
+            </div>
+        </div><!-- topbar -->
+        <section>
+            <div class="gap gray-bg">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="row" id="page-contents">
+                                <div class="col-lg-3">
+                                    <aside class="sidebar static">
+                                        <div class="widget">
+                                            <h4 class="widget-title">
+                                                <img src="~/images/twitter.jpg" width="55px" />
+                                            </h4>
+                                            <ul class="naves">
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="23" height="20" fill="currentColor" class="bi bi-house-add-fill" viewBox="0 0 16 16">
+                                                        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 1 1-1 0v-1h-1a.5.5 0 1 1 0-1h1v-1a.5.5 0 0 1 1 0" />
+                                                        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z" />
+                                                        <path d="m8 3.293 4.712 4.712A4.5 4.5 0 0 0 8.758 15H3.5A1.5 1.5 0 0 1 2 13.5V9.293z" />
+                                                    </svg>
+                                                    <a href="#" id="home-element"> Home</a>
+                                                </li>
+
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="23" height="20" fill="currentColor" class="bi bi-person-lines-fill" viewBox="0 0 16 16">
+                                                        <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5m.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1z" />
+                                                    </svg>
+                                                    <a href="#" onclick="location.href='@Url.Action("AboutPage", "Login")'">view Profile</a>
+                                                </li>
+
+                                               
+                                              
+                                                <ul>
+                                                    <li>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="23" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                                                            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901" />
+                                                        </svg>
+                                                        <a href="#" id="notificationLink" class="notification-link">Notifications</a>
+
+                                                    </li>
+                                                  
+                                                </ul>
+
+                                                <div class="Notifition"></div>
+
+                                                <br />
+                                               
+
+                                            </ul>
+                                        </div><!-- Shortcuts -->
+                                    </aside>
+                                </div><!-- sidebar -->
+                                <div class="col-lg-6 id" toggle-button"">
+
+
+                                    <div id="notification-menu">
+
+                                   </div>
+
+                                                                                                       
+                                   <div class="central-meta">
+
+                                        <div class="new-postbox">
+
+                                            <figure>
+                                                <img src="" alt="" height="54" width="54" id="ProfilePhoto">
+                                            </figure>
+                                            <div class="newpst-input">
+                                                <!-- Add Post -->
+                                                <textarea id="postContent" rows="2" placeholder="Write Something " required maxlength="120"></textarea>
+                                                <div id="postContentError" class="error-message" style="color: red; display: none;">Post content is required.</div>
+
+                                                <div class="attachments">
+                                                    <ul>
+                                                        <li>
+                                                            <label class="fileContainer">
+                                                                <i class="fas fa-images blue-icon" style="font-size: 20px;"></i>
+
+                                                                <input type="file" id="userpost">
+
+                                                                </i>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <button id="submitButton" class="btn btn-primary">Post</button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div><!-- add post new box -->
+                                    <div id="custom-confirm-modal" class="modal">
+                                        <div class="modal-content">
+                                            <p>Are you sure you want to delete this post?</p>
+                                            <button id="confirm-delete">Yes</button>
+                                            <button id="cancel-delete">No</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="loadMore">
+                                        <!-- Add Dynamic Post-->
+                                    </div>
+                                </div><!-- centerl meta -->
+                                <div class="col-lg-3">
+                                    <div class="sidebar static">
+                                        <div class="widget friend-list stick-widget">
+                                            <h4 class="widget-title">Suggested Friend List</h4>
+                                        
+
+                                            
+                                            <div id="searchDir"></div>
+                                          
+                                            
+                                            <ul id="userList" class="friendz-list">
+                                                <!-- User items will be dynamically added here -->
+                                            </ul>
+                                        </div><!-- friends list sidebar -->
+                                    </div>
+                                </div><!-- sidebar -->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </section>
+        <div class="bottombar">
+        </div>
+    </div>
+  
+
+
+    <script>
+       
+        $(document).ready(function () {
+           
+            $('.btn-follow').click(function () {
+                var $btn = $(this);
+                var following = $btn.data('following');
+
+              
+                setTimeout(function () {
+                    following = !following;
+                    $btn.text(following ? 'Unfollow' : 'Follow');
+                    $btn.toggleClass('unfollow', !following);
+                    $btn.data('following', following);
+                }, 500); 
+            });
+        });
+
+    </script>
+
+    <script></script>
+
+    <script src="~/JavaScript/main.min.js"></script>
+    <script src="~/JavaScript/script.js"></script>
+    <script src="~/JavaScript/map-init.js"></script>
+    <script src="https://kit.fontawesome.com/740b3d7ee7.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</body>
+</html>

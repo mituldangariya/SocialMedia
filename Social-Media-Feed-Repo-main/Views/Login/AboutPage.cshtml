@@ -1,0 +1,412 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <title> Social Media WebApplication  </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <head>
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    </head>
+
+
+
+    <style>
+       
+
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            color: red;
+            display: none;
+        }
+
+        .control-label {
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .name-input {
+            display: block;
+            margin-top: 5px;
+        }
+    </style>
+    <link rel="icon" href="images/fav.png" type="image/png" sizes="16x16">
+
+    <link rel="stylesheet" href="~/Css/main.min.css">
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/color.css">
+    <link rel="stylesheet" href="~/css/responsive.css">
+    <link href="~/Css/AboutPage.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+
+    <script src="~/JavaScript/HomePage.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="~/JavaScript/HomePage.js"></script>
+</head>
+<body>
+    <div class="theme-layout">
+
+        <div class="responsive-header">
+            <div class="mh-head first Sticky">
+                <span class="mh-btns-left">
+                    <a class="" href="#menu"><i class="fa fa-align-justify"></i></a>
+                </span>
+                <span class="mh-text">
+                    <a href="newsfeed.html" title=""><img src="~/images/logo2.png" alt=""></a>
+                </span>
+                <span class="mh-btns-right">
+                    <a class="fa fa-sliders" href="#shoppingbag"></a>
+                </span>
+            </div>
+            <div class="mh-head second">
+                <form class="mh-form" id="mh-form">
+                    <input placeholder="search" />
+                    <a href="#/" class="fa fa-search"></a>
+                </form>
+            </div>
+        </div><!-- responsive header -->
+
+        <div class="topbar stick">
+            <div class="logo">
+                <a title="" href="/Login/HomePage">
+                  
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+            </div>
+
+            <div class="top-area">
+                <div class="user-img">
+                  
+                    <span class="status f-online"></span>
+                    <div class="user-setting">
+                        <a href="#" title="" id="logoutButton"><i class="fa-solid fa-arrow-right-from-bracket"></i>Log out</a>
+                    </div>
+                </div>
+            </div>
+        </div><!-- topbar -->
+
+        <section>
+            <div class="feature-photo">
+                <figure>
+                   
+                    <div id="yourContainer">
+                       
+                    </div>
+                </figure>
+                <div class="container-fluid">
+                    <div class="row merged">
+                        <div class="col-lg-2 col-sm-3">
+                            <div class="user-avatar">
+                                <figure>
+                                    <img src="" id="ProfilePhoto" alt="">
+                                    <form id="uploadForm" enctype="multipart/form-data">
+                                        <label for="fileInput" class="fileContainer">
+                                            ChangePhoto
+                                            <input type="file" id="fileInput" onchange="uploadProfilePhoto()" name="fileInput" accept="image/*" />
+                                        </label>
+                                       
+                                    </form>
+
+
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="col-lg-10 col-sm-9">
+                            <div class="timeline-info">
+                                <ul>
+                                    <li class="admin-name">
+                                        <h3 id="UserName"></h3>
+                                     </li>
+
+                                    <li>
+                                        <a class="active" id="timelineLink" title="" data-ripple=""> Personal Info</a>
+                                        <a class="" id="editinfoLink" title="" data-ripple="">Edit Info</a>
+                                        <a class="" id="followersLink" title="" data-ripple="">Friends</a>
+                                        <a class="" id="postLink" title="" data-ripple="">Post</a>
+                                        <a class="" id="archieveLink" title="" data-ripple="">Archieve Post</a>
+
+
+                                     </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section><!-- top area -->
+
+        <section>
+            <div class="gap gray-bg">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="row" id="page-contents">
+                                <div class="col-lg-3">
+
+                                </div><!-- sidebar -->
+                                <div class="col-lg-6">
+                                    <div class="central-meta">
+                                        <!-- About Div -->
+                                        <div id="timelineDiv">
+                                            <div class="about">
+                                                <div class="personal">
+                                                    <h5 class="f-title"><i class="fa fa-address-book"></i> Personal Info</h5>
+
+                                                </div>
+                                                <div class="d-flex flex-row mt-2">
+                                                    <ul class="nav nav-tabs nav-tabs--vertical nav-tabs--left">
+                                                        <li class="nav-item">
+                                                            <a href="#basic" class="nav-link active" data-toggle="tab">Basic info</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a href="#interest" class="nav-link" data-toggle="tab">interests</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a href="#Bio" class="nav-link" data-toggle="tab">Bio</a>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active" id="basic">
+                                                            <ul class="basics">
+
+                                                                <li id="City">
+                                                                    <i class="fa-solid fa-city"></i>
+                                                                </li>
+
+                                                                <li id="PhoneNumber"><i class="fa-solid fa-phone"></i></li>
+                                                                <li id="Email"><i class="fa-solid fa-envelope"></i></li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="interest" role="tabpanel">
+                                                            <ul class="basics" id="interestdata">
+                                                            </ul>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="Bio" role="tabpanel">
+                                                            <ul class="basics" id="BioInfo">
+                                                            </ul>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <!-- edit info -->
+
+                                        <div id="editinfoDiv" style="display: none;">
+                                            <div class="editing-info" id="UserProfileDiv">
+                                                <h5 class="f-title"><i class="fa-solid fa-user"></i> Edit User Profile</h5>
+
+                                                <form id="myForm" method="post">
+
+                                                    <div class="form-group" hidden>
+                                                        <input type="text" id="TxtUserId" required="required" />
+                                                        <label class="control-label" for="LastName">userid</label><i class="mtrl-select"></i>
+                                                    </div>
+                                                    <div class="form-group" hidden>
+                                                        <input type="text" id="TxtUserPassword" />
+                                                        <label class="control-label" for="LastName">userPassword</label><i class="mtrl-select"></i>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <input type="text" id="TxtFirstName" class="name-input" required="required" />
+                                                        <label class="control-label" for="FirstName" style="font-size:10px; font-weight: bold;">First Name</label>
+                                                        <i class="mtrl-select"></i>
+                                                        <span class="error-message" id="firstNameError" style="color: red; display: none;">First Name should only contain alphabetic characters.</span>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <input type="text" id="TxtLastName" class="name-input" required="required" />
+                                                        <label class="control-label" for="LastName" style="font-size: 10px; font-weight: bold;">Last Name</label>
+                                                        <i class="mtrl-select"></i>
+                                                        <span class="error-message" id="lastNameError" style="color: red; display: none;">Last Name should only contain alphabetic characters.</span>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <input type="text" id="TxtCity" required="required" />
+                                                        <label class="control-label" for="City" style="font-size: 10px; font-weight: bold;">City</label>
+                                                        <i class="mtrl-select"></i>
+                                                        <span class="error-message" id="cityError" style="color: red; display: none;">City is required.</span>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <input type="email" id="TxtEmail" required="required" />
+                                                        <label class="control-label" for="Email" style="font-size: 10px; font-weight: bold;">Email</label>
+                                                        <i class="mtrl-select"></i>
+                                                        <span class="error-message" id="emailError" style="color: red; display: none;">Valid Email is required.</span>
+                                                    </div>
+
+                                                    <!-- Gender -->
+                                                    <label class="form-group">Gender: </label>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="gender" id="inlineRadio1" value="Male" required>
+                                                        <label class="form-check-label" for="inlineRadio1">Male</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="gender" id="inlineRadio2" value="Female">
+                                                        <label class="form-check-label" for="inlineRadio2">Female</label>
+                                                    </div>
+                                                    <br />
+
+                                                    <!-- Interests -->
+                                                    <label class="form-group">Interests: </label>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="Interests" value="Dance">
+                                                        <label class="form-check-label" for="inlineCheckbox1">Dance</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="Interests" value="singing">
+                                                        <label class="form-check-label" for="inlineCheckbox2">singing</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="Interests" value="Drawing">
+                                                        <label class="form-check-label" for="inlineCheckbox1">Drawing</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="Interests" value="Painting">
+                                                        <label class="form-check-label" for="inlineCheckbox2">Painting</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="Interests" value="Acting">
+                                                        <label class="form-check-label" for="inlineCheckbox1">Acting</label>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <input type="tel" id="TxtPhoneNumber" required="required" pattern="[0-9]{10,12}" />
+                                                        <label class="control-label" for="PhoneNumber" style="font-size: 10px; font-weight: bold;">Phone Number</label>
+                                                        <i class="mtrl-select"></i>
+                                                        <span class="error-message" id="phoneError" style="color: red; display: none;">Phone Number should be 10 to 12 digits long.</span>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" id="TxtBio" />
+                                                        <label class="control-label" for="Bio" style="font-size: 10px; font-weight: bold;">Bio</label><i class="mtrl-select"></i>
+                                                    </div>
+
+
+                                                    <span id="NewloginError" style="color: red;"></span><br />
+
+                                                    <div class="submit-btns">
+                                                        <button type="button" class="mtr-btn"><span>Cancel</span></button>
+                                                        <button type="button" id="updateButton" class="mtr-btn"><span>Update</span></button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        <script>
+
+                                        </script>
+
+
+
+                                        <!--  change password -->
+                                        <div id="changepasswordDiv" style="display: none;">
+                                            <div class="editing-info">
+                                                <h5 class="f-title"><i class="ti-lock"></i>Change Password</h5>
+
+                                                <form method="post">
+                                                    <div class="form-group">
+                                                        <input type="password" id="input" required="required" />
+                                                        <label class="control-label" for="input">New password</label><i class="mtrl-select"></i>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="password" required="required" />
+                                                        <label class="control-label" for="input">Confirm password</label><i class="mtrl-select"></i>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="password" required="required" />
+                                                        <label class="control-label" for="input">Current password</label><i class="mtrl-select"></i>
+                                                    </div>
+                                                    <a class="forgot-pwd underline" title="" href="#">Forgot Password?</a>
+                                                    <div class="submit-btns">
+                                                        <button type="button" class="mtr-btn"><span>Cancel</span></button>
+                                                        <button type="button" id="changePasswordButton" class="mtr-btn"><span>Change</span></button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+
+
+
+
+                                        <!--Followers-->
+                                        <div id="acceptedFollowerDiv" style="display: none;">
+
+                                            <h5 class="f-title"><i class="fa-solid fa-user"></i>User Friend</h5>
+
+                                            <ul id="acceptUserList">
+                                            </ul>
+                                        </div>
+
+                                        <div id="postDiv" style="display: none;">
+                                            <div class="Post-info" id="UserPostDiv">
+                                                <h5 class="f-title"><i class="fa-solid fa-image"></i>Post</h5>
+                                                <ul class="photos">
+                                                    <!--load dynamic post-->
+                                                </ul>
+                                            </div>
+                                        </div>
+
+
+
+                                        <div id="archieveDiv" style="display: none;">
+                                            <div class="archieve-info" id="archieveDiv">
+                                                <h5 class="f-title"><i class="fa-solid fa-box-archive"></i>archieve Photos</h5>
+                                                <ul class="photos">
+                                                    <!--load dynamic post-->
+                                                </ul>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                </div><!-- centerl meta -->
+
+                                <div class="col-lg-3"></div><!-- sidebar -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    </section>
+
+   
+    </div>
+
+
+    
+
+
+
+
+
+
+
+   
+
+    <script src="~/JavaScript/main.min.js"></script>
+    <script src="~/JavaScript/script.js"></script>
+    <script src="https://kit.fontawesome.com/740b3d7ee7.js" crossorigin="anonymous"></script>
+</body>
+
+</html>
