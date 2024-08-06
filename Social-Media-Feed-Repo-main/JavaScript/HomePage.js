@@ -16,6 +16,7 @@
     loadUserPosts();
     populateUserData(userId);
     FriendList();
+   
 
     $("#notificationLink").click(function () {
         console.log("flow goes right")
@@ -52,7 +53,7 @@
         $('#archieveDiv').hide();
 
         $('#timelineLink').removeClass('active');
-        $('#editinfLink').addClass('active');
+        $('#editinfoLink').addClass('active');
         $('#changePasswordLink').removeClass('active');
         $('#followersLink').removeClass('active');
         $('#followingLink').removeClass('active');
@@ -309,10 +310,11 @@ function AddPost(post) {
             mediaHTML = `<img src="${post.PostPhoto}" alt="Post Media" height="208" width="200">`;
         }
     }
-
+       
+        // Add styles to hide video controls
     const style = document.createElement('style');
     style.innerHTML = `
-                video::-webkit-media-controls-volume-slider,
+                video::-webk    it-media-controls-volume-slider,
                 video::-webkit-media-controls-mute-button,
                 video::-webkit-media-controls-fullscreen-button,
                 video::-webkit-media-controls-moreoptions-button,
@@ -372,7 +374,7 @@ function AddPost(post) {
     });
 
 
-
+     // HTML for the post including comments
     var postHTML =
         `<div class="central-meta item">
             <div class="user-post">
@@ -463,34 +465,9 @@ function commentlenght() {
 
 
 
-function getPosts(userId, searchQuery) {
-
-    $.ajax({
-        url: '/api/WebApi/GetPosts',
-        type: 'GET',
-        data: { userId: userId, searchQuery: searchQuery },
-        success: function (response) {
-
-            console.log('Posts:', response);
-
-            loadUserPosts();
-        },
-        error: function (xhr, status, error) {
-
-            console.error('Error:', error);
-        }
-    });
-}
 
 
 
-var userId = getCookie('userId');
-
-if (userId) {
-    getPosts(userId, 'exampleSearchQuery');
-} else {
-    console.error('User ID not found in cookie.');
-}
 
 function getCookie(name) {
     var cookies = document.cookie.split(';');
@@ -1007,7 +984,7 @@ function UploadComment() {
     var username = sessionStorage.getItem('Username');
     var ProfilePhoto = sessionStorage.getItem('ProfilePhoto');
 
-    if (commentText.trim() !== '') {
+    if (commentText.trim() !== '') {// Early return if comment text is empty
         $.ajax({
             url: '/api/WebApi/AddComment',
             method: 'POST',
@@ -1107,6 +1084,8 @@ function deleteComment(commentId) {
 }
 
 
+
+
 //Friend List 
 
 function FriendList() {
@@ -1179,6 +1158,7 @@ function FriendList() {
         }
     });
 }
+
 
 
 function addFriend(userId) {

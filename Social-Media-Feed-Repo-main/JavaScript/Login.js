@@ -46,6 +46,8 @@
         return re.test(password);
     }
 
+
+
     function hasLeadingOrTrailingSpaces(str) {
         return str !== str.trim();
     }

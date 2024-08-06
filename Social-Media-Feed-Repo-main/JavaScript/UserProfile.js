@@ -29,26 +29,30 @@
     });
 
 
+    $('#timeline-link').click(function () {
+        $('#timeline-div').show();
+        $('#acceptedFollowerDiv').hide();
+        $('#postDiv').hide();
+
+       
+        $('#timeline-link').addClass('active');
+        $('#followers-Link').removeClass('active');
+        $('#post-link').removeClass('active');
+       
+    });
 
 
     $('#followers-Link').click(function () {
         fetchConfirmFriend();
-        $('#timelineDiv').hide();
-        $('#editinfoDiv').hide();
-        $('#changepasswordDiv').hide();
+        $('#timeline-div').hide();
         $('#acceptedFollowerDiv').show();
-        $('#followingDiv').hide();
-        $('#followingDiv').hide();
         $('#postDiv').hide();
-        $('#archieveDiv').hide();
+       
 
-        $('#timelineLink').removeClass('active');
-        $('#editinfoLink').removeClass('active');
-        $('#changePasswordLink').removeClass('active');
+        $('#timeline-link').removeClass('active');
         $('#followers-Link').addClass('active');
-        $('#followingLink').removeClass('active');
-        $('#postLink').removeClass('active');
-        $('#archieveLink').removeClass('active');
+        $('#post-link').removeClass('active');
+       
 
     });
 
@@ -57,45 +61,20 @@
     $('#post-link').click(function () {
      
         $('#timeline-div').hide();
-        $('#editinfo-div').hide();
-        $('#changepassword-div').hide();
-        $('#accepted-follower-div').hide();
-        $('#following-div').hide();
-        $('#timeline-div').hide();
+        $('#acceptedFollowerDiv').hide();
         $('#postDiv').show();
-        $('#archieve-div').hide();
+       
 
         $('#timeline-link').removeClass('active');
-        $('#editinfo-link').removeClass('active');
-        $('#changepassword-link').removeClass('active');
-        $('#followers-link').removeClass('active');
-        $('#following-link').removeClass('active');
+        $('#followers-Link').removeClass('active');
         $('#post-link').addClass('active');
-        $('#archievelink').removeClass('active');
+       
     });
 
 
 
 
-    $('#timeline-link').click(function () {
-        $('#timeline-div').show();
-        $('#editinfo-div').hide();
-        $('#changepassword-div').hide();
-        $('#followers-div').hide();
-        $('#following-div').hide();
-        $('#accepted-follower-div').show();
-        $('#postDiv').hide();
-        $('#archieve-div').hide();
-
-
-        $('#editinfo-link').removeClass('active');
-        $('#timeline-link').addClass('active');
-        $('#changepassword-link').removeClass('active');
-        $('#followers-link').removeClass('active');
-        $('#following-link').removeClass('active');
-        $('#post-link').removeClass('active');
-        $('#archievelink').removeClass('active');
-    });
+   
 });
 
 
@@ -156,22 +135,20 @@ function AddPosts(post) {
 
 function loadUserPosts() {
     var userId = sessionStorage.getItem('UserProfileId');
-
+   // var userId = getCookie("userId");
     $.ajax({
-        url: '/api/WebApi/UserPosts/' + userId,
+        url: '/api/WebApi/UserPosts1/' + userId,
         method: 'GET',
         success: function (data) {
-            var postsHTML = '';
-
+            $('#UserPostDiv ul.photos').empty();
             data.reverse().forEach(function (post) {
-                if (post.UserId == userId) {
-                    if (post.Status != 1) {
-                        postsHTML += AddPost(post);
-                    }
+                if (post.Status === 1 || post.Status === 2 || post.UserId !== parseInt(userId)) {
+                    return;
+                } else {
+                    var postElement = AddPosts(post);
+                    $('#UserPostDiv ul.photos').append(postElement);
                 }
             });
-           
-            $('#UserProfileDiv ul.photos').html(postsHTML);
         },
         error: function (error) {
             console.log(error);

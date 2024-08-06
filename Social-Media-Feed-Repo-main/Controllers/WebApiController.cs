@@ -10,7 +10,9 @@ using System.Web.Http;
 using SocialMediaApp.Context;
 using SocialMediaApp.Models;
 using System.Net.Mail;
-
+using System.Data.Entity;
+using SocialMediaApp.Methods;
+using Newtonsoft.Json.Linq;
 
 namespace SocialMediaApp.Controllers
 {
@@ -20,31 +22,25 @@ namespace SocialMediaApp.Controllers
         SocialMediaAppEntities db = new SocialMediaAppEntities();
 
 
-       
+          WebApiMethods methods = new WebApiMethods();
+
+
+
+
+        /// <summary>
+        /// Retrieves a list of users who are not friends with the current user, including their profile information and friendship status.
+        /// </summary>
+        /// <param name="currentUserId">The ID of the current user.</param>
+        /// <returns>A list of users not friends with the current user, with details on friendship status and request status.</returns>
+        /// 
+
         [HttpGet]
         [Route("GetUserData/{currentUserId}")]
         public IHttpActionResult GetUserData(int currentUserId)
         {
             try
             {
-                var usersNotFriends = db.UserDatas
-                .Where(u => u.UserId != currentUserId)
-                .Select(user => new
-                {
-                    UserId = user.UserId,
-                    LastName = user.LastName,
-                    FirstName = user.FirstName,
-                    ProfilePhoto = user.ProfilePhoto,
-                    IsFriend = db.UserFriends.Any(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
-                                                       (f.UserId == user.UserId && f.FollowerId == currentUserId)),
-                    RequestStatus = db.UserFriends.Where(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
-                                                               (f.UserId == user.UserId && f.FollowerId == currentUserId))
-                                  .Select(f => f.RequestStatus).FirstOrDefault(),
-                    FollowerId = db.UserFriends.Where(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
-                                                 (f.UserId == user.UserId && f.FollowerId == currentUserId))
-                    .Select(f => f.FollowerId)
-                    .FirstOrDefault()
-                }).ToList();
+                var usersNotFriends = methods.GetUserData(currentUserId);
                 return Ok(usersNotFriends);
             }
             catch (Exception ex)
@@ -53,7 +49,12 @@ namespace SocialMediaApp.Controllers
             }
         }
 
-       
+
+        /// <summary>
+        /// Uploads a profile photo for the user and updates the profile photo URL in the database.
+        /// </summary>
+        /// <param name="id">The ID of the user whose profile photo is being updated.</param>
+        /// <returns>An HTTP response indicating the result of the operation.</returns>
 
 
         [HttpPost]
@@ -63,51 +64,25 @@ namespace SocialMediaApp.Controllers
             try
             {
                 var httpRequest = HttpContext.Current.Request;
-                if (httpRequest.Files.Count > 0)
-                {
-                    var postedFile = httpRequest.Files[0];
-                    if (postedFile != null && postedFile.ContentLength > 0)
-                    {
-                        var fileName = Path.GetFileName(postedFile.FileName);
-                        var filePath = Path.Combine(HttpContext.Current.Server.MapPath("~/postupload/"), fileName);
-                        postedFile.SaveAs(filePath);
-                        var profilePhotoUrl = "/postupload/" + fileName;
-
-                        string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-                        using (SqlConnection connection = new SqlConnection(connectionString))
-                        {
-                            using (SqlCommand command = new SqlCommand("UpdateUserProfilePhoto", connection))
-                            {
-                                command.CommandType = CommandType.StoredProcedure;
-                                command.Parameters.AddWithValue("@UserId", id);
-                                command.Parameters.AddWithValue("@ProfilePhoto", profilePhotoUrl);
-
-                                connection.Open();
-                                int rowsAffected = command.ExecuteNonQuery();
-                                if (rowsAffected > 0)
-                                {
-                                    return Ok(new { Message = "Profile photo updated successfully", ProfilePhoto = profilePhotoUrl });
-                                }
-                                else
-                                {
-                                    return BadRequest("Failed to update profile photo");
-                                }
-                            }
-                        }
-                    }
-                }
-                return BadRequest("No file uploaded or file is empty");
+                var result = methods.UploadProfilePhoto(id, httpRequest);
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 return InternalServerError(ex);
             }
         }
+     
 
 
 
+        /// <summary>
+        /// Retrieves the profile information for the specified user.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose profile is being retrieved.</param>
+        /// <returns>An HTTP response containing the user profile data or a 404 Not Found status if the user does not exist.</returns>
 
+      
         [HttpGet]
         [Route("UserProfile")]
         public IHttpActionResult GetUserProfile(int userId)
@@ -123,156 +98,82 @@ namespace SocialMediaApp.Controllers
 
 
 
+        /// <summary>
+        /// Retrieves user details based on the provided email and password.
+        /// </summary>
+        /// <param name="email">The email address of the user.</param>
+        /// <param name="password">The password of the user.</param>
+        /// <returns>Returns an HTTP response with user information if credentials are valid, otherwise returns Unauthorized.</returns>
+
 
         [HttpGet]
         [Route("Login")]
         public IHttpActionResult GetUser(string email, string password)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand("GetUser", connection))
+                var user = methods.GetUser(email, password);
+                if (user == null)
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    command.Parameters.AddWithValue("@Email", email);
-                    command.Parameters.AddWithValue("@Password", password);
-
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            var userInfo = new User
-                            {
-                                UserId = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
-                                LastName = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
-                                FirstName = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
-                                City = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
-                                Email = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
-                                UserPassword = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
-                                Gender = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
-                                ProfilePhoto = reader.IsDBNull(7) ? string.Empty : reader.GetString(7),
-                                Interests = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
-                                PhoneNumber = reader.IsDBNull(9) ? string.Empty : reader.GetString(9),
-                                Bio = reader.IsDBNull(10) ? string.Empty : reader.GetString(10)
-                            };
-
-                            return Ok(userInfo);
-                        }
-                    }
+                    return Unauthorized();
                 }
+                return Ok(user);
             }
-
-            return Unauthorized();
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
-
+        /// <summary>
+        /// Retrieves user details based on the specified user ID.
+        /// </summary>
+        /// <param name="id">The ID of the user to retrieve.</param>
+        /// <returns>An IHttpActionResult containing the user details or an error response if the user is not found.</returns>
 
 
         [HttpGet]
         [Route("{id}")]
         public IHttpActionResult GetUserById(int id)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand("GetUserById", connection))
+                var user = methods.GetUserById(id);
+                if (user == null)
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    command.Parameters.AddWithValue("@UserId", id);
-
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            var userInfo = new User
-                            {
-                                UserId = reader.IsDBNull(reader.GetOrdinal("UserId")) ? 0 : reader.GetInt32(reader.GetOrdinal("UserId")),
-                                LastName = reader.IsDBNull(reader.GetOrdinal("LastName")) ? string.Empty : reader.GetString(reader.GetOrdinal("LastName")),
-                                FirstName = reader.IsDBNull(reader.GetOrdinal("FirstName")) ? string.Empty : reader.GetString(reader.GetOrdinal("FirstName")),
-                                City = reader.IsDBNull(reader.GetOrdinal("City")) ? string.Empty : reader.GetString(reader.GetOrdinal("City")),
-                                Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? string.Empty : reader.GetString(reader.GetOrdinal("Email")),
-                                UserPassword = reader.IsDBNull(reader.GetOrdinal("UserPassword")) ? string.Empty : reader.GetString(reader.GetOrdinal("UserPassword")),
-                                Gender = reader.IsDBNull(reader.GetOrdinal("Gender")) ? string.Empty : reader.GetString(reader.GetOrdinal("Gender")),
-                                ProfilePhoto = reader.IsDBNull(reader.GetOrdinal("ProfilePhoto")) ? string.Empty : reader.GetString(reader.GetOrdinal("ProfilePhoto")),
-                                Interests = reader.IsDBNull(reader.GetOrdinal("Interests")) ? string.Empty : reader.GetString(reader.GetOrdinal("Interests")),
-                                PhoneNumber = reader.IsDBNull(reader.GetOrdinal("PhoneNumber")) ? string.Empty : reader.GetString(reader.GetOrdinal("PhoneNumber")),
-                                Bio = reader.IsDBNull(reader.GetOrdinal("Bio")) ? string.Empty : reader.GetString(reader.GetOrdinal("Bio")),
-                                Posts = new List<Post>()
-                            };
-
-                            return Ok(userInfo);
-                        }
-                    }
+                    return NotFound();
                 }
+                return Ok(user);
             }
-
-            return Unauthorized();
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
+        /// <summary>
+        /// Registers a new user and initiates OTP-based email verification.
+        /// </summary>
+        /// <param name="user">The user data for registration.</param>
+        /// <returns>An IHttpActionResult indicating the result of the registration process.</returns>
 
 
-
-      
         [HttpPost]
         [Route("Register")]
         public IHttpActionResult AddUser(UserData user)
         {
-            if (user.Email != null && user.UserPassword != null)
-            {
-                
-                var otp = new Random().Next(100000, 999999).ToString();
-                var passwordReset = new PasswordReset
-                {
-                    Email = user.Email,
-                    Token = otp,
-                    Created_At = DateTime.UtcNow
-                };
-
-             
-                db.PasswordResets.Add(passwordReset);
-                user.ProfilePhoto = "/postupload/profile.png";
-                db.UserDatas.Add(user);
-                db.SaveChanges();
-
-               
-                SendOtpEmail(user.Email, otp);
-                return Ok(new { message = "Registration initiated. Please check your email for the OTP to complete registration." });
-            }
-            return Unauthorized();
-        }
-
-        private void SendOtpEmail(string email, string otp)
-        {
             try
             {
-                string emailBody = $"Dear User,\n\nYour OTP for registration is: {otp}\n\nNote: This OTP is valid for 10 minutes.";
-
-                using (MailMessage mail = new MailMessage())
-                {
-                    mail.From = new MailAddress("testdemo3101@gmail.com");
-                    mail.To.Add(email);
-                    mail.Subject = "Registration OTP";
-                    mail.Body = emailBody;
-
-                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
-                    {
-                        smtp.Credentials = new System.Net.NetworkCredential("testdemo3101@gmail.com", "ldye iwbw nhui dncq");
-                        smtp.EnableSsl = true;
-                        smtp.Send(mail);
-                    }
-                }
+                methods.AddUser(user);
+                return Ok(new { message = "Registration initiated. Please check your email for the OTP to complete registration." });
             }
-            catch (Exception e)
+            catch (ArgumentException ex)
             {
-                Console.WriteLine($"Failed to send OTP email: {e.Message}");
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
 
@@ -280,210 +181,128 @@ namespace SocialMediaApp.Controllers
         [Route("VerifyOtp")]
         public IHttpActionResult VerifyOtp(string email, string otp)
         {
-            var passwordResetEntry = db.PasswordResets.FirstOrDefault(pr => pr.Email == email && pr.Token == otp);
-            if (passwordResetEntry == null)
+            try
             {
-                return BadRequest("Invalid email or OTP.");
+                methods.VerifyOtp(email, otp);
+                return Ok(new { message = "OTP verified successfully. Registration complete." });
             }
-
-            var timeDifference = (DateTime.UtcNow - passwordResetEntry.Created_At).TotalMinutes;
-            if (timeDifference > 10)
+            catch (ArgumentException ex)
             {
-                return BadRequest("OTP has expired.");
+                return BadRequest(ex.Message);
             }
- 
-            var user = db.UserDatas.FirstOrDefault(u => u.Email == email);
-            if (user != null)
+            catch (Exception ex)
             {
-               
-                db.SaveChanges();
+                return InternalServerError(ex);
             }
-
-            return Ok(new { message = "OTP verified successfully. Registration complete." });
         }
 
+
+        /// <summary>
+        /// Updates user information based on the provided user ID.
+        /// </summary>
+        /// <param name="id">The ID of the user to update.</param>
+        /// <param name="user">The user data with updated information.</param>
+        /// <returns>An IHttpActionResult indicating the result of the update operation.</returns>
 
 
         [HttpPut]
         [Route("{id}")]
         public IHttpActionResult UpdateUserInfo(int id, [FromBody] UserData user)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand("UpdateUserInfo", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    command.Parameters.AddWithValue("@UserId", id);
-                    command.Parameters.AddWithValue("@FirstName", user.FirstName);
-                    command.Parameters.AddWithValue("@LastName", user.LastName);
-                    command.Parameters.AddWithValue("@City", user.City);
-                    command.Parameters.AddWithValue("@UserPassword", user.UserPassword);
-                    command.Parameters.AddWithValue("@Email", user.Email);
-                    command.Parameters.AddWithValue("@Gender", user.Gender);
-                    command.Parameters.AddWithValue("@Interests", user.Interests);
-                    command.Parameters.AddWithValue("@PhoneNumber", user.PhoneNumber);
-                    command.Parameters.AddWithValue("@Bio", user.Bio);
-
-                    command.ExecuteNonQuery();
-
-                    return Ok();
-                }
+                methods.UpdateUserInfo(id, user);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
 
+
+        /// <summary>
+        /// Checks if the provided email is already in use by a user.
+        /// </summary>
+        /// <param name="request">An object containing the user ID and email to check.</param>
+        /// <returns>An IHttpActionResult indicating whether the email is in use or not.</returns>
 
 
         [HttpPost]
         [Route("CheckEmail")]
         public IHttpActionResult CheckEmail([FromBody] UserData request)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.Email))
+            try
             {
-                return BadRequest("Invalid email");
-            }
-
-            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                using (SqlCommand command = new SqlCommand("CheckEmail", connection))
+                if (request == null || string.IsNullOrWhiteSpace(request.Email))
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@UserId", request.UserId);
-                    command.Parameters.AddWithValue("@Email", request.Email);
-
-                    connection.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            bool emailInUse = Convert.ToBoolean(reader["EmailInUse"]);
-                            return Ok(new { emailInUse });
-                        }
-                        else
-                        {
-                            return InternalServerError(new Exception("No result returned from the stored procedure."));
-                        }
-                    }
+                    return BadRequest("Invalid email");
                 }
+
+                bool emailInUse = methods.CheckEmail(request.UserId, request.Email);
+                return Ok(new { emailInUse });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
 
-
-        
+        /// <summary>
+        /// Checks if the provided phone number is already in use by a user.
+        /// </summary>
+        /// <param name="request">An object containing the user ID and phone number to check.</param>
+        /// <returns>An IHttpActionResult indicating whether the phone number is in use or not.</returns>
+       
 
         [HttpPost]
         [Route("CheckPhoneNumber")]
         public IHttpActionResult CheckPhoneNumber([FromBody] UserData request)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.PhoneNumber))
+            try
             {
-                return BadRequest("Invalid phone number");
-            }
-
-            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                using (SqlCommand command = new SqlCommand("CheckPhoneNumber", connection))
+                if (request == null || string.IsNullOrWhiteSpace(request.PhoneNumber))
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@UserId", request.UserId);
-                    command.Parameters.AddWithValue("@PhoneNumber", request.PhoneNumber);
-
-                    try
-                    {
-                        connection.Open();
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                bool phoneInUse = Convert.ToBoolean(reader["PhoneInUse"]);
-                                return Ok(new { phoneInUse });
-                            }
-                            else
-                            {
-                                return InternalServerError(new Exception("No result returned from the stored procedure."));
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        
-                        return InternalServerError(ex);
-                    }
+                    return BadRequest("Invalid phone number");
                 }
+
+                bool phoneInUse = methods.CheckPhoneNumber(request.UserId, request.PhoneNumber);
+                return Ok(new { phoneInUse });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
 
-
+        /// <summary>
+        /// Adds a new post with optional media to the user's feed.
+        /// </summary>
+        /// <returns>An IHttpActionResult indicating the result of the post operation.</returns>
+       
 
         [HttpPost]
         [Route("NewPost")]
         public IHttpActionResult AddNewPost()
         {
-            var httpRequest = HttpContext.Current.Request;
-            var userId = httpRequest.Form["userId"];
-            var postContent = httpRequest.Form["PostContent"];
-            string mediaUrl = null;
-
-
-            if (httpRequest.Files.Count > 0)
+            try
             {
-                var postedFile = httpRequest.Files[0];
-                if (postedFile != null && postedFile.ContentLength > 0)
-                {
-
-                    string fileType = Path.GetExtension(postedFile.FileName).ToLower();
-
-                    if (fileType == ".jpg" || fileType == ".jpeg" || fileType == ".png" || fileType == ".gif")
-                    {
-                        // Image file
-                        string fileName = Path.GetFileName(postedFile.FileName);
-                        string imagePath = "~/images/" + fileName;
-                        postedFile.SaveAs(HttpContext.Current.Server.MapPath(imagePath));
-                        mediaUrl = VirtualPathUtility.ToAbsolute(imagePath);
-                    }
-                    else if (fileType == ".mp4" || fileType == ".avi" || fileType == ".mov" || fileType == ".wmv")
-                    {
-                        // Video file
-                        string fileName = Path.GetFileName(postedFile.FileName);
-                        string videoPath = "~/videos/" + fileName;
-                        postedFile.SaveAs(HttpContext.Current.Server.MapPath(videoPath));
-                        mediaUrl = VirtualPathUtility.ToAbsolute(videoPath);
-                    }
-                    else
-                    {
-                        return BadRequest("Unsupported file type. Please upload images or videos.");
-                    }
-                }
+                var result = methods.AddNewPost(HttpContext.Current.Request);
+                return Ok(result);
             }
-
-
-            UserPost post = new UserPost
+            catch (Exception ex)
             {
-                UserId = Convert.ToInt32(userId),
-                PostContent = postContent,
-                PostPhoto = mediaUrl,
-                PostDate = DateTime.Now,
-                LikeCount = 0,
-                ShareCount = 0,
-                CommentCount = 0
-            };
-
-
-            db.UserPosts.Add(post);
-            db.SaveChanges();
-
-            return Ok("Post added successfully.");
+                return InternalServerError(ex);
+            }
         }
 
 
+
+
+        /// <summary>
+        /// Retrieves the most recent post from the database.
+        /// </summary>
+        /// <returns>An IHttpActionResult containing the most recent post.</returns>
 
 
         [HttpGet]
@@ -501,8 +320,13 @@ namespace SocialMediaApp.Controllers
         }
 
 
+       
+        /// <summary>
+        /// Retrieves posts from the user and their friends based on the user's ID.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose posts are to be retrieved.</param>
+        /// <returns>An IHttpActionResult containing a list of posts.</returns>
 
- 
 
         [HttpGet]
         [Route("UserPosts/{userId}")]
@@ -510,63 +334,8 @@ namespace SocialMediaApp.Controllers
         {
             try
             {
-                var friendIdsSentRequests = db.UserFriends
-                .Where(f => f.FollowerId == userId && f.RequestStatus == "accepted")
-                .Select(f => f.UserId)
-                 .ToList();
-
-                var friendIdsReceivedRequests = db.UserFriends
-                    .Where(f => f.UserId == userId && f.RequestStatus == "accepted")
-                    .Select(f => f.FollowerId)
-                    .ToList();
-
-                var friendIds = friendIdsSentRequests.Concat(friendIdsReceivedRequests).ToList();
-                friendIds.Add(userId);
-
-
-                var postsInfo = db.UserPosts
-                                .Where(post => (post.Status == null || post.Status == "2") &&
-                                               friendIds.Contains(post.UserId))
-
-                                                .OrderBy(post => post.PostDate)
-                                .Select(post => new
-                                {
-                                    PostId = post.PostId,
-                                    UserId = post.UserId,
-                                    PostContent = post.PostContent,
-                                    PostPhoto = post.PostPhoto,
-                                    PostDate = post.PostDate,
-                                    LikeCount = post.LikeCount,
-                                    ShareCount = post.ShareCount,
-                                    CommentCount = post.CommentCount,
-                                    FirstName = post.UserData.FirstName,
-                                    LastName = post.UserData.LastName,
-                                    ProfilePhoto = post.UserData.ProfilePhoto,
-                                    Status = post.Status,
-                                    IsLiked = post.PostLikes.Any(x => x.UserId == userId),
-                                    LikeType = post.PostLikes.Select(x => x.LikeType)
-                                })
-                                .ToList();
-
-                var formattedPostsInfo = postsInfo.Select(post => new
-                {
-                    PostId = post.PostId,
-                    UserId = post.UserId,
-                    PostContent = post.PostContent,
-                    PostPhoto = post.PostPhoto,
-                    PostDate = FormatPostDate(post.PostDate),
-                    LikeCount = post.LikeCount,
-                    ShareCount = post.ShareCount,
-                    CommentCount = post.CommentCount,
-                    FirstName = post.FirstName,
-                    LastName = post.LastName,
-                    ProfilePhoto = post.ProfilePhoto,
-                    LikeType = post.LikeType,
-                    IsLiked = post.IsLiked,
-                    Status = post.Status,
-                }).ToList();
-
-                return Ok(formattedPostsInfo);
+                var postsInfo = methods.GetUserPosts(userId);
+                return Ok(postsInfo);
             }
             catch (Exception ex)
             {
@@ -576,132 +345,93 @@ namespace SocialMediaApp.Controllers
 
 
 
-        private string FormatPostDate(DateTime? postDate)
-        {
-            if (postDate.HasValue)
-            {
-                TimeSpan timeSincePost = DateTime.Now - postDate.Value;
-                if (timeSincePost.TotalMinutes < 1)
-                {
-                    return "just now";
-                }
-                else if (timeSincePost.TotalHours < 1)
-                {
-                    return $"{(int)timeSincePost.TotalMinutes} min ago";
-                }
-                else if (timeSincePost.TotalDays < 1)
-                {
-                    return $"{(int)timeSincePost.TotalHours} h ago";
-                }
-                else if (timeSincePost.TotalDays < 30)
-                {
-                    return $"{(int)timeSincePost.TotalDays} d ago";
-                }
-                else
-                {
-                    // return postDate.Value.ToString("MMM dd, yyyy").ToLower();
-                    return postDate.Value.ToString("MMM dd, yyyy");
-                }
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
+        /// <summary>
+        /// Handles the "like" or "unlike" action for a post by a user. 
+        /// If the user has not liked the post yet, a like is added and the post's like count is incremented. 
+        /// If the user has already liked the post, the like is removed and the post's like count is decremented.
+        /// </summary>
+        /// <param name="request">An object containing the information needed to toggle a like on a post. 
+        /// It includes the PostId of the post to be liked or unliked and the UserId of the user performing the action.</param>
+        /// <returns>Returns an <see cref="IHttpActionResult"/> representing the result of the action. 
+        /// If the post is found, returns an OK response with the updated like count and the new like status. 
+        /// If the post is not found, returns a NotFound result.</returns>
 
-
-
+       
         [HttpPost]
         [Route("PostLike")]
         public IHttpActionResult LikePost([FromBody] PostLike request)
         {
-            var post = db.UserPosts.Find(request.PostId);
-            if (post == null)
+            if (request == null || !request.PostId.HasValue || !request.UserId.HasValue)
+            {
+                return BadRequest("Invalid request data.");
+            }
+
+            try
+            {
+                var result = methods.LikePost(request.PostId.Value, request.UserId.Value);
+                return Ok(new { likeCount = result.LikeCount, isLiked = result.IsLiked });
+            }
+            catch (InvalidOperationException)
             {
                 return NotFound();
             }
-
-            var userLike = db.PostLikes.FirstOrDefault(l => l.PostId == request.PostId && l.UserId == request.UserId);
-            bool isLiked;
-
-            if (userLike == null)
+            catch (Exception ex)
             {
-                var like = new PostLike
-                {
-                    PostId = request.PostId,
-                    UserId = request.UserId,
-                    LikeDate = DateTime.Now
-                };
-                db.PostLikes.Add(like);
-                post.LikeCount++;
-                isLiked = true;
+                return InternalServerError(ex);
             }
-            else
-            {
-                db.PostLikes.Remove(userLike);
-                post.LikeCount--;
-                isLiked = false;
-            }
-
-            db.SaveChanges();
-            return Ok(new { likeCount = post.LikeCount, isLiked });
         }
 
 
-       
+        /// <summary>
+        /// Adds a new comment to a specified post. This method creates a new comment record in the database,
+        /// updates the comment count for the associated post, and returns an appropriate HTTP response.
+        /// </summary>
+        /// <param name="model">An object containing the details of the comment to be added. This includes:
+        /// - <c>PostId</c>: The ID of the post to which the comment is being added.
+        /// - <c>UserId</c>: The ID of the user making the comment.
+        /// - <c>CommentText</c>: The content of the comment.
+        /// - <c>ParentCommentId</c>: The ID of the parent comment if this is a reply; otherwise, null.
+        /// - <c>IsDeleted</c>: A flag indicating whether the comment is deleted (0 indicates not deleted; this is set automatically).</param>
+        /// <returns>An <see cref="IHttpActionResult"/> that represents the result of the operation. 
+        /// If the comment is successfully added and the post's comment count is updated, an <see cref="OkResult"/> is returned.
+        /// If the model is invalid, a <see cref="BadRequestResult"/> is returned with details about the validation errors.</returns>
+
+
         [HttpPost]
         [Route("AddComment")]
-        public IHttpActionResult AddComment(PostComment model)
+        public IHttpActionResult AddComment([FromBody] PostComment model)
         {
             if (ModelState.IsValid)
             {
-                var comment = new PostComment
+                try
                 {
-                    PostId = model.PostId,
-                    UserId = model.UserId,
-                    CommentText = model.CommentText,
-                    CommentDate = DateTime.Now,
-                    ParentCommentId = model.ParentCommentId,
-                    IsDeleted = 0
-                };
-
-                db.PostComments.Add(comment);
-                db.SaveChanges();
-
-                var post = db.UserPosts.Find(comment.PostId);
-                post.CommentCount++;
-                db.SaveChanges();
-
-                return Ok();
+                    methods.AddComment(model);
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
 
+        /// <summary>
+        /// Retrieves the most recent comment from the PostComments table along with user data.
+        /// </summary>
+        /// <returns>
+        /// An IHttpActionResult containing the latest comment with user data, or a NotFound result if no comments exist.
+        /// </returns>
 
-       /* [HttpGet]
+       
+        [HttpGet]
         [Route("GetLastComment")]
         public IHttpActionResult GetLastComment()
         {
-            using (SocialMediaAppEntities context = new SocialMediaAppEntities())
+            try
             {
-                var lastComment = context.PostComments
-                    .Include(pc => pc.UserData)
-                                   .OrderByDescending(pc => pc.CommentId)
-                   
-
-                    .Select(pc => new
-                    {
-                        pc.CommentId,
-                        pc.UserId,
-                        pc.CommentText,
-                        ProfilePhoto = pc.UserData.ProfilePhoto,
-                        FirstName = pc.UserData.FirstName,
-                        LastName = pc.UserData.LastName
-
-                    })
-                    .FirstOrDefault();
-
+                var lastComment = methods.GetLastComment();
                 if (lastComment == null)
                 {
                     return NotFound();
@@ -709,378 +439,319 @@ namespace SocialMediaApp.Controllers
 
                 return Ok(lastComment);
             }
-        }*/
-
-
-
-
-        [HttpPut]
-        [Route("Deletepost/{id}")]
-        public IHttpActionResult Deletepost(int id)
-        {
-            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            catch (Exception ex)
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand("DeletePost", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    command.ExecuteNonQuery();
-
-                    return Ok();
-                }
+                return InternalServerError(ex);
             }
         }
 
 
+        /// <summary>
+        /// Deletes a post from the database using the specified post ID.
+        /// </summary>
+        /// <param name="id">The ID of the post to delete.</param>
+        /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
+     
+        [HttpPut]
+        [Route("Deletepost/{id}")]
+        public IHttpActionResult DeletePost(int id)
+        {
+            try
+            {
+                methods.DeletePost(id);
+                return Ok("Post deleted successfully.");
+            }
+            catch (SqlException ex)
+            {
+                // Log the exception details and return an internal server error
+                return InternalServerError(ex);
+            }
+            catch (Exception ex)
+            {
+                // Catch any other exceptions
+                return InternalServerError(ex);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves and formats comments for a specific post.
+        /// </summary>
+        /// <param name="postId">The ID of the post to get comments for.</param>
+        /// <returns>An IHttpActionResult containing the list of formatted comments.</returns>
+
+        
         [HttpGet]
         [Route("GetPostComments/{postId}")]
         public IHttpActionResult GetPostComments(int postId)
         {
-            var comments = db.PostComments
-                .Where(c => c.PostId == postId)
-                .Select(c => new
-                {
-                    c.CommentId,
-                    c.CommentText,
-                    c.CommentDate,
-                    c.UserId,
-                    UserName = c.UserData.FirstName + " " + c.UserData.LastName,
-                    ProfilePhoto = c.UserData.ProfilePhoto
-                })
-                .ToList();
-
-            var formattedComments = comments.Select(c => new
+            try
             {
-                c.CommentId,
-                c.CommentText,
-                CommentDate = FormatCommentDate(c.CommentDate),
-                c.UserName,
-                c.UserId,
-                c.ProfilePhoto
-            }).ToList();
-
-            return Ok(formattedComments);
-        }
-
-
-
-        private string FormatCommentDate(DateTime? commentDate)
-        {
-            if (commentDate == null)
-            {
-                return string.Empty;
+                var comments = methods.GetPostComments(postId);
+                return Ok(comments);
             }
-
-            TimeSpan timeSinceComment = DateTime.Now - commentDate.Value;
-            if (timeSinceComment.TotalMinutes < 1)
+            catch (Exception ex)
             {
-                return "Just now";
-            }
-            else if (timeSinceComment.TotalHours < 1)
-            {
-                return $"{(int)timeSinceComment.TotalMinutes} min ago";
-            }
-            else if (timeSinceComment.TotalDays < 1)
-            {
-                return $"{(int)timeSinceComment.TotalHours} h ago";
-            }
-            else if (timeSinceComment.TotalDays < 30)
-            {
-                return $"{(int)timeSinceComment.TotalDays} d ago";
-            }
-            else
-            {
-                return commentDate.Value.ToString("MM dd, yyyy");
+                return InternalServerError(ex);
             }
         }
 
-        
-
-
+        /// <summary>
+        /// Retrieves replies for a specific parent comment.
+        /// </summary>
+        /// <param name="parentCommentId">The ID of the parent comment to get replies for.</param>
+        /// <returns>An IHttpActionResult containing the list of replies.</returns>
 
 
         [HttpGet]
         [Route("GetCommentReplies/{parentCommentId}")]
         public IHttpActionResult GetCommentReplies(int parentCommentId)
         {
-            var replies = db.PostComments
-                .Where(c => c.ParentCommentId == parentCommentId)
-                .Select(c => new
-                {
-                    c.CommentId,
-                    c.CommentText,
-                    c.CommentDate,
-                    c.UserId,
-                    UserName = c.UserData.FirstName + " " + c.UserData.LastName,
-                    ProfilePhoto = c.UserData.ProfilePhoto,
-                    ParentCommentId = c.ParentCommentId
-                })
-                .ToList();
-
-            return Ok(replies);
+            try
+            {
+                var replies = methods.GetCommentReplies(parentCommentId);
+                return Ok(replies);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
-
-
-
+        /// <summary>
+        /// Deletes a comment from the database using the specified comment ID.
+        /// </summary>
+        /// <param name="commentId">The ID of the comment to delete.</param>
+        /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
 
         [HttpDelete]
         [Route("DeleteComment/{commentId}")]
         public IHttpActionResult DeleteComment(int commentId)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand("DeleteComment", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@commentId", commentId);
-
-                    command.ExecuteNonQuery();
-
-                    return Ok();
-                }
+                methods.DeleteComment(commentId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
 
+        /// <summary>
+        /// Retrieves and formats posts for a specific user based on the given userId.
+        /// </summary>
+        /// <param name="userId">The ID of the user to get posts for.</param>
+        /// <returns>An IHttpActionResult containing the list of formatted posts.</returns>
 
-       
+
         [HttpGet]
         [Route("UserPosts1/{userId}")]
         public IHttpActionResult GetUserPosts1(int userId)
         {
-            var postsInfo = db.UserPosts
-        .Where(post => post.Status == null || post.Status == "2")
-                .OrderBy(post => post.PostDate)
-                .Select(post => new
-                {
-                    PostId = post.PostId,
-                    UserId = post.UserId,
-                    PostContent = post.PostContent,
-                    PostPhoto = post.PostPhoto,
-                    PostDate = post.PostDate,
-                    LikeCount = post.LikeCount,
-                    ShareCount = post.ShareCount,
-                    CommentCount = post.CommentCount,
-                    FirstName = post.UserData.FirstName,
-                    LastName = post.UserData.LastName,
-                    ProfilePhoto = post.UserData.ProfilePhoto,
-                    Status = post.Status,
-                    LikeType = post.PostLikes.Select(x => x.LikeType)
-                }).ToList();
-
-            var formattedPostsInfo = postsInfo.Select(post => new
+            try
             {
-                PostId = post.PostId,
-                UserId = post.UserId,
-                PostContent = post.PostContent,
-                PostPhoto = post.PostPhoto,
-                PostDate = FormatPostDate(post.PostDate),
-                LikeCount = post.LikeCount,
-                ShareCount = post.ShareCount,
-                CommentCount = post.CommentCount,
-                FirstName = post.FirstName,
-                LastName = post.LastName,
-                ProfilePhoto = post.ProfilePhoto,
-                LikeType = post.LikeType,
-                Status = post.Status,
-            }).ToList();
-
-            return Ok(formattedPostsInfo);
+                var posts = methods.GetUserPosts1(userId);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
 
+        /// <summary>
+        /// Adds a post to the archive using the specified post ID.
+        /// </summary>
+        /// <param name="id">The ID of the post to archive.</param>
+        /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
 
         [HttpPut]
         [Route("addarchievepost/{id}")]
         public IHttpActionResult AddArchievePost(int id)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand("AddArchievePost", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    try
-                    {
-                        command.ExecuteNonQuery();
-                        return Ok();
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest("Error: " + ex.Message);
-                    }
-                }
+                methods.AddArchievePost(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
 
-
-
+        /// <summary>
+        /// Removes a post from the archive using the specified post ID.
+        /// </summary>
+        /// <param name="id">The ID of the post to remove from the archive.</param>
+        /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
 
         [HttpPut]
         [Route("removearchievepost/{id}")]
         public IHttpActionResult RemoveArchievePost(int id)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                using (SqlCommand command = new SqlCommand("RemoveArchievePost", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    try
-                    {
-                        connection.Open();
-                        command.ExecuteNonQuery();
-                        return Ok();
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest("Error: " + ex.Message);
-                    }
-                }
+                methods.RemoveArchievePost(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
 
+        /// <summary>
+        /// Retrieves notifications for a specific user based on the provided user ID.
+        /// </summary>
+        /// <param name="userId">The ID of the user to get notifications for.</param>
+        /// <returns>An IHttpActionResult containing the list of notifications.</returns>
 
-
-
+        
         [HttpGet]
         [Route("notifications/{userId}")]
         public IHttpActionResult GetUserNotifications(int userId)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-            List<object> notifications = new List<object>();
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                using (SqlCommand command = new SqlCommand("GetUserNotifications", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@userId", userId);
-
-                    connection.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            var notification = new
-                            {
-                                NotificationText = reader["NotificationText"].ToString(),
-                                NotificationTimestamp = (DateTime)reader["NotificationTimestamp"],
-                                PostId = reader["PostId"],
-                                PostPhoto = reader["PostPhoto"],
-                                PostContent = reader["PostContent"],
-                                ProfilePhoto = reader["ProfilePhoto"]
-                            };
-
-                            notifications.Add(notification);
-                        }
-                    }
-                }
-            }
-
+            var notifications = methods.GetUserNotifications(userId);
             return Ok(notifications);
         }
 
 
+        /// <summary>
+        /// Adds a friend request from the current user to another user.
+        /// </summary>
+        /// <param name="request">The UserFriend object containing the user IDs for the friend request.</param>
+        /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
 
-      
         [HttpPost]
         [Route("AddFriend")]
         public IHttpActionResult AddFriend(UserFriend request)
         {
-            int currentUserId = (int)request.FollowerId;
-            if (request.UserId == currentUserId)
-                return BadRequest("You cannot add yourself as a friend.");
-            bool isFriendshipExisting = db.UserFriends
-                .Any(f => (f.UserId == currentUserId && f.FollowerId == request.UserId) ||
-                          (f.UserId == request.UserId && f.FollowerId == currentUserId));
-            if (isFriendshipExisting)
-                return BadRequest("Friendship already exists.");
-            UserFriend newFriendship = new UserFriend
+            if (request.FollowerId == null)
             {
-                UserId = currentUserId,
-                FollowerId = request.UserId,
-                IsFriend = 1,
-                RequestStatus = "pending"
-            };
-            db.UserFriends.Add(newFriendship);
-            db.SaveChanges();
-            return Ok();
+                return BadRequest("FollowerId cannot be null.");
+            }
+
+            int currentUserId = (int)request.FollowerId; // Ensure FollowerId is not null
+
+            try
+            {
+                // Ensure request.UserId is not null and cast it to int
+                if (request.UserId == null)
+                {
+                    return BadRequest("UserId cannot be null.");
+                }
+
+                int friendUserId = (int)request.UserId;
+
+                methods.AddFriend(currentUserId, friendUserId);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
 
 
+        /// <summary>
+        /// Removes a friendship between the current user and the specified friend.
+        /// </summary>
+        /// <param name="request">The UserFriend object containing the user IDs for the friendship to remove.</param>
+        /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
+       
 
         [HttpPost]
         [Route("RemoveFriend")]
         public IHttpActionResult RemoveFriend(UserFriend request)
         {
+            if (request.UserId == null || request.FollowerId == null)
+            {
+                return BadRequest("UserId and FollowerId cannot be null.");
+            }
+
             int currentUserId = (int)request.UserId;
             int friendId = (int)request.FollowerId;
-            var existingFriendship = db.UserFriends
-                .FirstOrDefault(f => (f.UserId == currentUserId && f.FollowerId == friendId) ||
-                                      (f.UserId == friendId && f.FollowerId == currentUserId));
-            if (existingFriendship == null)
-                return BadRequest("Friendship does not exist.");
-            db.UserFriends.Remove(existingFriendship);
-            db.SaveChanges();
-            return Ok();
+
+            try
+            {
+                methods.RemoveFriend(currentUserId, friendId);
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
 
 
+        /// <summary>
+        /// Confirms a friend request between the current user and the specified friend.
+        /// </summary>
+        /// <param name="request">The UserFriend object containing the user IDs for the friend request.</param>
+        /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
+      
 
         [HttpPost]
         [Route("ConfirmFriendRequest")]
         public IHttpActionResult ConfirmFriendRequest(UserFriend request)
         {
-            int currentUserId = (int)request.UserId;
-            int friendId = (int)request.FollowerId;
-            var friendRequest = db.UserFriends.FirstOrDefault(f => (f.UserId == currentUserId && f.FollowerId == friendId) ||
-                                                                   (f.UserId == friendId && f.FollowerId == currentUserId));
-            if (friendRequest != null)
+            if (request.UserId == null || request.FollowerId == null)
             {
-                friendRequest.RequestStatus = "accepted";
-                friendRequest.IsFriend = 2;
-                db.SaveChanges();
+                return BadRequest("UserId and FollowerId cannot be null.");
+            }
+
+            int userId = (int)request.UserId;
+            int followerId = (int)request.FollowerId;
+
+            try
+            {
+                methods.ConfirmFriendRequest(userId, followerId);
                 return Ok();
             }
-            else
+            catch (InvalidOperationException ex)
             {
-                return BadRequest("Friend request not found.");
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
 
 
 
 
+        /// <summary>
+        /// Initiates a password reset process for the specified email address.
+        /// </summary>
+        /// <param name="email">The email address of the user requesting a password reset.</param>
+        /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
+     
         [HttpPost]
         [Route("Forgotpassword")]
         public IHttpActionResult ForgotPassword([FromBody] string email)
@@ -1090,79 +761,37 @@ namespace SocialMediaApp.Controllers
                 return BadRequest("Email is required.");
             }
 
-            var user = db.UserDatas.FirstOrDefault(u => u.Email == email);
-            if (user == null)
+            try
+            {
+                methods.HandleForgotPassword(email);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
             {
                 return NotFound();
             }
-
-            var token = Guid.NewGuid().ToString();
-            var passwordReset = new PasswordReset
+            catch (Exception ex)
             {
-                Email = email,
-                Token = token,
-                Created_At = DateTime.Now
-            };
-            db.PasswordResets.Add(passwordReset);
-            db.SaveChanges();
-
-            SendResetPasswordEmail(email, token);
-
-            return Ok();
+                return InternalServerError(ex);
+            }
         }
 
 
        
-        private void SendResetPasswordEmail(string email, string token)
-        {
-            try
-            {
-                string encodedToken = System.Web.HttpUtility.UrlEncode(token);
-                DateTime createdAtTime = GetCreatedAtTimeFromDatabase();
-                DateTime expirationTime = createdAtTime.AddMinutes(10);
-
-                string ResetPasswordLink = $"Dear User,\n\nPlease click the following link to reset your password:\n\nhttps://localhost:44321/Login/ResetPassword?token={encodedToken}\n\nNote: This link will expire at {expirationTime}.";
-
-                using (MailMessage mail = new MailMessage())
-                {
-                    mail.From = new MailAddress("testdemo3101@gmail.com");
-                    mail.To.Add(email);
-                    mail.Subject = "Reset Password Link";
-                    mail.Body = $"{ResetPasswordLink}";
-
-                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
-                    {
-                        smtp.Credentials = new System.Net.NetworkCredential("testdemo3101@gmail.com", "ldye iwbw nhui dncq");
-                        smtp.EnableSsl = true;
-                        smtp.Send(mail);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Failed to send mail: {e.Message}");
-            }
-        }
-
-        private DateTime GetCreatedAtTimeFromDatabase()
-        {
-
-            return DateTime.Now;
-        }
-
-
-
-        public bool IsTokenExpired(string token)
-        {
-            DateTime expirationTime = GetExpirationTimeFromToken(token);
-            return DateTime.UtcNow > expirationTime;
-        }
-
-        private DateTime GetExpirationTimeFromToken(string token)
-        {
-
-            return DateTime.Now.AddMinutes(10);
-        }
+        /// <summary>
+        /// Handles the password reset functionality. This method validates the provided token, checks for expiration, 
+        /// ensures the token belongs to a valid user, and updates the user's password if all conditions are met. 
+        /// It also verifies that the new password is not one of the last three passwords used by the user.
+        /// </summary>
+        /// <param name="token">The password reset token sent to the user, which is used to validate and identify the reset request.</param>
+        /// <param name="password">The new password that the user wants to set.</param>
+        /// <returns>An IHttpActionResult indicating the result of the password reset operation. 
+        /// Returns a BadRequest if the token is invalid or expired, if the user does not exist, or if the new password is reused.
+        /// Returns an Ok if the password was updated successfully.</returns>
 
 
 
@@ -1170,84 +799,56 @@ namespace SocialMediaApp.Controllers
         [Route("Resetpassword")]
         public IHttpActionResult ResetPassword(string token, string password)
         {
-            var passwordReset = db.PasswordResets.SingleOrDefault(r => r.Token == token);
-            if (passwordReset == null)
+            try
             {
-                return BadRequest("Your Token Is Invalid");
+                methods.ResetUserPassword(token, password);
+                return Ok(new { Result = "Password has been updated successfully." });
             }
-            if ((DateTime.UtcNow - passwordReset.Created_At).TotalMinutes > 10)
+            catch (ArgumentException ex)
             {
-                return BadRequest("This Token Has Expired. Please send a new password reset link.");
+                return BadRequest(ex.Message);
             }
-
-            var user = db.UserDatas.SingleOrDefault(u => u.Email == passwordReset.Email);
-            if (user == null)
+            catch (InvalidOperationException ex)
             {
-                return BadRequest("This Username Is Not Found.");
+                return BadRequest(ex.Message);
             }
-
-            var lastThreePasswords = db.PasswordChangeHistories
-                .Where(p => p.UserId == user.UserId)
-                .OrderByDescending(p => p.ChangeDate)
-                .Take(3)
-                .Select(p => p.NewPassword)
-                .ToList();
-
-            if (lastThreePasswords.Contains(password))
+            catch (Exception ex)
             {
-                return BadRequest("New password cannot be the same as any of the last three passwords.");
+                return InternalServerError(ex);
             }
-
-
-            user.UserPassword = password;
-
-            var passwordChange = new PasswordChangeHistory
-            {
-                UserId = user.UserId,
-                NewPassword = password,
-                ChangeDate = DateTime.Now
-            };
-            db.PasswordChangeHistories.Add(passwordChange);
-
-            db.PasswordResets.Remove(passwordReset);
-            db.SaveChanges();
-
-            return Ok(new { Result = "Password has been updated successfully." });
         }
 
 
+
+        /// <summary>
+        /// Verifies the validity and expiration of a password reset token. 
+        /// Checks if the token exists and whether it has expired (valid for 10 minutes). 
+        /// Returns the token's creation time if valid; otherwise, returns an error message.
+        /// </summary>
+        /// <param name="token">The password reset token to check.</param>
+        /// <returns>An IHttpActionResult with:
+        /// - BadRequest if the token is missing, invalid, or expired.
+        /// - Ok with the token's creation time if the token is valid.</returns>
 
 
         [HttpGet]
         [Route("CheckTokenExpiration")]
         public IHttpActionResult CheckTokenExpiration(string token)
         {
-            if (string.IsNullOrEmpty(token))
+            try
             {
-                return BadRequest("Token is required.");
+                var creationTime = methods.CheckTokenExpiration(token);
+                return Ok(new { creationTime });
             }
-
-            var passwordResetEntry = db.PasswordResets
-                .Where(pr => pr.Token == token)
-                .FirstOrDefault();
-
-            if (passwordResetEntry == null)
+            catch (ArgumentException ex)
             {
-                return BadRequest(" This Token is invalid.");
+                return BadRequest(ex.Message);
             }
-
-            var tokenCreationTime = passwordResetEntry.Created_At;
-            var currentTime = DateTime.UtcNow;
-            var timeDifference = (currentTime - tokenCreationTime).TotalMinutes;
-
-            if (timeDifference > 10)
+            catch (Exception ex)
             {
-                return BadRequest(" This Token has expired.");
+                return InternalServerError(ex);
             }
-
-            return Ok(new { creationTime = tokenCreationTime });
         }
-
 
 
     }
