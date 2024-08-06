@@ -20,7 +20,7 @@ namespace SocialMediaApp.Methods
 {
     public class WebApiMethods : ApiController
     {
-        SocialMediaAppEntities db = new SocialMediaAppEntities()
+        SocialMediaAppEntities db = new SocialMediaAppEntities();
       
 
         public object GetUserData(int currentUserId)
