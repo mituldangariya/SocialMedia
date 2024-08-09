@@ -7,14 +7,18 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
+using System.Linq;// For LINQ methods
 using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using System.Data.Entity; // For Include
-using System.Linq;        // For LINQ methods
+       
 using System.Net.Mail;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace SocialMediaApp.Methods
 {
@@ -90,8 +94,54 @@ namespace SocialMediaApp.Methods
             throw new Exception("No file uploaded or file is empty");
         }
 
-        public User GetUser(string email, string password)
+        /* public User GetUser(string email, string password)
+         {
+             string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
+
+             using (SqlConnection connection = new SqlConnection(connectionString))
+             {
+                 connection.Open();
+
+                 using (SqlCommand command = new SqlCommand("GetUser", connection))
+                 {
+                     command.CommandType = CommandType.StoredProcedure;
+
+                     command.Parameters.AddWithValue("@Email", email);
+                     command.Parameters.AddWithValue("@Password", password);
+
+                     using (SqlDataReader reader = command.ExecuteReader())
+                     {
+                         if (reader.Read())
+                         {
+                             var userInfo = new User
+                             {
+                                 UserId = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
+                                 LastName = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                                 FirstName = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                                 City = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
+                                 Email = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                                 UserPassword = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                                 Gender = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
+                                 ProfilePhoto = reader.IsDBNull(7) ? string.Empty : reader.GetString(7),
+                                 Interests = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
+                                 PhoneNumber = reader.IsDBNull(9) ? string.Empty : reader.GetString(9),
+                                 Bio = reader.IsDBNull(10) ? string.Empty : reader.GetString(10)
+                             };
+
+                             return userInfo;
+                         }
+                     }
+                 }
+             }
+
+             return null;
+         }*/
+
+      
+        public static User GetUser(string email, string password)
         {
+            // Ensure the password is hashed and stored securely in your database
+            // You should also implement proper password validation
             string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -103,7 +153,7 @@ namespace SocialMediaApp.Methods
                     command.CommandType = CommandType.StoredProcedure;
 
                     command.Parameters.AddWithValue("@Email", email);
-                    command.Parameters.AddWithValue("@Password", password);
+                    command.Parameters.AddWithValue("@Password", password); // Ensure this password is hashed
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -132,6 +182,10 @@ namespace SocialMediaApp.Methods
 
             return null;
         }
+
+
+
+
 
         public User GetUserById(int id)
         {
@@ -537,7 +591,52 @@ namespace SocialMediaApp.Methods
             return (likeCount, isLiked);
         }
 
-        public void AddComment(PostComment model)
+        /*        public void AddComment(PostComment model)
+                {
+                    if (model == null)
+                    {
+                        throw new ArgumentNullException(nameof(model));
+                    }
+
+                    var comment = new PostComment
+                    {
+                        PostId = model.PostId,
+                        UserId = model.UserId,
+                        CommentText = model.CommentText,
+                        CommentDate = DateTime.Now,
+                        ParentCommentId = model.ParentCommentId,
+                        IsDeleted = 0
+                    };
+
+                    db.PostComments.Add(comment);
+                    db.SaveChanges();
+
+                    var user = db.UserDatas.Find(comment.UserId); // Fetch user details
+                    var post = db.UserPosts.Find(comment.PostId);
+                    if (post != null)
+                    {
+                        post.CommentCount++;
+                        db.SaveChanges();
+                    }
+
+                    var response = new
+                    {
+                        CommentId = comment.CommentId,
+                        CommentText = comment.CommentText,
+                        CommentDate = DateTime.Now,
+                        UserName = user.FirstName + " " + user.LastName,
+                        ProfilePhoto = user.ProfilePhoto
+                    };
+
+                    return response;
+
+                }
+        */
+
+
+
+
+        public object AddComment(PostComment model)
         {
             if (model == null)
             {
@@ -557,12 +656,34 @@ namespace SocialMediaApp.Methods
             db.PostComments.Add(comment);
             db.SaveChanges();
 
+            if (comment.CommentId == 0)
+            {
+                throw new Exception("Failed to save comment.");
+            }
+
+            var user = db.UserDatas.Find(comment.UserId);
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+
             var post = db.UserPosts.Find(comment.PostId);
             if (post != null)
             {
                 post.CommentCount++;
                 db.SaveChanges();
             }
+
+            var response = new
+            {
+                CommentId = comment.CommentId,
+                CommentText = comment.CommentText,
+                CommentDate = DateTime.Now,
+                UserName = user.FirstName + " " + user.LastName,
+                ProfilePhoto = user.ProfilePhoto
+            };
+
+            return response;
         }
 
 
@@ -607,13 +728,14 @@ namespace SocialMediaApp.Methods
         public object GetPostComments(int postId)
         {
             var comments = db.PostComments
-                .Where(c => c.PostId == postId)
+               .Where(c => c.PostId == postId && c.IsDeleted == 0)
                 .Select(c => new
                 {
                     c.CommentId,
                     c.CommentText,
                     c.CommentDate,
                     c.UserId,
+                    c.ParentCommentId,
                     UserName = c.UserData.FirstName + " " + c.UserData.LastName,
                     ProfilePhoto = c.UserData.ProfilePhoto
                 })
@@ -626,6 +748,7 @@ namespace SocialMediaApp.Methods
                 CommentDate = FormatCommentDate(c.CommentDate),
                 c.UserName,
                 c.UserId,
+                c.ParentCommentId,
                 c.ProfilePhoto
             }).ToList();
 

@@ -11,6 +11,8 @@ namespace SocialMediaApp
         {
             // Web API configuration and services
             // Web API routes
+          //  config.Filters.Add(new AuthorizeAttribute());
+
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(

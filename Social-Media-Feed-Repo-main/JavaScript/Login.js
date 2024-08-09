@@ -1,11 +1,42 @@
 ﻿$(document).ready(function () {
     // Function to set a cookie
-    function setCookie(cookieName, cookieValue, expirationDays) {
-        var d = new Date();
-        d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
-        var expires = "expires=" + d.toUTCString();
-        document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+    //function setCookie(cookieName, cookieValue, expirationDays) {
+    //    var d = new Date();
+    //    d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+    //    var expires = "expires=" + d.toUTCString();
+    //    document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+    //}
+    //function setCookie(name, value, days) {
+    //    var expires = "";
+    //    if (days) {
+    //        var date = new Date();
+    //        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    //        expires = "; expires=" + date.toUTCString();
+    //    }
+    //    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    //}
+
+    /*function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
     }
+*/
+
+    function setCookie(name, value, minutes) {
+        var expires = "";
+        if (minutes) {
+            var date = new Date();
+            date.setTime(date.getTime() + (minutes * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
 
     function getCookie(cookieName) {
         var name = cookieName + "=";
@@ -75,16 +106,17 @@
             data: { email: email, password: password },
 
             success: function (response) {
-                if (response.UserId) {
-                    setCookie('userId', response.UserId, 30); // Set userId cookie for 30 days
+                if (response.User && response.Token) {
+                    setCookie('userId', response.User.UserId, 30);
+                    setCookie('authToken', response.Token, 30); // Set authToken cookie for 30 days
                     console.log("Login successful", response);
                     window.location.href = "/Login/HomePage";
-                } else {
+                }  else {
                     $("#loginError").text("Invalid login response.");
                 }
             },
             error: function (xhr, status, error) {
-                console.error("Login failed", error);
+                console.log("Login failed", error);
                 $("#loginError").text("Email or password invalid.");
             }
         });

@@ -32,6 +32,7 @@ body {
     cursor: pointer;
     float: right;
     font-size: 9px; /* Align button to the right */
+    margin-top: -23px;
 }
 
 
@@ -572,7 +573,7 @@ body {
 }
 
 p {
-    font-size: 14px;
+    font-size: 13px;
     line-height: 26px;
     color: #8c8b8b;
 }
@@ -2018,6 +2019,7 @@ form button {
     font-weight: 400;
     margin-right: 3px;
     position: relative;
+
 }
 
 .we-video-info > ul li.upload-date {
@@ -2433,7 +2435,7 @@ for some reason nth-child(1) is always busy and elements starting from 2 */
     line-height: 26px;
     margin-bottom: 0;
     max-width: 100%;
-    margin-top: 5px;
+    margin-top: -3px;
 }
 
 .we-reply {

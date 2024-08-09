@@ -77,13 +77,33 @@
    
 });
 
+function getCookie(cookieName) {
+    var name = cookieName + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var cookieArray = decodedCookie.split(';');
+    for (var i = 0; i < cookieArray.length; i++) {
+        var cookie = cookieArray[i];
+        while (cookie.charAt(0) == ' ') {
+            cookie = cookie.substring(1);
+        }
+        if (cookie.indexOf(name) == 0) {
+            return cookie.substring(name.length, cookie.length);
+        }
+    }
+    return "";
+}
+
 
 function populateUserData(userId) {
-   
+    var authToken = getCookie("authToken");
+
     $.ajax({
         url: '/api/WebApi/' + userId,
         dataType: 'json',
         type: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (response) {
             var userData = response;
             sessionStorage.setItem('Username', response.FirstName + " " + response.LastName);
@@ -135,10 +155,15 @@ function AddPosts(post) {
 
 function loadUserPosts() {
     var userId = sessionStorage.getItem('UserProfileId');
+    var authToken = getCookie("authToken");
+
    // var userId = getCookie("userId");
     $.ajax({
         url: '/api/WebApi/UserPosts1/' + userId,
         method: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (data) {
             $('#UserPostDiv ul.photos').empty();
             data.reverse().forEach(function (post) {
@@ -161,10 +186,14 @@ function loadUserPosts() {
 
 function FriendList() {
     const userId = sessionStorage.getItem('UserProfileId');
+    var authToken = getCookie("authToken");
 
     $.ajax({
         url: '/api/WebApi/GetUserData/' + userId,
         method: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (data) {
             var peopleList = $('.friendz-list');
             peopleList.empty();

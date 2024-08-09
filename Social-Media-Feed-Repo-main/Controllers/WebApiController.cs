@@ -13,6 +13,12 @@ using System.Net.Mail;
 using System.Data.Entity;
 using SocialMediaApp.Methods;
 using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Web.Security;
+using SocialMediaApp.BasicAuth;
 
 namespace SocialMediaApp.Controllers
 {
@@ -25,15 +31,13 @@ namespace SocialMediaApp.Controllers
           WebApiMethods methods = new WebApiMethods();
 
 
-
-
         /// <summary>
         /// Retrieves a list of users who are not friends with the current user, including their profile information and friendship status.
         /// </summary>
         /// <param name="currentUserId">The ID of the current user.</param>
         /// <returns>A list of users not friends with the current user, with details on friendship status and request status.</returns>
         /// 
-
+        [BasicAuthentication]
         [HttpGet]
         [Route("GetUserData/{currentUserId}")]
         public IHttpActionResult GetUserData(int currentUserId)
@@ -56,7 +60,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="id">The ID of the user whose profile photo is being updated.</param>
         /// <returns>An HTTP response indicating the result of the operation.</returns>
 
-
+        [BasicAuthentication]
         [HttpPost]
         [Route("uploadprofilephoto/{id}")]
         public IHttpActionResult UploadProfilePhoto(int id)
@@ -82,7 +86,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="userId">The ID of the user whose profile is being retrieved.</param>
         /// <returns>An HTTP response containing the user profile data or a 404 Not Found status if the user does not exist.</returns>
 
-      
+        
         [HttpGet]
         [Route("UserProfile")]
         public IHttpActionResult GetUserProfile(int userId)
@@ -105,25 +109,57 @@ namespace SocialMediaApp.Controllers
         /// <param name="password">The password of the user.</param>
         /// <returns>Returns an HTTP response with user information if credentials are valid, otherwise returns Unauthorized.</returns>
 
-
+        [AllowAnonymous]
         [HttpGet]
         [Route("Login")]
         public IHttpActionResult GetUser(string email, string password)
         {
             try
             {
-                var user = methods.GetUser(email, password);
+                var user = WebApiMethods.GetUser(email, password);
                 if (user == null)
                 {
                     return Unauthorized();
                 }
-                return Ok(user);
+                // FormsAuthentication.SetAuthCookie(email, false);
+                var authToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{email}:{password}"));
+
+                //return Ok(user);
+                var response = new
+                {
+                    User = user,
+                    Token = authToken
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
                 return InternalServerError(ex);
             }
         }
+
+        public static bool Login(string email,string password)
+        {
+            try
+            {
+                var user = WebApiMethods.GetUser(email, password);
+                if (user != null)
+                {
+                    return  true;
+                }
+                else
+                {
+                    return false;
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+       
 
         /// <summary>
         /// Retrieves user details based on the specified user ID.
@@ -132,6 +168,7 @@ namespace SocialMediaApp.Controllers
         /// <returns>An IHttpActionResult containing the user details or an error response if the user is not found.</returns>
 
 
+        
         [HttpGet]
         [Route("{id}")]
         public IHttpActionResult GetUserById(int id)
@@ -157,7 +194,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="user">The user data for registration.</param>
         /// <returns>An IHttpActionResult indicating the result of the registration process.</returns>
 
-
+        [AllowAnonymous]
         [HttpPost]
         [Route("Register")]
         public IHttpActionResult AddUser(UserData user)
@@ -177,6 +214,7 @@ namespace SocialMediaApp.Controllers
             }
         }
 
+       
         [HttpPost]
         [Route("VerifyOtp")]
         public IHttpActionResult VerifyOtp(string email, string otp)
@@ -204,7 +242,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="user">The user data with updated information.</param>
         /// <returns>An IHttpActionResult indicating the result of the update operation.</returns>
 
-
+        [BasicAuthentication]
         [HttpPut]
         [Route("{id}")]
         public IHttpActionResult UpdateUserInfo(int id, [FromBody] UserData user)
@@ -228,6 +266,7 @@ namespace SocialMediaApp.Controllers
         /// <returns>An IHttpActionResult indicating whether the email is in use or not.</returns>
 
 
+        [BasicAuthentication]
         [HttpPost]
         [Route("CheckEmail")]
         public IHttpActionResult CheckEmail([FromBody] UserData request)
@@ -253,8 +292,8 @@ namespace SocialMediaApp.Controllers
         /// </summary>
         /// <param name="request">An object containing the user ID and phone number to check.</param>
         /// <returns>An IHttpActionResult indicating whether the phone number is in use or not.</returns>
-       
 
+        [BasicAuthentication]
         [HttpPost]
         [Route("CheckPhoneNumber")]
         public IHttpActionResult CheckPhoneNumber([FromBody] UserData request)
@@ -279,8 +318,8 @@ namespace SocialMediaApp.Controllers
         /// Adds a new post with optional media to the user's feed.
         /// </summary>
         /// <returns>An IHttpActionResult indicating the result of the post operation.</returns>
-       
 
+        [BasicAuthentication]
         [HttpPost]
         [Route("NewPost")]
         public IHttpActionResult AddNewPost()
@@ -304,7 +343,7 @@ namespace SocialMediaApp.Controllers
         /// </summary>
         /// <returns>An IHttpActionResult containing the most recent post.</returns>
 
-
+        [BasicAuthentication]
         [HttpGet]
         [Route("GetLastPost")]
         public IHttpActionResult GetLastPost()
@@ -320,14 +359,14 @@ namespace SocialMediaApp.Controllers
         }
 
 
-       
+
         /// <summary>
         /// Retrieves posts from the user and their friends based on the user's ID.
         /// </summary>
         /// <param name="userId">The ID of the user whose posts are to be retrieved.</param>
         /// <returns>An IHttpActionResult containing a list of posts.</returns>
 
-
+        [BasicAuthentication]
         [HttpGet]
         [Route("UserPosts/{userId}")]
         public IHttpActionResult GetUserPosts(int userId)
@@ -356,7 +395,7 @@ namespace SocialMediaApp.Controllers
         /// If the post is found, returns an OK response with the updated like count and the new like status. 
         /// If the post is not found, returns a NotFound result.</returns>
 
-       
+        [BasicAuthentication]
         [HttpPost]
         [Route("PostLike")]
         public IHttpActionResult LikePost([FromBody] PostLike request)
@@ -381,78 +420,13 @@ namespace SocialMediaApp.Controllers
             }
         }
 
-
-        /// <summary>
-        /// Adds a new comment to a specified post. This method creates a new comment record in the database,
-        /// updates the comment count for the associated post, and returns an appropriate HTTP response.
-        /// </summary>
-        /// <param name="model">An object containing the details of the comment to be added. This includes:
-        /// - <c>PostId</c>: The ID of the post to which the comment is being added.
-        /// - <c>UserId</c>: The ID of the user making the comment.
-        /// - <c>CommentText</c>: The content of the comment.
-        /// - <c>ParentCommentId</c>: The ID of the parent comment if this is a reply; otherwise, null.
-        /// - <c>IsDeleted</c>: A flag indicating whether the comment is deleted (0 indicates not deleted; this is set automatically).</param>
-        /// <returns>An <see cref="IHttpActionResult"/> that represents the result of the operation. 
-        /// If the comment is successfully added and the post's comment count is updated, an <see cref="OkResult"/> is returned.
-        /// If the model is invalid, a <see cref="BadRequestResult"/> is returned with details about the validation errors.</returns>
-
-
-        [HttpPost]
-        [Route("AddComment")]
-        public IHttpActionResult AddComment([FromBody] PostComment model)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    methods.AddComment(model);
-                    return Ok();
-                }
-                catch (Exception ex)
-                {
-                    return InternalServerError(ex);
-                }
-            }
-            return BadRequest(ModelState);
-        }
-
-
-        /// <summary>
-        /// Retrieves the most recent comment from the PostComments table along with user data.
-        /// </summary>
-        /// <returns>
-        /// An IHttpActionResult containing the latest comment with user data, or a NotFound result if no comments exist.
-        /// </returns>
-
-       
-        [HttpGet]
-        [Route("GetLastComment")]
-        public IHttpActionResult GetLastComment()
-        {
-            try
-            {
-                var lastComment = methods.GetLastComment();
-                if (lastComment == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(lastComment);
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
-
-
         /// <summary>
         /// Deletes a post from the database using the specified post ID.
         /// </summary>
         /// <param name="id">The ID of the post to delete.</param>
         /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
-     
+        [BasicAuthentication]
         [HttpPut]
         [Route("Deletepost/{id}")]
         public IHttpActionResult DeletePost(int id)
@@ -474,13 +448,80 @@ namespace SocialMediaApp.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Adds a new comment to a specified post. This method creates a new comment record in the database,
+        /// updates the comment count for the associated post, and returns an appropriate HTTP response.
+        /// </summary>
+        /// <param name="model">An object containing the details of the comment to be added. This includes:
+        /// - <c>PostId</c>: The ID of the post to which the comment is being added.
+        /// - <c>UserId</c>: The ID of the user making the comment.
+        /// - <c>CommentText</c>: The content of the comment.
+        /// - <c>ParentCommentId</c>: The ID of the parent comment if this is a reply; otherwise, null.
+        /// - <c>IsDeleted</c>: A flag indicating whether the comment is deleted (0 indicates not deleted; this is set automatically).</param>
+        /// <returns>An <see cref="IHttpActionResult"/> that represents the result of the operation. 
+        /// If the comment is successfully added and the post's comment count is updated, an <see cref="OkResult"/> is returned.
+        /// If the model is invalid, a <see cref="BadRequestResult"/> is returned with details about the validation errors.</returns>
+
+        [BasicAuthentication]
+        [HttpPost]
+        [Route("AddComment")]
+        public IHttpActionResult AddComment([FromBody] PostComment model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                   var response= methods.AddComment(model);
+                    return Ok(response);
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
+            }
+            return BadRequest(ModelState);
+        }
+
+
+        /// <summary>
+        /// Retrieves the most recent comment from the PostComments table along with user data.
+        /// </summary>
+        /// <returns>
+        /// An IHttpActionResult containing the latest comment with user data, or a NotFound result if no comments exist.
+        /// </returns>
+
+        [BasicAuthentication]
+        [HttpGet]
+        [Route("GetLastComment")]
+        public IHttpActionResult GetLastComment()
+        {
+            try
+            {
+                var lastComment = methods.GetLastComment();
+                if (lastComment == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(lastComment);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
+       
+
         /// <summary>
         /// Retrieves and formats comments for a specific post.
         /// </summary>
         /// <param name="postId">The ID of the post to get comments for.</param>
         /// <returns>An IHttpActionResult containing the list of formatted comments.</returns>
 
-        
+        [BasicAuthentication]
         [HttpGet]
         [Route("GetPostComments/{postId}")]
         public IHttpActionResult GetPostComments(int postId)
@@ -502,7 +543,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="parentCommentId">The ID of the parent comment to get replies for.</param>
         /// <returns>An IHttpActionResult containing the list of replies.</returns>
 
-
+        [BasicAuthentication]
         [HttpGet]
         [Route("GetCommentReplies/{parentCommentId}")]
         public IHttpActionResult GetCommentReplies(int parentCommentId)
@@ -525,6 +566,7 @@ namespace SocialMediaApp.Controllers
         /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
 
+        [BasicAuthentication]
         [HttpDelete]
         [Route("DeleteComment/{commentId}")]
         public IHttpActionResult DeleteComment(int commentId)
@@ -546,7 +588,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="userId">The ID of the user to get posts for.</param>
         /// <returns>An IHttpActionResult containing the list of formatted posts.</returns>
 
-
+        [BasicAuthentication]
         [HttpGet]
         [Route("UserPosts1/{userId}")]
         public IHttpActionResult GetUserPosts1(int userId)
@@ -569,7 +611,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="id">The ID of the post to archive.</param>
         /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
-
+        [BasicAuthentication]
         [HttpPut]
         [Route("addarchievepost/{id}")]
         public IHttpActionResult AddArchievePost(int id)
@@ -592,7 +634,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="id">The ID of the post to remove from the archive.</param>
         /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
-
+        [BasicAuthentication]
         [HttpPut]
         [Route("removearchievepost/{id}")]
         public IHttpActionResult RemoveArchievePost(int id)
@@ -615,7 +657,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="userId">The ID of the user to get notifications for.</param>
         /// <returns>An IHttpActionResult containing the list of notifications.</returns>
 
-        
+        [BasicAuthentication]
         [HttpGet]
         [Route("notifications/{userId}")]
         public IHttpActionResult GetUserNotifications(int userId)
@@ -631,7 +673,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="request">The UserFriend object containing the user IDs for the friend request.</param>
         /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
-
+        [BasicAuthentication]
         [HttpPost]
         [Route("AddFriend")]
         public IHttpActionResult AddFriend(UserFriend request)
@@ -677,8 +719,8 @@ namespace SocialMediaApp.Controllers
         /// </summary>
         /// <param name="request">The UserFriend object containing the user IDs for the friendship to remove.</param>
         /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
-       
 
+        [BasicAuthentication]
         [HttpPost]
         [Route("RemoveFriend")]
         public IHttpActionResult RemoveFriend(UserFriend request)
@@ -713,8 +755,8 @@ namespace SocialMediaApp.Controllers
         /// </summary>
         /// <param name="request">The UserFriend object containing the user IDs for the friend request.</param>
         /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
-      
 
+        [BasicAuthentication]
         [HttpPost]
         [Route("ConfirmFriendRequest")]
         public IHttpActionResult ConfirmFriendRequest(UserFriend request)
@@ -751,7 +793,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="email">The email address of the user requesting a password reset.</param>
         /// <returns>An IHttpActionResult indicating the result of the operation.</returns>
 
-     
+       
         [HttpPost]
         [Route("Forgotpassword")]
         public IHttpActionResult ForgotPassword([FromBody] string email)
@@ -781,7 +823,7 @@ namespace SocialMediaApp.Controllers
         }
 
 
-       
+
         /// <summary>
         /// Handles the password reset functionality. This method validates the provided token, checks for expiration, 
         /// ensures the token belongs to a valid user, and updates the user's password if all conditions are met. 
@@ -794,7 +836,7 @@ namespace SocialMediaApp.Controllers
         /// Returns an Ok if the password was updated successfully.</returns>
 
 
-
+       
         [HttpGet]
         [Route("Resetpassword")]
         public IHttpActionResult ResetPassword(string token, string password)
@@ -830,7 +872,7 @@ namespace SocialMediaApp.Controllers
         /// - BadRequest if the token is missing, invalid, or expired.
         /// - Ok with the token's creation time if the token is valid.</returns>
 
-
+        
         [HttpGet]
         [Route("CheckTokenExpiration")]
         public IHttpActionResult CheckTokenExpiration(string token)

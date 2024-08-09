@@ -12,14 +12,26 @@ namespace SocialMediaApp.Controllers
     public class LoginController : Controller
     {
         SocialMediaAppEntities db = new SocialMediaAppEntities();
+
+
+
         public ActionResult Login()
         {
             return View();
         }
+
+     
         public ActionResult HomePage()
         {
             var responseData = ViewBag.ResponseData;
-
+            if (ModelState.IsValid)
+            {
+                ViewBag.isSuccess = true;
+            }
+            else
+            {
+                ViewBag.isSuccess = false;
+            }
             return View();
         }
         public ActionResult AboutPage()

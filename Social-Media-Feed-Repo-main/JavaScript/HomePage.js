@@ -16,7 +16,7 @@
     loadUserPosts();
     populateUserData(userId);
     FriendList();
-   
+
 
     $("#notificationLink").click(function () {
         console.log("flow goes right")
@@ -31,10 +31,10 @@
         $('.central-meta').show();
         $('#notification-menu').hide();
     });
-
     $("#logoutButton").click(function () {
         sessionStorage.clear();
-        window.location.href = "/Login/Login";
+        setCookie('userId', 0, -1);
+        location.reload();
     });
 
     $('#updateButton').click(updateUserInfo);
@@ -62,7 +62,7 @@
 
     });
 
-   
+
 
     $('#followersLink').click(function () {
         fetchConfirmFriend();
@@ -84,7 +84,7 @@
 
     });
 
-   
+
 
 
 
@@ -176,10 +176,22 @@ function getCookie(cookieName) {
     return "";
 }
 
+
+function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+
 $(document).ready(function () {
     // Function to validate email
     function validateEmail(email) {
-        const re = /^[^@]+@[^@]+\.[^@]+$/; 
+        const re = /^[^@]+@[^@]+\.[^@]+$/;
         return re.test(email);
     }
 
@@ -281,6 +293,9 @@ function toggleComments(element, postId) {
 // Add New Post Img and Videos
 function AddPost(post) {
     var userId = getCookie("userId");
+
+
+
     var isLikedClass = post.isLiked ? 'fa-solid fa-heart liked' : 'fa-regular fa-heart';
 
     var deleteButtonHTML = '';
@@ -294,7 +309,7 @@ function AddPost(post) {
         if (['mp4', 'avi', 'mov', 'wmv'].includes(fileExtension)) {
             mediaHTML = `
         <div style="position: relative; height: 300px; width: 650px; border-radius: 12px; overflow: hidden;">
-            <video id="postVideo" height="100%" width="100%" style="object-fit: cover;" controls>
+            <video id="postVideo" height="100%" width="90%" style="object-fit: cover;" controls>
                 <source src="${post.PostPhoto}" type="video/${fileExtension}">
             </video>
             <div id="videoOverlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center;">
@@ -310,8 +325,8 @@ function AddPost(post) {
             mediaHTML = `<img src="${post.PostPhoto}" alt="Post Media" height="208" width="200">`;
         }
     }
-       
-        // Add styles to hide video controls
+
+    // Add styles to hide video controls
     const style = document.createElement('style');
     style.innerHTML = `
                 video::-webk    it-media-controls-volume-slider,
@@ -374,62 +389,77 @@ function AddPost(post) {
     });
 
 
-     // HTML for the post including comments
+    // HTML for the post including comments
     var postHTML =
         `<div class="central-meta item">
-            <div class="user-post">
-                <div class="friend-info">
-                    <figure>
-                        <img src="${post.ProfilePhoto}" alt="" height="54" width="54" id="ProfilePhoto" class="zoomable">
-                    </figure>
-                    <div class="friend-name">
-                        ${post.UserId == userId ? `<i class="fas fa-ellipsis-h more-icon" data-toggle="tooltip" title="More"></i>` : ''}
-                        <div class="friend-name">
-                            <ins onclick="ShowFriendProfile(${post.UserId})" style="cursor: pointer">${post.FirstName} ${post.LastName}</ins>
-                            <span hidden>${post.UserId}</span>
-                            <button class="delete-btn" onClick="deletePost(${post.PostId})"> <i class="fas fa-trash"></i></button>
-                        </div>
-                        <span>published: ${post.PostDate}</span>
-                    </div>
-                </div>
-                <div class="description">
-                    <p>${post.PostContent}</p>
-                </div>
-                <div class="post-meta">
-                    ${mediaHTML}
-                    <div class="we-video-info">
-                        <ul class="d-flex">
-                            <li>
-                                <span class="views like-button" data-toggle="tooltip" title="like" data-post-id="${post.PostId}">
-                                    <i class="${isLikedClass}" id="like"></i>
-                                    <ins>${post.LikeCount}</ins>
-                                </span>
-                            </li>
-                            <li>
-                                <span class="comment" data-toggle="tooltip" title="comment" onclick="toggleComments(this, ${post.PostId})">
-                                    <i class="fa fa-comments-o"></i>
-                                    <ins>${post.CommentCount}</ins>
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="comment-area" style="display: none;">
-                        <div class="post-comt-box">
-                         <textarea id="commentTextarea" placeholder="Post your comment" maxlength="60" onchange="commentlenght()"></textarea>
-                            <button class="btn-primary" id="Postbtn">Comment</button>
-                                    <span id="commenterror" hidden></span>
-
-                        </div>
-                         <span id="maxLengthMessage" hidden>You have reached the maximum length.</span>
-                        <ul class="we-comet"></ul>
-                    </div>
-                    <span id="comment-error"></span>
+        <div class="user-post">
+            <div class="friend-info">
+                <figure>
+                    <img src="${post.ProfilePhoto}" alt="" height="54" width="54" id="ProfilePhoto" class="zoomable">
+                </figure>
+                <div class="friend-name">
+                    ${post.UserId == userId ? `<i class="fas fa-ellipsis-h more-icon" data-toggle="tooltip" title="More"></i>` : ''}
+                    <ins onclick="ShowFriendProfile(${post.UserId})" style="cursor: pointer">${post.FirstName} ${post.LastName}</ins>
+                    <span hidden>${post.UserId}</span>
+                    <button class="delete-btn" onClick="deletePost(${post.PostId})"> <i class="fas fa-trash"></i></button>
+                    <span>Published: ${post.PostDate}</span>
                 </div>
             </div>
-        </div>`;
+            <div class="description">
+                <b>${post.PostContent}</b>
+            </div>
+            <div class="post-meta">
+                ${mediaHTML}
+                <div class="we-video-info">
+                    <ul class="d-flex">
+                        <li>
+                            <span class="views like-button" data-toggle="tooltip" title="like" data-post-id="${post.PostId}">
+                                <i class="${isLikedClass}" id="like"></i>
+                                <ins>${post.LikeCount}</ins>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="comment" data-toggle="tooltip" title="comment" onclick="toggleComments(this, ${post.PostId})" style="cursor: pointer;">
+                                <i class="fa fa-comments-o"></i>
+                                <ins>${post.CommentCount}</ins>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="comment-area" style="display: none;">
+                    <div class="post-comt-box">
+                        <textarea id="commentTextarea" placeholder="Post your comment" maxlength="60" onchange="commentlenght()"></textarea>
+                        <button class="btn-primary" id="Postbtn">Comment</button>
+                        <span id="commenterror" hidden>Please enter a comment.</span>
+                    </div>
+                    <span id="maxLengthMessage" hidden>You have reached the maximum length.</span>
+                    <ul class="we-comet"></ul>
+                </div>
+                <span id="comment-error"></span>
+            </div>
+        </div>
+    </div>`;
 
     return postHTML;
+
 }
+
+
+document.addEventListener('click', function (event) {
+    if (event.target && event.target.id === 'Postbtn') {
+        var commentTextarea = document.getElementById('commentTextarea');
+        var commentError = document.getElementById('commenterror');
+
+        if (commentTextarea.value.trim() === '') {
+            commentError.hidden = false;
+            commentTextarea.style.border = '1px solid red';
+        } else {
+            commentError.hidden = true;
+            commentTextarea.style.border = '';
+            // Add your logic to post the comment here
+        }
+    }
+});
 
 // CommentLenght
 function commentlenght() {
@@ -490,6 +520,8 @@ function UploadPost() {
     const fileInput = document.getElementById('userpost');
     const file = fileInput.files[0];
     var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
+
 
     const postContent = document.getElementById('postContent').value.trim();
     const postContentError = document.getElementById('postContentError');
@@ -511,6 +543,9 @@ function UploadPost() {
     $.ajax({
         url: '/api/WebApi/NewPost',
         type: 'POST',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         data: formData,
         contentType: false,
         processData: false,
@@ -521,6 +556,9 @@ function UploadPost() {
 
             $.ajax({
                 url: '/api/WebApi/GetLastPost',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authToken);
+                },
                 type: 'GET',
                 success: function (data) {
                     data.forEach(function (post) {
@@ -530,10 +568,13 @@ function UploadPost() {
                     $('.like-button').click(function () {
                         var $this = $(this);
                         var postId = $this.data('post-id');
-                       
+
                         var user = getCookie("userId");
                         $.ajax({
                             url: '/api/WebApi/PostLike',
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("Authorization", "Basic " + authToken);
+                            },
                             method: 'POST',
                             data: { postId: postId, userId: user },
                             success: function (data) {
@@ -566,10 +607,13 @@ function UploadPost() {
 //  Post Uploaded User Friend
 function loadUserPosts() {
     var userId = getCookie('userId');
-
+    var authToken = getCookie("authToken");
     $.ajax({
         url: '/api/WebApi/UserPosts/' + userId,
         method: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (data) {
             var postsHTML = '';
 
@@ -594,6 +638,9 @@ function loadUserPosts() {
                 $.ajax({
                     url: '/api/WebApi/PostLike',
                     method: 'POST',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", "Basic " + authToken);
+                    },
                     data: { postId: postId, userId: userId },
                     success: function (data) {
                         $this.find('ins').text(data.likeCount);
@@ -622,12 +669,16 @@ function loadUserPosts() {
 
 //Post Delete
 function deletePost(postId) {
+    var authToken = getCookie("authToken");
     $('#custom-confirm-modal').css('display', 'block');
 
     $('#confirm-delete').on('click', function () {
         $.ajax({
             url: '/api/WebApi/Deletepost/' + postId,
             method: 'PUT',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authToken);
+            },
             success: function (data) {
                 $(`.like-button[data-post-id="${postId}"]`).closest('.central-meta.item').hide();
                 console.log("Post deleted");
@@ -704,9 +755,14 @@ document.body.addEventListener('click', function (event) {
 
 //User Profile
 function loadUserProfile(userId) {
+    var authToken = getCookie("authToken");
+
     $.ajax({
-        url: `/api/WEbApi/UserProfile?userId=${userId}`,
+        url: `/api/WebApi/UserProfile?userId=${userId}`,
         type: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (user) {
             // Update the main content area with user profile details
             $('#UserName').text(`${user.FirstName} ${user.LastName}`);
@@ -757,8 +813,9 @@ function loadUserProfile(userId) {
 
 //Comment Replies
 function ShowReplies(replies) {
- 
+
     var userId = getCookie("userId");
+
     let replyHTML = '';
     if (replies && replies.length > 0) {
         replies.forEach(function (reply) {
@@ -788,101 +845,18 @@ function ShowReplies(replies) {
 
 
 
-// Display All PostComments
-function loadPostComments(postId, $commentsList) {
-
-    var userId = getCookie("userId");
-    $.ajax({
-        url: '/api/WebApi/GetPostComments/' + postId,
-        method: 'GET',
-        success: function (comments) {
-            $commentsList.empty();
-
-            if (comments.length === 0) {
-                /* $commentsList.append('<li id="NoComments">No comments yet.</li>');*/
-            } else {
-                comments.forEach(function (comment) {
-                    const commentHtml = `
-                    <li data-comment-id="${comment.Id}">
-                        <div class="comet-avatar">
-                            <img src="${comment.ProfilePhoto}" alt="" height="40" width="40" id="ProfilePhoto">
-                        </div>
-                        <div class="we-comment">
-                            <div class="coment-head">
-                                <h5>${comment.UserName}</h5>
-                                <span hidden>${comment.CommentId}</span>
-                                <span>${comment.CommentDate}</span>
-                                     <i class="fa-solid fa-share"></i>
-                                    
-
-                                ${comment.UserId == userId ? `
-                                <div class="comment-options">   
-                                  <div class="comment-options">
-                                       <button class="delete-comment-btn custom-style" onclick="deleteComment(${comment.CommentId})"> <i class="fas fa-trash"></i></button>
-                                   </div>
-
-                                </div>` : ''}
-                            </div>
-
-
-                            <p>${comment.CommentText}</p>
-                        </div>
-
-                            <div id="replyModal" class="modal">
-                               <div class="modal-content">
-                                     <span class="close">&times;</span>
-                                         <h3>Reply to Comment</h3>
-                                     <textarea id="replyText" placeholder="Enter your reply" autofocus></textarea>
-                                     <button class="btn btn-success" id="submitReply">Reply Comment</button>
-                               </div>
-                            </div>
-                    </li>`;
-
-                    $commentsList.append(commentHtml);
-                });
-
-
-                $commentsList.find('.fa-share').click(function () {
-                    var commentId = $(this).closest('li').find('span[hidden]').text();
-                    replieComment(commentId, postId);
-                });
-                $commentsList.find('.delete-reply-btn').click(function () {
-                    var commentId = $(this).closest('li').find('i[hidden]').text();
-                    var $reply = $(this).closest('li');
-                    deleteComment(commentId, $reply);
-                });
-                $commentsList.find('.fa-ellipsis').click(function () {
-                    $(this).siblings('.comment-options').toggle();
-                });
-                $commentsList.find('.delete-comment-btn').click(function () {
-                    var commentId = $(this).closest('li').find('span[hidden]').text();
-                    var $comment = $(this).closest('li');
-                    DeleteComment(commentId, $comment);
-                });
-
-                $commentsList.find('.more-options').click(function (e) {
-                    e.preventDefault();
-                    $(this).siblings('.edit-delete-options').toggle();
-                });
-
-               
-            }
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
-}
-
-
-
 
 function addCommentReply(replyText, postId, parentCommentId, userId) {
     var UserName = sessionStorage.getItem('Username');
     var ProfilePhoto = sessionStorage.getItem('ProfilePhoto');
+    var authToken = getCookie("authToken");
+
     $.ajax({
         url: '/api/WebApi/AddComment',
         method: 'POST',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         data: {
             postId: postId,
             userId: userId,
@@ -895,6 +869,9 @@ function addCommentReply(replyText, postId, parentCommentId, userId) {
             $.ajax({
                 url: '/api/WebApi/GetLastComment',
                 type: 'GET',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authToken);
+                },
                 success: function (data) {
                     data.forEach(function (comment) {
                         var $parentComment = $(`li span[hidden]:contains(${parentCommentId})`).closest('li');
@@ -942,57 +919,205 @@ function addCommentReply(replyText, postId, parentCommentId, userId) {
 
 
 
-function replieComment(commentId, postId) {
-   
+function loadPostComments(postId, $commentsList) {
     var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
 
-    var modal = document.getElementById("replyModal");
-    var replyText = document.getElementById("replyText");
-    var submitReply = document.getElementById("submitReply");
-    var span = document.getElementsByClassName("close")[0];
-    modal.style.display = "block";
-    span.onclick = function () {
-        modal.style.display = "none";
-        $('#replyText').focus();
-    }
-    window.onclick = function (event) {
-        if (event.target == modal) {
-            $('#replyText').focus();
-            modal.style.display = "none";
+    $.ajax({
+        url: '/api/WebApi/GetPostComments/' + postId,
+        method: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
+        success: function (comments) {
+            $commentsList.empty();
+
+            if (comments.length === 0) {
+                // $commentsList.append('<li id="NoComments">No comments yet.</li>');
+            } else {
+                var commentsMap = {};
+
+                // Create comments and map them by ID
+                comments.forEach(function (comment) {
+                    const uniqueModalId = 'replyModal-' + comment.CommentId;
+                    const commentHtml = `
+                    <li data-comment-id="${comment.Id}" data-parent-comment-id="${comment.ParentCommentId}">
+                        <div class="comet-avatar">
+                            <img src="${comment.ProfilePhoto}" alt="" height="40" width="40" id="ProfilePhoto">
+                        </div>
+                        <div class="we-comment">
+                            <div class="coment-head">
+                                <h5>${comment.UserName}</h5>
+                                <span hidden>${comment.CommentId}</span>
+                                <span>${comment.CommentDate}</span>
+                                    <i class="fa-solid fa-share reply-icon" data-modal-id="${uniqueModalId}" style="cursor: pointer;"></i>
+                                ${comment.UserId == userId ? `
+                                <div class="comment-options">
+                                    <button class="delete-comment-btn custom-style" onclick="deleteComment(${comment.CommentId}, $(this).closest('li'))">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>` : ''}
+                            </div>
+                            <p>${comment.CommentText}</p>
+                        </div>
+                        <ul class="replies"></ul>
+                        <div class="modal" id="${uniqueModalId}">
+                            <div class="modal-content">
+                                <span class="close">&times;</span>
+                                <h3>Reply to Comment</h3>
+                                <textarea class="replyText" placeholder="Enter your reply"></textarea>
+                                <button class="btn btn-success submitReply" style="width:87px">Reply Comment</button>
+                            </div>
+                        </div>
+                    </li>`;
+                    commentsMap[comment.CommentId] = $(commentHtml);
+                });
+
+                // Append comments to the correct parent or to the root list
+                comments.forEach(function (comment) {
+                    if (comment.ParentCommentId) {
+                        if (commentsMap[comment.ParentCommentId]) {
+                            commentsMap[comment.ParentCommentId].find('.replies').first().append(commentsMap[comment.CommentId]);
+                        }
+                    } else {
+                        $commentsList.append(commentsMap[comment.CommentId]);
+                    }
+                });
+
+                // Bind click events
+                $commentsList.find('.reply-icon').click(function () {
+                    var modalId = $(this).data('modal-id');
+                    replieComment($(this).closest('li').find('span[hidden]').text(), postId, modalId);
+                });
+
+                // Ensure only one modal is handled at a time
+                $(document).on('click', '.close', function () {
+                    $(this).closest('.modal').hide();
+                });
+
+                $(window).click(function (event) {
+                    if ($(event.target).hasClass('modal')) {
+                        $(event.target).hide();
+                    }
+                });
+            }
+        },
+        error: function (error) {
+            console.log(error);
         }
-    }
-    submitReply.onclick = function () {
-        var replyTextValue = replyText.value.trim();
-        if (replyTextValue !== '') {
-            addCommentReply(replyTextValue, postId, commentId, userId);
-            modal.style.display = "none";
-            replyText.value = "";
-        }
-    }
+    });
 }
 
 
 
+function replieComment(commentId, postId, modalId) {
+    var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
+
+    var modal = document.querySelector("#" + modalId);
+    var replyText = modal.querySelector(".replyText");
+    var submitReply = modal.querySelector(".submitReply");
+    var span = modal.querySelector(".close");
+
+    if (!modal) {
+        console.error("Modal with id '" + modalId + "' not found.");
+        return;
+    }
+
+    modal.style.display = "block";
+
+    span.onclick = function () {
+        modal.style.display = "none";
+        replyText.focus();
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+            replyText.focus();
+        }
+    }
+
+    submitReply.onclick = function () {
+        var replyTextValue = replyText.value.trim();
+        if (replyTextValue !== '') {
+            $.ajax({
+                url: '/api/WebApi/AddComment',
+                method: 'POST',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authToken);
+                },
+                data: JSON.stringify({
+                    postId: postId,
+                    userId: userId,
+                    commentText: replyTextValue,
+                    ProfilePhoto: sessionStorage.getItem('ProfilePhoto'),
+                    parentCommentId: commentId // Send ParentCommentId in the request
+                }),
+                contentType: 'application/json; charset=utf-8',
+                success: function (reply) {
+                    modal.style.display = "none";
+                    replyText.value = "";
+
+                    // Construct HTML for the new reply
+                    var replyHtml = `
+                    <li data-comment-id="${reply.CommentId}">
+                        <div class="comet-avatar">
+                            <img src="${reply.ProfilePhoto}" alt="" height="40" width="40" id="ProfilePhoto">
+                        </div>
+                        <div class="we-comment">
+                            <div class="coment-head">
+                                <h5>${reply.UserName}</h5>
+                                <span>just now</span>
+                            </div>
+                            <p>${reply.CommentText}</p>
+                        </div>
+                    </li>`;
+
+                    // Append the reply to the correct parent comment
+                    var parentCommentLi = $(modal).closest('li');
+                    parentCommentLi.find('.replies').append(replyHtml);
+
+                    // Update the reply count
+                    var $replyCount = parentCommentLi.find('.reply-count'); // Ensure this is the correct class or selector
+                    var currentCount = parseInt($replyCount.text()) || 0;
+                    $replyCount.text(currentCount + 1);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    }
+}
+
 //upload comment
+
+
 function UploadComment() {
     var $form = $(this).closest('.post-comt-box');
     var postId = $form.closest('.central-meta').find('.like-button').data('post-id');
     var commentText = $form.find('textarea').val();
-   
-    var userId = getCookie("userId");
 
-    var username = sessionStorage.getItem('Username');
+    var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
     var ProfilePhoto = sessionStorage.getItem('ProfilePhoto');
 
-    if (commentText.trim() !== '') {// Early return if comment text is empty
+    if (commentText.trim() !== '') {
         $.ajax({
             url: '/api/WebApi/AddComment',
             method: 'POST',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authToken);
+            },
             data: { postId: postId, userId: userId, commentText: commentText, ProfilePhoto: ProfilePhoto },
             success: function () {
                 $.ajax({
                     url: '/api/WebApi/GetLastComment',
                     type: 'GET',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", "Basic " + authToken);
+                    },
                     success: function (comment) {
                         if (comment) {
                             $form.find('textarea').val('');
@@ -1004,27 +1129,23 @@ function UploadComment() {
                                     <div class="coment-head">
                                         <h5>${comment.FirstName} ${comment.LastName}</h5>
                                         <span>Just Now</span>
-                                        ${comment.UserId == userId ? '<i class="fa-solid fa-ellipsis"></i>' : ''}
-                                        <div class="comment-options" style="display: none;">
-                                            <button class="btn btn-danger delete-comment-btn" Onclick=deleteComment(${comment.CommentId});><i class="fas fa-trash"></i> </button>
-                                        </div>
-
-
+                                        ${comment.UserId == userId ? '<i class="fa-solid fa-share reply-icon" data-modal-id="${uniqueModalId}" style="cursor: pointer;"></i>' : ''}
+                                        <div class="comment-options">
+                                    <button class="delete-comment-btn custom-style" onclick="deleteComment(${comment.CommentId}, $(this).closest('li'))">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                        
                                     </div>
                                     <p>${comment.CommentText}</p>
                                 </div>
                             </li>`;
                             $form.closest('.comment-area').find('.we-comet').prepend(commentHTML);
 
-                            $(document).on('click', '.fa-ellipsis', function () {
-                                $(this).siblings('.comment-options').toggle();
-                            });
-
-                            $(document).on('click', '.delete-comment-btn', function () {
-                                var commentId = $(this).closest('li').find('span[hidden]').text();
-                                var $comment = $(this).closest('li');
-                                DeleteComment(commentId, $comment);
-                            });
+                            // Update comment count
+                            var $commentCount = $form.closest('.central-meta').find('.comment ins');
+                            var currentCount = parseInt($commentCount.text());
+                            $commentCount.text(currentCount + 1);
                         }
                     },
                     error: function (error) {
@@ -1040,10 +1161,10 @@ function UploadComment() {
 }
 
 
-
-
 //Comment Delete 
-function deleteComment(commentId) {
+
+
+function deleteComment(commentId, $commentElement) {
     Swal.fire({
         title: 'Are you sure?',
         text: "Do you really want to delete this comment?",
@@ -1055,20 +1176,37 @@ function deleteComment(commentId) {
         cancelButtonText: 'Cancel'
     }).then((result) => {
         if (result.isConfirmed) {
-            var userId = sessionStorage.getItem('userId');
+            var authToken = getCookie("authToken");
 
             $.ajax({
                 url: '/api/WebApi/DeleteComment/' + commentId,
                 type: 'DELETE',
-                headers: {
-                    'Authorization': userId
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authToken);
                 },
-                success: function (response) {
+                success: function () {
                     Swal.fire(
                         'Deleted!',
                         'Your comment has been deleted.',
                         'success'
                     );
+
+                    // Hide the comment element
+                    $commentElement.remove();
+
+                    // Update comment count
+                    var $postContainer = $commentElement.closest('.central-meta');
+                    var $commentCount = $postContainer.find('.comment ins');
+                    var currentCount = parseInt($commentCount.text());
+
+                    if (currentCount > 0) {
+                        $commentCount.text(currentCount - 1);
+                    }
+
+                    // Optionally check if the list is empty now
+                    if ($postContainer.find('.we-comet').children().length === 0) {
+                        $postContainer.find('.we-comet').append('<li id="NoComments">No comments yet.</li>');
+                    }
                 },
                 error: function (xhr, status, error) {
                     Swal.fire(
@@ -1086,15 +1224,19 @@ function deleteComment(commentId) {
 
 
 
-//Friend List 
+//Friend List
 
 function FriendList() {
-  
+
     var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
 
     $.ajax({
         url: '/api/WebApi/GetUserData/' + userId,
         method: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (data) {
             var peopleList = $('.friendz-list');
             peopleList.empty();
@@ -1162,12 +1304,16 @@ function FriendList() {
 
 
 function addFriend(userId) {
-  
+
     var currentUserId = getCookie("userId");
+    var authToken = getCookie("authToken");
 
     $.ajax({
         url: '/api/WebApi/AddFriend',
         method: 'POST',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         data: {
             userId: currentUserId,
             followerId: userId
@@ -1183,12 +1329,16 @@ function addFriend(userId) {
 }
 
 function removeFriend(friendId) {
-   
+
     var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
 
     $.ajax({
         url: '/api/WebApi/RemoveFriend',
         method: 'POST',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         data: { UserId: userId, FollowerId: friendId },
         success: function (response) {
             console.log('Friend removed successfully');
@@ -1203,12 +1353,15 @@ function removeFriend(friendId) {
 
 
 function confirmFriendRequest(userId) {
-   
-    var currentUserId = getCookie("userId");
 
+    var currentUserId = getCookie("userId");
+    var authToken = getCookie("authToken");
     $.ajax({
         url: '/api/WebApi/ConfirmFriendRequest',
         method: 'POST',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         data: {
             userId: currentUserId,
             followerId: userId
@@ -1227,15 +1380,19 @@ function confirmFriendRequest(userId) {
 
 function fetchConfirmFriend() {
     var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
 
     $.ajax({
         url: '/api/WebApi/GetUserData/' + userId,
         type: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (response) {
             $('#acceptUserList').empty();
             response.forEach(function (user) {
                 if (user.RequestStatus == "accepted") {
-                   
+
                     loadUserPosts(user.UserId);
 
                     // Render friend list
@@ -1261,8 +1418,52 @@ function fetchConfirmFriend() {
 }
 
 
+/*function fetchConfirmFriend() {
+    var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
 
+    $.ajax({
+        url: '/api/WebApi/GetUserData/' + userId,
+        type: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
+        success: function (response) {
+            $('#acceptUserList').empty();
+            response.forEach(function (user) {
+                if (user.RequestStatus == "accepted") {
+                    loadUserPosts(user.UserId);
 
+                    // Render friend list with Remove button
+                    var request = `
+                        <li>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <figure>
+                                    <img src="${user.ProfilePhoto}" onclick="ShowFriendProfile(${user.UserId})" class="media-object pull-left" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" alt="Profile Photo">
+                                </figure>
+                                <div style="flex: 1; margin-left: 10px;">
+                                    <i>${user.FirstName} ${user.LastName}</i>
+                                    <i hidden>${user.UserId}</i>
+                                </div>
+                                <button class="btn btn-danger btn-sm remove-friend-btn" data-user-id="${user.UserId}">Remove</button>
+                            </div>
+                        </li>`;
+                    $('#acceptUserList').append(request);
+                }
+            });
+
+            // Bind click event for Remove buttons
+            $(document).on('click', '.remove-friend-btn', function () {
+                var userIdToRemove = $(this).data('user-id');
+                removeFriend(userIdToRemove);
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log('Error fetching friends:', error);
+        }
+    });
+}
+*/
 
 function commentreplay() {
     console.log("comment");
@@ -1272,30 +1473,51 @@ function commentreplay() {
 
 //Notifications Like, Comment,etc
 function displayNotifications() {
-   
+
     var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
 
     $.ajax({
         url: '/api/WebApi/notifications/' + userId,
         method: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (data) {
             console.log("got notification data:", data);
             var notificationsHtml = '';
             data.forEach(function (notification) {
                 notificationsHtml += `
-                    <div class="notification-box">
-                        <div class="notifi-meta">
-                            <img src="${notification.ProfilePhoto}" alt="" width="52" height="52" style="float: left; border-radius: 50%;">
-                            ${notification.PostPhoto ?
+    <div class="notification-box border-bottom d-flex align-items-center p-3 bg-white mb-3">
+        <div class="row w-100">
+            <!-- Profile Photo Column -->
+            <div class="col-auto">
+               <div class="profile-photo-container" style="display: flex; justify-content: center; align-items: center;">
+    <img src="${notification.ProfilePhoto}" alt="Profile Photo"
+         style="width: 52px; height: 52px; border-radius: 50%; border: 2px solid #ddd; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
+</div>
+
+            </div>
+            
+            <!-- Notification Content Column -->
+            <div class="col">
+                <div class="notification-content">
+                    <p class="notification-text mb-1">${notification.NotificationText}</p>
+                    <span class="notification-timestamp text-muted"style="font-size: 14px;">${new Date(notification.NotificationTimestamp).toLocaleString()}</span>
+                    <input type="hidden" class="post-id" value="${notification.PostId}">
+                </div>
+            </div>
+          
+            <!-- Post Media Column -->
+            <div class="col-auto">
+                ${notification.PostPhoto ?
                         (notification.PostPhoto.endsWith('.mp4') ?
-                            `<video width="52" height="52" controls style="float: right; border-radius: 50%;"><source src="${notification.PostPhoto}" type="video/mp4">Your browser does not support the video tag.</video>` :
-                            `<img src="${notification.PostPhoto}" alt="" width="52" height="52" style="float: right; border-radius: 50%;">`) :
-                        `<p style="float: right; border-radius: 50%; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; background: #f0f0f0;">${notification.PostContent}</p>`}
-                            <p>${notification.NotificationText}</p>
-                            <span>${new Date(notification.NotificationTimestamp).toLocaleString()}</span>
-                            <input type="hidden" class="post-id" value="${notification.PostId}">
-                        </div>
-                    </div>`;
+                            `<video class="post-media rounded me-3" width="52" height="52" controls><source src="${notification.PostPhoto}" type="video/mp4">Your browser does not support the video tag.</video>` :
+                            `<img src="${notification.PostPhoto}" alt="Post Photo" class="post-media rounded me-3" width="52" height="52">`) :
+                        `<p class="post-content d-flex align-items-center justify-content-center rounded bg-light text-center me-3" style="width: 52px; height: 52px;margin: 15px;">${notification.PostContent}</p>`}
+            </div>
+        </div>
+    </div>`;
             });
 
             $('#notification-menu').html(notificationsHtml);
@@ -1368,18 +1590,24 @@ $(document).ready(function () {
 
 
 function populateUserData(userId) {
-  
+
     var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
+
+
 
     $.ajax({
         url: '/api/WebApi/' + userId,
         dataType: 'json',
         type: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (response) {
             var userData = response;
             sessionStorage.setItem('Username', response.FirstName + " " + response.LastName);
             sessionStorage.setItem('ProfilePhoto', userData.ProfilePhoto);
-          
+
             $('#UserName').html(userData.FirstName + " " + userData.LastName);
 
             $('#City').html('<i class="fa-solid fa-city"></i> ' + userData.City);
@@ -1388,7 +1616,7 @@ function populateUserData(userId) {
             $('#interestdata').append('<li>' + userData.Interests + ' </li>');
             $('#BioInfo').append('<li>' + userData.Bio + ' </li>');
 
-            
+
 
             var profilePhoto = userData.ProfilePhoto ? userData.ProfilePhoto : '~/images/profile.png';
             $('#ProfilePhoto').attr("src", profilePhoto);
@@ -1460,12 +1688,16 @@ function updateUserInfo() {
     var userId = userData.UserId;
     var email = userData.Email;
     var phoneNumber = userData.PhoneNumber;
+    var authToken = getCookie("authToken");
 
 
     // Check if the email is already in use
     $.ajax({
         url: '/api/WebApi/CheckEmail',
         method: 'POST',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         contentType: 'application/json',
         data: JSON.stringify({ UserId: userId, Email: email }),
         success: function (response) {
@@ -1475,6 +1707,9 @@ function updateUserInfo() {
                 $.ajax({
                     url: '/api/WebApi/' + userId,
                     method: 'PUT',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", "Basic " + authToken);
+                    },
                     contentType: 'application/json',
                     data: JSON.stringify(userData),
                     success: function (response) {
@@ -1520,8 +1755,9 @@ function changePassword() {
 
 
 function uploadProfilePhoto() {
-   
+
     var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
 
     var formData = new FormData();
     var fileInput = document.getElementById('fileInput');
@@ -1530,6 +1766,9 @@ function uploadProfilePhoto() {
         $.ajax({
             url: '/api/WebApi/uploadprofilephoto/' + userId,
             type: 'POST',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authToken);
+            },
             data: formData,
             processData: false,
             contentType: false,
@@ -1548,14 +1787,19 @@ function uploadProfilePhoto() {
 
 
 
-function ShowFriendProfile(id) {   
+function ShowFriendProfile(id) {
     event.preventDefault();
-   
+
     var userId = id;
+    var authToken = getCookie("authToken");
+
     console.log("clicked");
     $.ajax({
         url: '/api/WebApi/' + userId,
         method: "GET",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         data: { userId: userId },
         success: function (response) {
             sessionStorage.setItem('UserProfileId', response.UserId);
@@ -1598,11 +1842,16 @@ function AddPosts(post) {
 
 
 function loadUserPostsHomePage() {
-  
+
     var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
+
     $.ajax({
         url: '/api/WebApi/UserPosts1/' + userId,
         method: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (data) {
             $('#UserPostDiv ul.photos').empty();
             data.reverse().forEach(function (post) {
@@ -1650,9 +1899,13 @@ function archievepost(post) {
 
 function loadarchievepost() {
     var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
     $.ajax({
         url: '/api/WebApi/UserPosts1/' + userId,
         method: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (data) {
             $('#archieveDiv ul.photos').empty();
             data.reverse().forEach(function (post) {
@@ -1674,6 +1927,8 @@ function loadarchievepost() {
 
 
 function handlearchievepost(postId) {
+    var authToken = getCookie("authToken");
+
     console.log("Post ID:", postId);
     $('#archieveDiv ul.photos').empty();
     var postElement = $('[data-post-id="' + postId + '"]');
@@ -1692,6 +1947,9 @@ function handlearchievepost(postId) {
     $.ajax({
         url: apiUrl,
         method: 'PUT',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
         success: function (data) {
             console.log(successMessage);
             postElement.hide();

@@ -11,7 +11,6 @@
     <meta name="keywords" content="" />
     <title>Social Media  WebApplication </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/Scripts/jquery-3.4.1.slim.min.js"></script>
     <script src="~/Scripts/jquery.validate.min.js"></script>
@@ -206,7 +205,10 @@
         .liked {
             color: red;
         }
-
+        #commenterror {
+            color: red;
+            display: none;
+        }
 
     </style>
 
@@ -238,13 +240,14 @@
         <div class="topbar stick">
             <div class="logo">
                 <a title="" href="/Login/HomePage"><img src="~/images/twitter.jpg" alt="" height="95" width="108"></a>
-               
+
             </div>
             <div class="top-area">
                 <div class="user-img">
-                  
 
-                    <span class="status f-online"></span>
+
+                    @* <span class="status f-online"></span>*@
+                    <i class="fa fa-sign-out" aria-hidden="true"></i>
                     <div class="user-setting">
                         <a href="#" title="" id="logoutButton"><i class="fa-solid fa-arrow-right-from-bracket"></i>Log out</a>
                     </div>
@@ -280,8 +283,8 @@
                                                     <a href="#" onclick="location.href='@Url.Action("AboutPage", "Login")'">view Profile</a>
                                                 </li>
 
-                                               
-                                              
+
+
                                                 <ul>
                                                     <li>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="23" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
@@ -290,13 +293,13 @@
                                                         <a href="#" id="notificationLink" class="notification-link">Notifications</a>
 
                                                     </li>
-                                                  
+
                                                 </ul>
 
                                                 <div class="Notifition"></div>
 
                                                 <br />
-                                               
+
 
                                             </ul>
                                         </div><!-- Shortcuts -->
@@ -307,10 +310,10 @@
 
                                     <div id="notification-menu">
 
-                                   </div>
+                                    </div>
 
-                                                                                                       
-                                   <div class="central-meta">
+
+                                    <div class="central-meta">
 
                                         <div class="new-postbox">
 
@@ -326,7 +329,7 @@
                                                     <ul>
                                                         <li>
                                                             <label class="fileContainer">
-                                                                <i class="fas fa-images blue-icon" style="font-size: 20px;"></i>
+                                                                <i class="fas fa-images blue-icon" style="font-size: 20px; cursor:pointer"></i>
 
                                                                 <input type="file" id="userpost">
 
@@ -334,7 +337,7 @@
                                                             </label>
                                                         </li>
                                                         <li>
-                                                            <button id="submitButton" class="btn btn-primary">Post</button>
+                                                            <button id="submitButton" class="btn btn-primary" style="font-size: 12px;">Post</button>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -358,12 +361,12 @@
                                     <div class="sidebar static">
                                         <div class="widget friend-list stick-widget">
                                             <h4 class="widget-title">Suggested Friend List</h4>
-                                        
 
-                                            
+
+
                                             <div id="searchDir"></div>
-                                          
-                                            
+
+
                                             <ul id="userList" class="friendz-list">
                                                 <!-- User items will be dynamically added here -->
                                             </ul>
@@ -382,24 +385,24 @@
         <div class="bottombar">
         </div>
     </div>
-  
+
 
 
     <script>
-       
+
         $(document).ready(function () {
-           
+
             $('.btn-follow').click(function () {
                 var $btn = $(this);
                 var following = $btn.data('following');
 
-              
+
                 setTimeout(function () {
                     following = !following;
                     $btn.text(following ? 'Unfollow' : 'Follow');
                     $btn.toggleClass('unfollow', !following);
                     $btn.data('following', following);
-                }, 500); 
+                }, 500);
             });
         });
 
@@ -413,5 +416,6 @@
     <script src="https://kit.fontawesome.com/740b3d7ee7.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+    <script src="~/JavaScript/Login.js"></script>
 </body>
 </html>
