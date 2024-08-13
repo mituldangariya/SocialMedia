@@ -112,7 +112,7 @@
           <Property Name="ShareCount" Type="int" />
           <Property Name="Status" Type="varchar(max)" />
         </EntityType>
-        <Association Name="FK__Notificat__UserI__793DFFAF">
+        <Association Name="FK__Notificat__UserI__2739D489">
           <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
           <End Role="Notifications" Type="Self.Notifications" Multiplicity="*" />
           <ReferentialConstraint>
@@ -124,7 +124,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Notificat__UserI__7FEAFD3E">
+        <Association Name="FK__Notificat__UserI__282DF8C2">
           <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
           <End Role="Notifications" Type="Self.Notifications" Multiplicity="*" />
           <ReferentialConstraint>
@@ -136,7 +136,55 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PasswordC__UserI__67DE6983">
+        <Association Name="FK__Notificat__UserI__29221CFB">
+          <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
+          <End Role="Notifications" Type="Self.Notifications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserData">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Notifications">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Notificat__UserI__2A164134">
+          <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
+          <End Role="Notifications" Type="Self.Notifications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserData">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Notifications">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Notificat__UserI__59063A47">
+          <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
+          <End Role="Notifications" Type="Self.Notifications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserData">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Notifications">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Notificat__UserI__59FA5E80">
+          <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
+          <End Role="Notifications" Type="Self.Notifications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserData">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Notifications">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PasswordC__UserI__5BE2A6F2">
           <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
           <End Role="PasswordChangeHistory" Type="Self.PasswordChangeHistory" Multiplicity="*" />
           <ReferentialConstraint>
@@ -148,7 +196,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PostComme__PostI__628FA481">
+        <Association Name="FK__PostComme__PostI__55F4C372">
           <End Role="UserPosts" Type="Self.UserPosts" Multiplicity="0..1" />
           <End Role="PostComments" Type="Self.PostComments" Multiplicity="*" />
           <ReferentialConstraint>
@@ -160,7 +208,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PostComme__UserI__6383C8BA">
+        <Association Name="FK__PostComme__UserI__56E8E7AB">
           <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
           <End Role="PostComments" Type="Self.PostComments" Multiplicity="*" />
           <ReferentialConstraint>
@@ -172,7 +220,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PostLikeR__PostI__6FE99F9F">
+        <Association Name="FK__PostLikeR__PostI__5FB337D6">
           <End Role="UserPosts" Type="Self.UserPosts" Multiplicity="1" />
           <End Role="PostLikeRequests" Type="Self.PostLikeRequests" Multiplicity="*" />
           <ReferentialConstraint>
@@ -184,7 +232,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PostLikeR__UserI__70DDC3D8">
+        <Association Name="FK__PostLikeR__UserI__60A75C0F">
           <End Role="UserData" Type="Self.UserData" Multiplicity="1" />
           <End Role="PostLikeRequests" Type="Self.PostLikeRequests" Multiplicity="*" />
           <ReferentialConstraint>
@@ -196,7 +244,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PostLikes__PostI__5EBF139D">
+        <Association Name="FK__PostLikes__PostI__619B8048">
           <End Role="UserPosts" Type="Self.UserPosts" Multiplicity="0..1" />
           <End Role="PostLikes" Type="Self.PostLikes" Multiplicity="*" />
           <ReferentialConstraint>
@@ -208,7 +256,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PostLikes__UserI__5DCAEF64">
+        <Association Name="FK__PostLikes__UserI__628FA481">
           <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
           <End Role="PostLikes" Type="Self.PostLikes" Multiplicity="*" />
           <ReferentialConstraint>
@@ -220,7 +268,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__UserFrien__Follo__11158940">
+        <Association Name="FK__UserFrien__Follo__6754599E">
           <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
           <End Role="UserFriends" Type="Self.UserFriends" Multiplicity="*" />
           <ReferentialConstraint>
@@ -232,7 +280,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__UserFrien__UserI__10216507">
+        <Association Name="FK__UserFrien__UserI__68487DD7">
           <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
           <End Role="UserFriends" Type="Self.UserFriends" Multiplicity="*" />
           <ReferentialConstraint>
@@ -244,7 +292,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__UserPosts__UserI__59FA5E80">
+        <Association Name="FK__UserPosts__UserI__693CA210">
           <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
           <End Role="UserPosts" Type="Self.UserPosts" Multiplicity="*" />
           <ReferentialConstraint>
@@ -280,9 +328,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Function Name="AddArchivePostSP" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="PostId" Type="int" Mode="In" />
-        </Function>
         <Function Name="AddComment" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="PostId" Type="int" Mode="In" />
           <Parameter Name="UserId" Type="int" Mode="In" />
@@ -305,7 +350,7 @@
           <Parameter Name="CommentCount" Type="int" Mode="In" />
         </Function>
         <Function Name="DeleteComment" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="CommentId" Type="int" Mode="In" />
+          <Parameter Name="commentId" Type="int" Mode="In" />
         </Function>
         <Function Name="DeletePost" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -323,9 +368,6 @@
           <Parameter Name="UserId" Type="int" Mode="In" />
         </Function>
         <Function Name="GetUserData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="GetUserNotificationsSP" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="UserId" Type="int" Mode="In" />
-        </Function>
         <EntityContainer Name="SocialMediaAppModelStoreContainer">
           <EntitySet Name="Notifications" EntityType="Self.Notifications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PasswordChangeHistory" EntityType="Self.PasswordChangeHistory" Schema="dbo" store:Type="Tables" />
@@ -336,51 +378,67 @@
           <EntitySet Name="UserData" EntityType="Self.UserData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserFriends" EntityType="Self.UserFriends" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserPosts" EntityType="Self.UserPosts" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__Notificat__UserI__793DFFAF" Association="Self.FK__Notificat__UserI__793DFFAF">
+          <AssociationSet Name="FK__Notificat__UserI__2739D489" Association="Self.FK__Notificat__UserI__2739D489">
             <End Role="UserData" EntitySet="UserData" />
             <End Role="Notifications" EntitySet="Notifications" />
           </AssociationSet>
-          <AssociationSet Name="FK__Notificat__UserI__7FEAFD3E" Association="Self.FK__Notificat__UserI__7FEAFD3E">
+          <AssociationSet Name="FK__Notificat__UserI__282DF8C2" Association="Self.FK__Notificat__UserI__282DF8C2">
             <End Role="UserData" EntitySet="UserData" />
             <End Role="Notifications" EntitySet="Notifications" />
           </AssociationSet>
-          <AssociationSet Name="FK__PasswordC__UserI__67DE6983" Association="Self.FK__PasswordC__UserI__67DE6983">
+          <AssociationSet Name="FK__Notificat__UserI__29221CFB" Association="Self.FK__Notificat__UserI__29221CFB">
+            <End Role="UserData" EntitySet="UserData" />
+            <End Role="Notifications" EntitySet="Notifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Notificat__UserI__2A164134" Association="Self.FK__Notificat__UserI__2A164134">
+            <End Role="UserData" EntitySet="UserData" />
+            <End Role="Notifications" EntitySet="Notifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Notificat__UserI__59063A47" Association="Self.FK__Notificat__UserI__59063A47">
+            <End Role="UserData" EntitySet="UserData" />
+            <End Role="Notifications" EntitySet="Notifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Notificat__UserI__59FA5E80" Association="Self.FK__Notificat__UserI__59FA5E80">
+            <End Role="UserData" EntitySet="UserData" />
+            <End Role="Notifications" EntitySet="Notifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PasswordC__UserI__5BE2A6F2" Association="Self.FK__PasswordC__UserI__5BE2A6F2">
             <End Role="UserData" EntitySet="UserData" />
             <End Role="PasswordChangeHistory" EntitySet="PasswordChangeHistory" />
           </AssociationSet>
-          <AssociationSet Name="FK__PostComme__PostI__628FA481" Association="Self.FK__PostComme__PostI__628FA481">
+          <AssociationSet Name="FK__PostComme__PostI__55F4C372" Association="Self.FK__PostComme__PostI__55F4C372">
             <End Role="UserPosts" EntitySet="UserPosts" />
             <End Role="PostComments" EntitySet="PostComments" />
           </AssociationSet>
-          <AssociationSet Name="FK__PostComme__UserI__6383C8BA" Association="Self.FK__PostComme__UserI__6383C8BA">
+          <AssociationSet Name="FK__PostComme__UserI__56E8E7AB" Association="Self.FK__PostComme__UserI__56E8E7AB">
             <End Role="UserData" EntitySet="UserData" />
             <End Role="PostComments" EntitySet="PostComments" />
           </AssociationSet>
-          <AssociationSet Name="FK__PostLikeR__PostI__6FE99F9F" Association="Self.FK__PostLikeR__PostI__6FE99F9F">
+          <AssociationSet Name="FK__PostLikeR__PostI__5FB337D6" Association="Self.FK__PostLikeR__PostI__5FB337D6">
             <End Role="UserPosts" EntitySet="UserPosts" />
             <End Role="PostLikeRequests" EntitySet="PostLikeRequests" />
           </AssociationSet>
-          <AssociationSet Name="FK__PostLikeR__UserI__70DDC3D8" Association="Self.FK__PostLikeR__UserI__70DDC3D8">
+          <AssociationSet Name="FK__PostLikeR__UserI__60A75C0F" Association="Self.FK__PostLikeR__UserI__60A75C0F">
             <End Role="UserData" EntitySet="UserData" />
             <End Role="PostLikeRequests" EntitySet="PostLikeRequests" />
           </AssociationSet>
-          <AssociationSet Name="FK__PostLikes__PostI__5EBF139D" Association="Self.FK__PostLikes__PostI__5EBF139D">
+          <AssociationSet Name="FK__PostLikes__PostI__619B8048" Association="Self.FK__PostLikes__PostI__619B8048">
             <End Role="UserPosts" EntitySet="UserPosts" />
             <End Role="PostLikes" EntitySet="PostLikes" />
           </AssociationSet>
-          <AssociationSet Name="FK__PostLikes__UserI__5DCAEF64" Association="Self.FK__PostLikes__UserI__5DCAEF64">
+          <AssociationSet Name="FK__PostLikes__UserI__628FA481" Association="Self.FK__PostLikes__UserI__628FA481">
             <End Role="UserData" EntitySet="UserData" />
             <End Role="PostLikes" EntitySet="PostLikes" />
           </AssociationSet>
-          <AssociationSet Name="FK__UserFrien__Follo__11158940" Association="Self.FK__UserFrien__Follo__11158940">
+          <AssociationSet Name="FK__UserFrien__Follo__6754599E" Association="Self.FK__UserFrien__Follo__6754599E">
             <End Role="UserData" EntitySet="UserData" />
             <End Role="UserFriends" EntitySet="UserFriends" />
           </AssociationSet>
-          <AssociationSet Name="FK__UserFrien__UserI__10216507" Association="Self.FK__UserFrien__UserI__10216507">
+          <AssociationSet Name="FK__UserFrien__UserI__68487DD7" Association="Self.FK__UserFrien__UserI__68487DD7">
             <End Role="UserData" EntitySet="UserData" />
             <End Role="UserFriends" EntitySet="UserFriends" />
           </AssociationSet>
-          <AssociationSet Name="FK__UserPosts__UserI__59FA5E80" Association="Self.FK__UserPosts__UserI__59FA5E80">
+          <AssociationSet Name="FK__UserPosts__UserI__693CA210" Association="Self.FK__UserPosts__UserI__693CA210">
             <End Role="UserData" EntitySet="UserData" />
             <End Role="UserPosts" EntitySet="UserPosts" />
           </AssociationSet>
@@ -413,7 +471,6 @@
           <Property Name="PhoneNumber" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Bio" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="UserPosts" Relationship="Self.FK__UserPosts__UserI__5DCAEF64" FromRole="UserData" ToRole="UserPosts" />
-          <NavigationProperty Name="PostComments" Relationship="SocialMediaAppModel.FK__PostComme__UserI__04E4BC85" FromRole="UserData" ToRole="PostComment" />
           <NavigationProperty Name="PostLikes" Relationship="SocialMediaAppModel.FK__PostLikes__UserI__5DCAEF64" FromRole="UserData" ToRole="PostLike" />
           <NavigationProperty Name="PostLikeRequests" Relationship="SocialMediaAppModel.FK__PostLikeR__UserI__70DDC3D8" FromRole="UserData" ToRole="PostLikeRequest" />
           <NavigationProperty Name="Notifications" Relationship="SocialMediaAppModel.FK__Notificat__UserI__793DFFAF" FromRole="UserData" ToRole="Notification" />
@@ -421,6 +478,7 @@
           <NavigationProperty Name="UserFriends" Relationship="SocialMediaAppModel.FK__UserFrien__Follo__11158940" FromRole="UserData" ToRole="UserFriend" />
           <NavigationProperty Name="UserFriends1" Relationship="SocialMediaAppModel.FK__UserFrien__UserI__10216507" FromRole="UserData" ToRole="UserFriend" />
           <NavigationProperty Name="PasswordChangeHistories" Relationship="SocialMediaAppModel.FK__PasswordC__UserI__67DE6983" FromRole="UserData" ToRole="PasswordChangeHistory" />
+          <NavigationProperty Name="PostComments" Relationship="SocialMediaAppModel.FK__PostComme__UserI__56E8E7AB" FromRole="UserData" ToRole="PostComment" />
           </EntityType>
         <EntityType Name="UserPost">
           <Key>
@@ -435,11 +493,11 @@
           <Property Name="CommentCount" Type="Int32" />
           <Property Name="ShareCount" Type="Int32" />
           <NavigationProperty Name="UserData" Relationship="Self.FK__UserPosts__UserI__5DCAEF64" FromRole="UserPosts" ToRole="UserData" />
-          <NavigationProperty Name="PostComments" Relationship="SocialMediaAppModel.FK__PostComme__PostI__03F0984C" FromRole="UserPost" ToRole="PostComment" />
           <NavigationProperty Name="PostLikes" Relationship="SocialMediaAppModel.FK__PostLikes__PostI__5EBF139D" FromRole="UserPost" ToRole="PostLike" />
           <NavigationProperty Name="PostLikeRequests" Relationship="SocialMediaAppModel.FK__PostLikeR__PostI__6FE99F9F" FromRole="UserPost" ToRole="PostLikeRequest" />
           <Property Name="Status" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Notifications" Relationship="SocialMediaAppModel.FK_Notifications_PostPhoto" FromRole="UserPost" ToRole="Notification" />
+          <NavigationProperty Name="PostComments" Relationship="SocialMediaAppModel.FK__PostComme__PostI__55F4C372" FromRole="UserPost" ToRole="PostComment" />
         </EntityType>
         <Association Name="FK__UserPosts__UserI__5DCAEF64">
           <End Role="UserData" Type="Self.UserData" Multiplicity="0..1" />
@@ -459,15 +517,6 @@
           <AssociationSet Name="FK__UserPosts__UserI__5DCAEF64" Association="Self.FK__UserPosts__UserI__5DCAEF64">
             <End Role="UserData" EntitySet="UserDatas" />
             <End Role="UserPosts" EntitySet="UserPosts" />
-          </AssociationSet>
-          <EntitySet Name="PostComments" EntityType="SocialMediaAppModel.PostComment" />
-          <AssociationSet Name="FK__PostComme__PostI__03F0984C" Association="SocialMediaAppModel.FK__PostComme__PostI__03F0984C">
-            <End Role="UserPost" EntitySet="UserPosts" />
-            <End Role="PostComment" EntitySet="PostComments" />
-          </AssociationSet>
-          <AssociationSet Name="FK__PostComme__UserI__04E4BC85" Association="SocialMediaAppModel.FK__PostComme__UserI__04E4BC85">
-            <End Role="UserData" EntitySet="UserDatas" />
-            <End Role="PostComment" EntitySet="PostComments" />
           </AssociationSet>
           <EntitySet Name="PostLikes" EntityType="SocialMediaAppModel.PostLike" />
           <AssociationSet Name="FK__PostLikes__PostI__5EBF139D" Association="SocialMediaAppModel.FK__PostLikes__PostI__5EBF139D">
@@ -503,7 +552,7 @@
             <Parameter Name="CommentCount" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="DeleteComment" ReturnType="Collection(Int32)">
-          <Parameter Name="CommentId" Mode="In" Type="Int32" />
+          <Parameter Name="commentId" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="GetLastPost" ReturnType="Collection(SocialMediaAppModel.GetLastPost_Result)" />
           <FunctionImport Name="GetLastPostForUser" ReturnType="Collection(SocialMediaAppModel.GetLastPostForUser_Result)">
@@ -516,10 +565,6 @@
           <Parameter Name="UserId" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="GetUserData" ReturnType="Collection(SocialMediaAppModel.GetUserData_Result)" />
-          <AssociationSet Name="FK_ParentCommentId_CommentId" Association="SocialMediaAppModel.FK_ParentCommentId_CommentId">
-            <End Role="PostComment" EntitySet="PostComments" />
-            <End Role="PostComment1" EntitySet="PostComments" />
-          </AssociationSet>
           <FunctionImport Name="GetLastComment" ReturnType="Collection(SocialMediaAppModel.GetLastComment_Result)" />
           <FunctionImport Name="GetNotifications" ReturnType="Collection(SocialMediaAppModel.GetNotifications_Result)" />
           <EntitySet Name="Notifications" EntityType="SocialMediaAppModel.Notification" />
@@ -565,47 +610,20 @@
             <Parameter Name="CommentText" Mode="In" Type="String" />
             <Parameter Name="ParentCommentId" Mode="In" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="PostComments" EntityType="SocialMediaAppModel.PostComment" />
+          <AssociationSet Name="FK__PostComme__PostI__55F4C372" Association="SocialMediaAppModel.FK__PostComme__PostI__55F4C372">
+            <End Role="UserPost" EntitySet="UserPosts" />
+            <End Role="PostComment" EntitySet="PostComments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PostComme__UserI__56E8E7AB" Association="SocialMediaAppModel.FK__PostComme__UserI__56E8E7AB">
+            <End Role="UserData" EntitySet="UserDatas" />
+            <End Role="PostComment" EntitySet="PostComments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ParentCommentId_CommentId" Association="SocialMediaAppModel.FK_ParentCommentId_CommentId">
+            <End Role="PostComment" EntitySet="PostComments" />
+            <End Role="PostComment1" EntitySet="PostComments" />
+          </AssociationSet>
           </EntityContainer>
-        <EntityType Name="PostComment">
-          <Key>
-            <PropertyRef Name="CommentId" />
-          </Key>
-          <Property Name="CommentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PostId" Type="Int32" />
-          <Property Name="UserId" Type="Int32" />
-          <Property Name="CommentText" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="CommentDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="UserPost" Relationship="SocialMediaAppModel.FK__PostComme__PostI__03F0984C" FromRole="PostComment" ToRole="UserPost" />
-          <NavigationProperty Name="UserData" Relationship="SocialMediaAppModel.FK__PostComme__UserI__04E4BC85" FromRole="PostComment" ToRole="UserData" />
-          <Property Name="ParentCommentId" Type="Int32" />
-          <NavigationProperty Name="PostComments1" Relationship="SocialMediaAppModel.FK_ParentCommentId_CommentId" FromRole="PostComment" ToRole="PostComment1" />
-          <NavigationProperty Name="PostComment1" Relationship="SocialMediaAppModel.FK_ParentCommentId_CommentId" FromRole="PostComment1" ToRole="PostComment" />
-          <Property Name="IsDeleted" Type="Int32" />
-        </EntityType>
-        <Association Name="FK__PostComme__PostI__03F0984C">
-          <End Type="SocialMediaAppModel.UserPost" Role="UserPost" Multiplicity="0..1" />
-          <End Type="SocialMediaAppModel.PostComment" Role="PostComment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="UserPost">
-              <PropertyRef Name="PostId" />
-            </Principal>
-            <Dependent Role="PostComment">
-              <PropertyRef Name="PostId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__PostComme__UserI__04E4BC85">
-          <End Type="SocialMediaAppModel.UserData" Role="UserData" Multiplicity="0..1" />
-          <End Type="SocialMediaAppModel.PostComment" Role="PostComment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="UserData">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="PostComment">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="PostLike">
           <Key>
             <PropertyRef Name="LikeId" />
@@ -731,18 +749,6 @@
           <Property Type="String" Name="FirstName" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="ProfilePhoto" Nullable="true" MaxLength="255" />
         </ComplexType>
-        <Association Name="FK_ParentCommentId_CommentId">
-          <End Type="SocialMediaAppModel.PostComment" Role="PostComment" Multiplicity="0..1" />
-          <End Type="SocialMediaAppModel.PostComment" Role="PostComment1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PostComment">
-              <PropertyRef Name="CommentId" />
-            </Principal>
-            <Dependent Role="PostComment1">
-              <PropertyRef Name="ParentCommentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <ComplexType Name="GetLastComment_Result">
           <Property Type="Int32" Name="CommentId" Nullable="false" />
           <Property Type="Int32" Name="PostId" Nullable="true" />
@@ -892,6 +898,58 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="PostComment">
+          <Key>
+            <PropertyRef Name="CommentId" />
+          </Key>
+          <Property Name="CommentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PostId" Type="Int32" />
+          <Property Name="UserId" Type="Int32" />
+          <Property Name="CommentText" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CommentDate" Type="DateTime" Precision="3" />
+          <Property Name="ParentCommentId" Type="Int32" />
+          <Property Name="IsDeleted" Type="Int32" />
+          <NavigationProperty Name="UserPost" Relationship="SocialMediaAppModel.FK__PostComme__PostI__55F4C372" FromRole="PostComment" ToRole="UserPost" />
+          <NavigationProperty Name="UserData" Relationship="SocialMediaAppModel.FK__PostComme__UserI__56E8E7AB" FromRole="PostComment" ToRole="UserData" />
+          <NavigationProperty Name="PostComments1" Relationship="SocialMediaAppModel.FK_ParentCommentId_CommentId" FromRole="PostComment" ToRole="PostComment1" />
+          <NavigationProperty Name="PostComment1" Relationship="SocialMediaAppModel.FK_ParentCommentId_CommentId" FromRole="PostComment1" ToRole="PostComment" />
+        </EntityType>
+        <Association Name="FK__PostComme__PostI__55F4C372">
+          <End Type="SocialMediaAppModel.UserPost" Role="UserPost" Multiplicity="0..1" />
+          <End Type="SocialMediaAppModel.PostComment" Role="PostComment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserPost">
+              <PropertyRef Name="PostId" />
+            </Principal>
+            <Dependent Role="PostComment">
+              <PropertyRef Name="PostId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PostComme__UserI__56E8E7AB">
+          <End Type="SocialMediaAppModel.UserData" Role="UserData" Multiplicity="0..1" />
+          <End Type="SocialMediaAppModel.PostComment" Role="PostComment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserData">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="PostComment">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ParentCommentId_CommentId">
+          <End Type="SocialMediaAppModel.PostComment" Role="PostComment" Multiplicity="0..1" />
+          <End Type="SocialMediaAppModel.PostComment" Role="PostComment1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PostComment">
+              <PropertyRef Name="CommentId" />
+            </Principal>
+            <Dependent Role="PostComment1">
+              <PropertyRef Name="ParentCommentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -927,19 +985,6 @@
                 <ScalarProperty Name="LikeCount" ColumnName="LikeCount" />
                 <ScalarProperty Name="CommentCount" ColumnName="CommentCount" />
                 <ScalarProperty Name="ShareCount" ColumnName="ShareCount" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PostComments">
-            <EntityTypeMapping TypeName="SocialMediaAppModel.PostComment">
-              <MappingFragment StoreEntitySet="PostComments">
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="ParentCommentId" ColumnName="ParentCommentId" />
-                <ScalarProperty Name="CommentDate" ColumnName="CommentDate" />
-                <ScalarProperty Name="CommentText" ColumnName="CommentText" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="PostId" ColumnName="PostId" />
-                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1096,19 +1141,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="AddArchivePostSP" FunctionName="SocialMediaAppModel.Store.AddArchivePostSP" />
-          <FunctionImportMapping FunctionImportName="GetUserNotificationsSP" FunctionName="SocialMediaAppModel.Store.GetUserNotificationsSP">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="SocialMediaAppModel.GetUserNotificationsSP_Result">
-                <ScalarProperty Name="NotificationText" ColumnName="NotificationText" />
-                <ScalarProperty Name="NotificationTimestamp" ColumnName="NotificationTimestamp" />
-                <ScalarProperty Name="PostId" ColumnName="PostId" />
-                <ScalarProperty Name="PostPhoto" ColumnName="PostPhoto" />
-                <ScalarProperty Name="PostContent" ColumnName="PostContent" />
-                <ScalarProperty Name="ProfilePhoto" ColumnName="ProfilePhoto" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <EntitySetMapping Name="PasswordResets">
             <EntityTypeMapping TypeName="SocialMediaAppModel.PasswordReset">
               <MappingFragment StoreEntitySet="PasswordReset">
@@ -1131,6 +1163,19 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="AddComment" FunctionName="SocialMediaAppModel.Store.AddComment" />
+          <EntitySetMapping Name="PostComments">
+            <EntityTypeMapping TypeName="SocialMediaAppModel.PostComment">
+              <MappingFragment StoreEntitySet="PostComments">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="ParentCommentId" ColumnName="ParentCommentId" />
+                <ScalarProperty Name="CommentDate" ColumnName="CommentDate" />
+                <ScalarProperty Name="CommentText" ColumnName="CommentText" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="PostId" ColumnName="PostId" />
+                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

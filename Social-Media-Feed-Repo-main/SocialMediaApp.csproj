@@ -351,6 +351,7 @@
     <Content Include="images\1080x360.jpg" />
     <Content Include="images\10919270.jpg" />
     <Content Include="images\4315.jpg_wh860.jpg" />
+    <Content Include="images\attachment_129933858.jpg" />
     <Content Include="images\axar.jpg" />
     <Content Include="images\book-icon.png" />
     <Content Include="images\credit-cards.png" />
@@ -567,11 +568,13 @@
     <Content Include="images\resources\userlist-6.jpg" />
     <Content Include="images\resources\userlist-7.jpg" />
     <Content Include="images\rohit.jpg" />
+    <Content Include="images\social-media.png" />
     <Content Include="images\twitter.jpg" />
     <Content Include="images\virat.jpg" />
     <Content Include="images\viratk.jpg" />
     <Content Include="images\welcome-sign.png" />
     <Content Include="images\wink.png" />
+    <Content Include="JavaScript\custom.js" />
     <Content Include="JavaScript\HomePage.js" />
     <Content Include="JavaScript\Login.js" />
     <Content Include="JavaScript\main.min.js" />

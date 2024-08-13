@@ -389,9 +389,10 @@ function AddPost(post) {
     });
 
 
-    // HTML for the post including comments
-    var postHTML =
-        `<div class="central-meta item">
+    
+
+    var postHTML = `
+    <div class="central-meta item">
         <div class="user-post">
             <div class="friend-info">
                 <figure>
@@ -429,7 +430,8 @@ function AddPost(post) {
                 <div class="comment-area" style="display: none;">
                     <div class="post-comt-box">
                         <textarea id="commentTextarea" placeholder="Post your comment" maxlength="60" onchange="commentlenght()"></textarea>
-                        <button class="btn-primary" id="Postbtn">Comment</button>
+                      <button class="btn-primary" id="Postbtn" style="font-size: 17px;">Comment</button>
+
                         <span id="commenterror" hidden>Please enter a comment.</span>
                     </div>
                     <span id="maxLengthMessage" hidden>You have reached the maximum length.</span>
@@ -439,10 +441,9 @@ function AddPost(post) {
             </div>
         </div>
     </div>`;
-
     return postHTML;
-
 }
+
 
 
 document.addEventListener('click', function (event) {
@@ -656,7 +657,12 @@ function loadUserPosts() {
                 });
             });
 
-            $('.friend-name').click(ShowFriendProfile);
+            $('.friend-name').click(function (event) {
+                event.preventDefault(); // Prevent default action for the click event
+
+                var userId = $(this).data('id');
+                ShowFriendProfile(userId);
+            });
             $('.post-comt-box button').click(UploadComment);
         },
         error: function (error) {
@@ -667,32 +673,56 @@ function loadUserPosts() {
 
 
 
+
+
+
 //Post Delete
+
+
 function deletePost(postId) {
     var authToken = getCookie("authToken");
-    $('#custom-confirm-modal').css('display', 'block');
 
-    $('#confirm-delete').on('click', function () {
-        $.ajax({
-            url: '/api/WebApi/Deletepost/' + postId,
-            method: 'PUT',
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "Basic " + authToken);
-            },
-            success: function (data) {
-                $(`.like-button[data-post-id="${postId}"]`).closest('.central-meta.item').hide();
-                console.log("Post deleted");
-                $('#custom-confirm-modal').css('display', 'none');
-            },
-            error: function (error) {
-                console.error("Error deleting post:", error);
-            }
-        });
-    });
-
-    $('#cancel-delete').on('click', function () {
-        console.log("Post deletion canceled");
-        $('#custom-confirm-modal').css('display', 'none');
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you really want to delete this Post?!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/api/WebApi/Deletepost/' + postId,
+                method: 'PUT',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authToken);
+                },
+                success: function (data) {
+                    $(`.like-button[data-post-id="${postId}"]`).closest('.central-meta.item').hide();
+                    Swal.fire(
+                        'Deleted!',
+                        'Your post has been deleted.',
+                        'success'
+                    );
+                },
+                error: function (error) {
+                    console.error("Error deleting post:", error);
+                    Swal.fire(
+                        'Error!',
+                        'There was an issue deleting your post.',
+                        'error'
+                    );
+                }
+            });
+        } else {
+            Swal.fire(
+                'Cancelled',
+                'Your post is safe :)',
+                'info'
+            );
+        }
     });
 }
 
@@ -1161,10 +1191,9 @@ function UploadComment() {
 }
 
 
-//Comment Delete 
 
 
-function deleteComment(commentId, $commentElement) {
+function deleteComment(commentId, $commentElement, isReply = false) {
     Swal.fire({
         title: 'Are you sure?',
         text: "Do you really want to delete this comment?",
@@ -1191,21 +1220,36 @@ function deleteComment(commentId, $commentElement) {
                         'success'
                     );
 
-                    // Hide the comment element
+                    // Remove the comment or reply element from the DOM
                     $commentElement.remove();
 
-                    // Update comment count
-                    var $postContainer = $commentElement.closest('.central-meta');
-                    var $commentCount = $postContainer.find('.comment ins');
-                    var currentCount = parseInt($commentCount.text());
+                    // Update the comment or reply count
+                    if (isReply) {
+                        // Update the reply count for the parent comment
+                        var $parentComment = $commentElement.closest('li').closest('li');
+                        var $replyCount = $parentComment.find('.reply-count');
 
-                    if (currentCount > 0) {
-                        $commentCount.text(currentCount - 1);
+                        if ($replyCount.length) {
+                            var currentReplyCount = parseInt($replyCount.text(), 10);
+                            if (!isNaN(currentReplyCount) && currentReplyCount > 0) {
+                                $replyCount.text(currentReplyCount - 1);
+                            }
+                        }
+                    } else {
+                        // Update the main comment count for the post
+                        var $commentCount = $commentElement.closest('.central-meta').find('.comment ins');
+
+                        if ($commentCount.length) {
+                            var currentCommentCount = parseInt($commentCount.text(), 10);
+                            if (!isNaN(currentCommentCount) && currentCommentCount > 0) {
+                                $commentCount.text(currentCommentCount - 1);
+                            }
+                        }
                     }
 
-                    // Optionally check if the list is empty now
-                    if ($postContainer.find('.we-comet').children().length === 0) {
-                        $postContainer.find('.we-comet').append('<li id="NoComments">No comments yet.</li>');
+                    // If there are no comments or replies left, show "No comments yet."
+                    if ($commentElement.closest('ul').children().length === 0) {
+                        $commentElement.closest('ul').append('<li id="NoComments">No comments yet.</li>');
                     }
                 },
                 error: function (xhr, status, error) {
@@ -1224,10 +1268,8 @@ function deleteComment(commentId, $commentElement) {
 
 
 
-//Friend List
 
 function FriendList() {
-
     var userId = getCookie("userId");
     var authToken = getCookie("authToken");
 
@@ -1243,7 +1285,6 @@ function FriendList() {
             if (data.length === 0) {
                 peopleList.append('<li>No users found.</li>');
             } else {
-
                 data.sort(function (a, b) {
                     if (a.RequestStatus === 'pending' && b.RequestStatus !== 'pending') {
                         return -1;
@@ -1253,6 +1294,7 @@ function FriendList() {
                         return 0;
                     }
                 });
+
                 data.forEach(function (user) {
                     var userHTML = `
                     <li>
@@ -1260,7 +1302,7 @@ function FriendList() {
                             <figure>
                         <img src="${user.ProfilePhoto}" onclick="ShowFriendProfile(${user.UserId})" class="media-object pull-left" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer;" alt="Profile Photo">
                             </figure>
-                            <div style="display: inline;">
+                                <div style="display: inline; cursor: pointer;" onclick="ShowFriendProfile(${user.UserId})">
                                 <i>${user.FirstName} ${user.LastName}</i>
                                 <i hidden>${user.UserId}</i>
                             </div>
@@ -1281,14 +1323,18 @@ function FriendList() {
                     `;
                     peopleList.append(userHTML);
                 });
+
+                // Event bindings for dynamic content
                 $('.add-friend-btn').on('click', function () {
                     var userId = $(this).data('user-id');
                     addFriend(userId);
                 });
+
                 $('.remove-friend-btn').on('click', function () {
                     var userId = $(this).data('user-id');
                     removeFriend(userId);
                 });
+
                 $('.confirm-friend-btn').on('click', function () {
                     var userId = $(this).data('user-id');
                     confirmFriendRequest(userId);
@@ -1300,7 +1346,6 @@ function FriendList() {
         }
     });
 }
-
 
 
 function addFriend(userId) {
@@ -1328,8 +1373,9 @@ function addFriend(userId) {
     });
 }
 
-function removeFriend(friendId) {
 
+
+function removeFriend(friendId) {
     var userId = getCookie("userId");
     var authToken = getCookie("authToken");
 
@@ -1342,7 +1388,8 @@ function removeFriend(friendId) {
         data: { UserId: userId, FollowerId: friendId },
         success: function (response) {
             console.log('Friend removed successfully');
-            FriendList();
+            // Remove the friend from the UI without page refresh
+            $('li').has('button[data-user-id="' + friendId + '"]').remove();
         },
         error: function (error) {
             console.log(error);
@@ -1378,6 +1425,8 @@ function confirmFriendRequest(userId) {
 
 
 
+
+
 function fetchConfirmFriend() {
     var userId = getCookie("userId");
     var authToken = getCookie("authToken");
@@ -1391,71 +1440,33 @@ function fetchConfirmFriend() {
         success: function (response) {
             $('#acceptUserList').empty();
             response.forEach(function (user) {
-                if (user.RequestStatus == "accepted") {
-
+                if (user.RequestStatus === "accepted") {
                     loadUserPosts(user.UserId);
 
-                    // Render friend list
-                    var request = `<li>
-                        <div style="display: flex;justify-content: space-between;">
-                            <figure>
-                                <img src="${user.ProfilePhoto}" onclick="ShowFriendProfile(${user.UserId})" class="media-object pull-left" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" alt="Profile Photo">
-                            </figure>
-                            <div style="display: inline;">
-                                <i>${user.FirstName} ${user.LastName}</i>
-                                <i hidden>${user.UserId}</i>
-                            </div>
-                        </div>
-                    </li>`
-                    $('#acceptUserList').append(request);
-                }
-            });
-        },
-        error: function (xhr, status, error) {
-            console.log('Error fetching friends:', error);
-        }
-    });
-}
-
-
-/*function fetchConfirmFriend() {
-    var userId = getCookie("userId");
-    var authToken = getCookie("authToken");
-
-    $.ajax({
-        url: '/api/WebApi/GetUserData/' + userId,
-        type: 'GET',
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authToken);
-        },
-        success: function (response) {
-            $('#acceptUserList').empty();
-            response.forEach(function (user) {
-                if (user.RequestStatus == "accepted") {
-                    loadUserPosts(user.UserId);
-
-                    // Render friend list with Remove button
+                    // Render friend list with a "Remove" button
                     var request = `
-                        <li>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <figure>
-                                    <img src="${user.ProfilePhoto}" onclick="ShowFriendProfile(${user.UserId})" class="media-object pull-left" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" alt="Profile Photo">
-                                </figure>
-                                <div style="flex: 1; margin-left: 10px;">
-                                    <i>${user.FirstName} ${user.LastName}</i>
-                                    <i hidden>${user.UserId}</i>
-                                </div>
-                                <button class="btn btn-danger btn-sm remove-friend-btn" data-user-id="${user.UserId}">Remove</button>
-                            </div>
-                        </li>`;
+                    <li data-friend-id="${user.UserId}">
+                       <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <figure>
+                                  <img src="${user.ProfilePhoto}" onclick="ShowFriendProfile(${user.UserId})" class="media-object pull-left" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer;" alt="Profile Photo">
+                        </figure>
+
+                         <div style="display: inline;">
+                              <i onclick="ShowFriendProfile(${user.UserId})" style="cursor: pointer;">${user.FirstName} ${user.LastName}</i>
+                              <i hidden>${user.UserId}</i>
+                         </div>
+                       <button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}">Remove</button>
+                   </div>
+                    </li>`;
+
                     $('#acceptUserList').append(request);
                 }
             });
 
-            // Bind click event for Remove buttons
-            $(document).on('click', '.remove-friend-btn', function () {
-                var userIdToRemove = $(this).data('user-id');
-                removeFriend(userIdToRemove);
+            // Bind click event for the "Remove" button
+            $('.remove-friend-btn').click(function () {
+                var friendUserId = $(this).data('user-id');
+                removeFriend(friendUserId);
             });
         },
         error: function (xhr, status, error) {
@@ -1463,17 +1474,16 @@ function fetchConfirmFriend() {
         }
     });
 }
-*/
+
+
+
 
 function commentreplay() {
     console.log("comment");
 }
 
-
-
 //Notifications Like, Comment,etc
 function displayNotifications() {
-
     var userId = getCookie("userId");
     var authToken = getCookie("authToken");
 
@@ -1484,49 +1494,66 @@ function displayNotifications() {
             xhr.setRequestHeader("Authorization", "Basic " + authToken);
         },
         success: function (data) {
-            console.log("got notification data:", data);
-            var notificationsHtml = '';
+            // Start building the HTML for notifications
+            var notificationsHtml = `
+                <h1>Notifications</h1>
+                <div class="notification-container">
+            `;
+
+            // Generate HTML for each notification
             data.forEach(function (notification) {
                 notificationsHtml += `
-    <div class="notification-box border-bottom d-flex align-items-center p-3 bg-white mb-3">
-        <div class="row w-100">
-            <!-- Profile Photo Column -->
-            <div class="col-auto">
-               <div class="profile-photo-container" style="display: flex; justify-content: center; align-items: center;">
-    <img src="${notification.ProfilePhoto}" alt="Profile Photo"
-         style="width: 52px; height: 52px; border-radius: 50%; border: 2px solid #ddd; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
-</div>
-
-            </div>
-            
-            <!-- Notification Content Column -->
-            <div class="col">
-                <div class="notification-content">
-                    <p class="notification-text mb-1">${notification.NotificationText}</p>
-                    <span class="notification-timestamp text-muted"style="font-size: 14px;">${new Date(notification.NotificationTimestamp).toLocaleString()}</span>
-                    <input type="hidden" class="post-id" value="${notification.PostId}">
-                </div>
-            </div>
-          
-            <!-- Post Media Column -->
-            <div class="col-auto">
-                ${notification.PostPhoto ?
+                    <div class="notification-box border-bottom d-flex align-items-center p-3 bg-white mb-3">
+                        <div class="row w-100">
+                            <!-- Profile Photo Column -->
+                            <div class="col-auto">
+                                <div class="profile-photo-container" style="display: flex; justify-content: center; align-items: center;">
+                                    <img src="${notification.ProfilePhoto}" alt="Profile Photo" style="width: 52px; height: 52px; border-radius: 50%;margin-top: 16px; border: 2px solid #ddd; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
+                                </div>
+                            </div>
+                            
+                            <!-- Notification Content Column -->
+                            <div class="col">
+                                <div class="notification-content">
+                                    <p class="notification-text mb-1">${notification.NotificationText}</p>
+                                    <span class="notification-timestamp text-muted" style="font-size: 14px;">
+                                        ${new Date(notification.NotificationTimestamp).toLocaleString()}
+                                    </span>
+                                    <input type="hidden" class="post-id" value="${notification.PostId}">
+                                </div>
+                            </div>
+                            
+                            <!-- Post Media Column -->
+                            <div class="col-auto">
+                                ${notification.PostPhoto ?
                         (notification.PostPhoto.endsWith('.mp4') ?
-                            `<video class="post-media rounded me-3" width="52" height="52" controls><source src="${notification.PostPhoto}" type="video/mp4">Your browser does not support the video tag.</video>` :
+                            `<video class="post-media rounded me-3" width="52" height="52" controls>
+                                            <source src="${notification.PostPhoto}" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>` :
                             `<img src="${notification.PostPhoto}" alt="Post Photo" class="post-media rounded me-3" width="52" height="52">`) :
-                        `<p class="post-content d-flex align-items-center justify-content-center rounded bg-light text-center me-3" style="width: 52px; height: 52px;margin: 15px;">${notification.PostContent}</p>`}
-            </div>
-        </div>
-    </div>`;
+                        `<p class="post-content d-flex align-items-center justify-content-center rounded bg-light text-center me-3" style="width: 52px; height: 52px; margin: 15px;">
+                                        ${notification.PostContent}
+                                    </p>`
+                    }
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
 
+            // Insert the generated HTML into the DOM
             $('#notification-menu').html(notificationsHtml);
         },
         error: function (xhr, status, error) {
             console.error("Error fetching notifications:", error);
+            // Optionally, you could display a user-friendly message here
+            $('#notification-menu').html('<p>Error fetching notifications. Please try again later.</p>');
         }
     });
 }
+
+
 
 
 $(document).ready(function () {
@@ -1590,11 +1617,8 @@ $(document).ready(function () {
 
 
 function populateUserData(userId) {
-
     var userId = getCookie("userId");
     var authToken = getCookie("authToken");
-
-
 
     $.ajax({
         url: '/api/WebApi/' + userId,
@@ -1605,48 +1629,50 @@ function populateUserData(userId) {
         },
         success: function (response) {
             var userData = response;
+
+            // Clear existing data to avoid duplication
+            $('#interestdata').empty();
+            $('#BioInfo').empty();
+
             sessionStorage.setItem('Username', response.FirstName + " " + response.LastName);
             sessionStorage.setItem('ProfilePhoto', userData.ProfilePhoto);
 
             $('#UserName').html(userData.FirstName + " " + userData.LastName);
-
             $('#City').html('<i class="fa-solid fa-city"></i> ' + userData.City);
             $('#PhoneNumber').html('<i class="fa-solid fa-phone"></i> ' + userData.PhoneNumber);
             $('#Email').html('<i class="fa-solid fa-envelope"></i> ' + userData.Email);
             $('#interestdata').append('<li>' + userData.Interests + ' </li>');
             $('#BioInfo').append('<li>' + userData.Bio + ' </li>');
-
-
-
             var profilePhoto = userData.ProfilePhoto ? userData.ProfilePhoto : '~/images/profile.png';
             $('#ProfilePhoto').attr("src", profilePhoto);
 
-
-
+            // Update form fields with user data
             $('#TxtUserId').val(userData.UserId);
             $('#TxtLastName').val(userData.LastName);
             $('#TxtFirstName').val(userData.FirstName);
             $('#TxtCity').val(userData.City);
             $('#TxtEmail').val(userData.Email);
-            $('#TxtBio').val(userData.bio);
-            $('#TxtPhoneNumber').val(userData.PhoneNumber);
             $('#TxtBio').val(userData.Bio);
+            $('#TxtPhoneNumber').val(userData.PhoneNumber);
             $('#TxtUserPassword').val(userData.UserPassword);
             $('#gender').val(userData.Gender);
             $('#Interests').val(userData.Interests);
-            //show Gender db value
+
+            // Show Gender
             if (userData.Gender === 'Male') {
                 $('#inlineRadio1').prop('checked', true);
             } else if (userData.Gender === 'Female') {
                 $('#inlineRadio2').prop('checked', true);
             }
-            //show interests db value
+
+            // Show Interests
             var interests = userData.Interests.split(', ');
             $("input[name='Interests']").prop('checked', false);
             interests.forEach(function (interest) {
                 $("input[name='Interests'][value='" + interest + "']").prop('checked', true);
             });
-            //show brithdate db value
+
+            // Show Birthdate
             var birthDate = new Date(userData.BirthDate);
             var year = birthDate.getFullYear();
             var month = String(birthDate.getMonth() + 1).padStart(2, '0');
@@ -1814,11 +1840,11 @@ function ShowFriendProfile(id) {
 
 
 
+
 function AddPosts(post) {
     var postHTML = '<li class="post-item" data-post-id="' + post.PostId + '">';
 
     if (post.PostPhoto) {
-        // Check if the PostPhoto field contains a video URL or a photo URL
         if (post.PostPhoto.endsWith('.mp4')) {
             postHTML += '<video width="212" height="212" controls><source src="' + post.PostPhoto + '" type="video/mp4">Your browser does not support the video tag.</video>';
         } else {
@@ -1855,13 +1881,13 @@ function loadUserPostsHomePage() {
         success: function (data) {
             $('#UserPostDiv ul.photos').empty();
             data.reverse().forEach(function (post) {
-                if (post.Status === 1 || post.Status === 2 || post.UserId !== parseInt(userId)) {
-                    return;
-                } else {
+                // Check if the post status is null (or 0) and the post belongs to the current user
+                if ((post.Status === null || post.Status === 0) && post.UserId === parseInt(userId)) {
                     var postElement = AddPosts(post);
                     $('#UserPostDiv ul.photos').append(postElement);
                 }
             });
+
         },
         error: function (error) {
             console.log(error);
@@ -1926,41 +1952,47 @@ function loadarchievepost() {
 
 
 
-function handlearchievepost(postId) {
-    var authToken = getCookie("authToken");
 
+
+function handlearchievepost(postId) {
     console.log("Post ID:", postId);
-    $('#archieveDiv ul.photos').empty();
-    var postElement = $('[data-post-id="' + postId + '"]');
+
+    var postElementInUserDiv = $('#UserPostDiv [data-post-id="' + postId + '"]');
+    var postElementInArchieveDiv = $('#archieveDiv [data-post-id="' + postId + '"]');
+
+    var postElement;
     var apiUrl;
     var successMessage;
-    if (postElement.closest('#UserPostDiv').length > 0) {
+
+    if (postElementInUserDiv.length > 0) {
+        postElement = postElementInUserDiv;
         apiUrl = '/api/WebApi/addarchievepost/' + postId;
-        successMessage = "removearchievepost";
-    } else if (postElement.closest('#archieveDiv').length > 0) {
+        successMessage = "Post moved to archive";
+    } else if (postElementInArchieveDiv.length > 0) {
+        postElement = postElementInArchieveDiv;
         apiUrl = '/api/WebApi/removearchievepost/' + postId;
-        successMessage = "archievepost";
+        successMessage = "Post removed from archive";
     } else {
         console.log("Post element not found in either container");
         return;
     }
+
     $.ajax({
         url: apiUrl,
         method: 'PUT',
         beforeSend: function (xhr) {
+            var authToken = getCookie("authToken");
             xhr.setRequestHeader("Authorization", "Basic " + authToken);
         },
         success: function (data) {
             console.log(successMessage);
-            postElement.hide();
+            postElement.remove(); // Remove the post element from the DOM
         },
         error: function (error) {
-            console.log(error);
+            console.log("Error:", error);
         }
     });
 }
-
-
 
 
 

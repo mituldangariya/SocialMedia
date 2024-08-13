@@ -33,19 +33,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="PostComments">
-      <EntityTypeMapping TypeName="SocialMediaAppModel.PostComment">
-        <MappingFragment StoreEntitySet="PostComments">
-          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-          <ScalarProperty Name="ParentCommentId" ColumnName="ParentCommentId" />
-          <ScalarProperty Name="CommentDate" ColumnName="CommentDate" />
-          <ScalarProperty Name="CommentText" ColumnName="CommentText" />
-          <ScalarProperty Name="UserId" ColumnName="UserId" />
-          <ScalarProperty Name="PostId" ColumnName="PostId" />
-          <ScalarProperty Name="CommentId" ColumnName="CommentId" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="PostLikes">
       <EntityTypeMapping TypeName="SocialMediaAppModel.PostLike">
         <MappingFragment StoreEntitySet="PostLikes">
@@ -199,19 +186,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <FunctionImportMapping FunctionImportName="AddArchivePostSP" FunctionName="SocialMediaAppModel.Store.AddArchivePostSP" />
-    <FunctionImportMapping FunctionImportName="GetUserNotificationsSP" FunctionName="SocialMediaAppModel.Store.GetUserNotificationsSP">
-      <ResultMapping>
-        <ComplexTypeMapping TypeName="SocialMediaAppModel.GetUserNotificationsSP_Result">
-          <ScalarProperty Name="NotificationText" ColumnName="NotificationText" />
-          <ScalarProperty Name="NotificationTimestamp" ColumnName="NotificationTimestamp" />
-          <ScalarProperty Name="PostId" ColumnName="PostId" />
-          <ScalarProperty Name="PostPhoto" ColumnName="PostPhoto" />
-          <ScalarProperty Name="PostContent" ColumnName="PostContent" />
-          <ScalarProperty Name="ProfilePhoto" ColumnName="ProfilePhoto" />
-        </ComplexTypeMapping>
-      </ResultMapping>
-    </FunctionImportMapping>
     <EntitySetMapping Name="PasswordResets">
       <EntityTypeMapping TypeName="SocialMediaAppModel.PasswordReset">
         <MappingFragment StoreEntitySet="PasswordReset">
@@ -234,5 +208,18 @@
       </EntityTypeMapping>
     </EntitySetMapping>
     <FunctionImportMapping FunctionImportName="AddComment" FunctionName="SocialMediaAppModel.Store.AddComment" />
+    <EntitySetMapping Name="PostComments">
+      <EntityTypeMapping TypeName="SocialMediaAppModel.PostComment">
+        <MappingFragment StoreEntitySet="PostComments">
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="ParentCommentId" ColumnName="ParentCommentId" />
+          <ScalarProperty Name="CommentDate" ColumnName="CommentDate" />
+          <ScalarProperty Name="CommentText" ColumnName="CommentText" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="PostId" ColumnName="PostId" />
+          <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping>

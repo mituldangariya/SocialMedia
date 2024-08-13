@@ -8762,9 +8762,9 @@ a.btn.disabled, fieldset:disabled a.btn {
 
 .btn-primary {
     color: #fff;
-    background-color: #007bff;
-    border-color: #007bff;
-    border-radius: 20px
+    background-color: #1f89fb;
+    border-color: #aab3bd;
+    border-radius: 13px
 }
 
     .btn-primary:hover {

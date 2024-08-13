@@ -77,9 +77,9 @@ $('.notification-box > ul li > i.del').on("click", function(){
 
 
 //progress line for page loader
-	$('body').show();
+	/*$('body').show();
 	NProgress.start();
-	setTimeout(function() { NProgress.done(); $('.fade').removeClass('out'); }, 2000);
+	setTimeout(function() { NProgress.done(); $('.fade').removeClass('out'); }, 2000);*/
 	
 //--- bootstrap tooltip	
 	$(function () {

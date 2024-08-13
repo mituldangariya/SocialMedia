@@ -473,8 +473,7 @@ namespace SocialMediaApp.Methods
             friendIds.Add(userId);
 
             var postsInfo = db.UserPosts
-                .Where(post => (post.Status == null || post.Status == "2") &&
-                               friendIds.Contains(post.UserId))
+                 .Where(post => post.Status == null && friendIds.Contains(post.UserId))
                 .OrderBy(post => post.PostDate)
                 .Select(post => new
                 {
@@ -591,48 +590,6 @@ namespace SocialMediaApp.Methods
             return (likeCount, isLiked);
         }
 
-        /*        public void AddComment(PostComment model)
-                {
-                    if (model == null)
-                    {
-                        throw new ArgumentNullException(nameof(model));
-                    }
-
-                    var comment = new PostComment
-                    {
-                        PostId = model.PostId,
-                        UserId = model.UserId,
-                        CommentText = model.CommentText,
-                        CommentDate = DateTime.Now,
-                        ParentCommentId = model.ParentCommentId,
-                        IsDeleted = 0
-                    };
-
-                    db.PostComments.Add(comment);
-                    db.SaveChanges();
-
-                    var user = db.UserDatas.Find(comment.UserId); // Fetch user details
-                    var post = db.UserPosts.Find(comment.PostId);
-                    if (post != null)
-                    {
-                        post.CommentCount++;
-                        db.SaveChanges();
-                    }
-
-                    var response = new
-                    {
-                        CommentId = comment.CommentId,
-                        CommentText = comment.CommentText,
-                        CommentDate = DateTime.Now,
-                        UserName = user.FirstName + " " + user.LastName,
-                        ProfilePhoto = user.ProfilePhoto
-                    };
-
-                    return response;
-
-                }
-        */
-
 
 
 
@@ -641,6 +598,16 @@ namespace SocialMediaApp.Methods
             if (model == null)
             {
                 throw new ArgumentNullException(nameof(model));
+            }
+
+            if (model.ParentCommentId.HasValue)
+            {
+                // Optionally validate that the parent comment exists
+                var parentComment = db.PostComments.Find(model.ParentCommentId.Value);
+                if (parentComment == null)
+                {
+                    throw new Exception("Parent comment not found.");
+                }
             }
 
             var comment = new PostComment
@@ -685,6 +652,7 @@ namespace SocialMediaApp.Methods
 
             return response;
         }
+
 
 
         public object GetLastComment()

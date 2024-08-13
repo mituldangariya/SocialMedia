@@ -113,24 +113,26 @@
 
         .notification-list {
             padding: 20px;
-
             /* Add more styles as needed */
         }
+
         .notifications {
             display: none; /* Initially hide notifications */
             /* Add your styles for the notification panel */
         }
+
         .notification-sidebar {
             position: fixed;
             width: 92%;
             height: 100vh;
             transition: right 0.3s ease;
             right: -50px;
-
         }
+
         .newpst-input textarea:required {
             border: 1px solid #212529;
         }
+
         .invalid {
             border: 1px solid red;
         }
@@ -141,9 +143,9 @@
 
         .notification-link {
             text-decoration: none;
-            color: #000;
             cursor: pointer;
         }
+
         .modal {
             display: none;
             position: fixed;
@@ -173,6 +175,7 @@
                 .modal-content button:hover {
                     background-color: #ddd;
                 }
+
         .error-message {
             color: red;
             font-size: 14px;
@@ -202,12 +205,23 @@
         .fa-solid.fa-heart.liked {
             color: red;
         }
+
         .liked {
             color: red;
         }
+
         #commenterror {
             color: red;
             display: none;
+        }
+        .error {
+            color: red;
+            display: none;
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
         }
 
     </style>
@@ -219,6 +233,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/JavaScript/custom.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="~/JavaScript/HomePage.js"></script>
@@ -239,8 +254,9 @@
     <div class="theme-layout">
         <div class="topbar stick">
             <div class="logo">
-                <a title="" href="/Login/HomePage"><img src="~/images/twitter.jpg" alt="" height="95" width="108"></a>
-
+                <a title="" href="/Login/HomePage">
+                <img src="~/images/social-media.png" alt="" height="65" width="58"></a>
+              
             </div>
             <div class="top-area">
                 <div class="user-img">
@@ -264,7 +280,7 @@
                                     <aside class="sidebar static">
                                         <div class="widget">
                                             <h4 class="widget-title">
-                                                <img src="~/images/twitter.jpg" width="55px" />
+                                                <img src="~/images/social-media.png" width="30px" />
                                             </h4>
                                             <ul class="naves">
                                                 <li>

@@ -49,19 +49,36 @@ body {
 }
 
 /* Style for the delete button */
+/*.delete-btn {
+    display: none;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;*/
+    /* margin-top: 5px;*/
+    /*margin-top: -8%;
+    cursor: pointer;
+    float: right;
+    border-radius: 3px;
+    font-size: 12px;
+}*/
+
 .delete-btn {
     display: none;
     background-color: #f44336;
     color: white;
     border: none;
     padding: 5px 10px;
-    /* margin-top: 5px;*/
-    margin-top: -8%;
+    /* margin-top: 5px; */
+    margin-top: -14%;
+    margin-right: 29px;
     cursor: pointer;
     float: right;
     border-radius: 3px;
     font-size: 12px;
+    margin-left: 100px;
 }
+
 
 li.__web-inspector-hide-shortcut__ {
     backface-visibility: hidden;
@@ -485,48 +502,7 @@ button.btn.btn-outline-primary.confirm-friend-btn, button.btn.btn-outline-danger
 .comment:hover .three-dot-img{
     display: flex;
 }
-/*
 
-[Master Stylesheet]
-
-Project Name: winku (HMTL Template)
-Version:    1.1
-Last change:  4/september/18
-
-====INDEX=====
-
-01- general styling
-02- sticky header 
-03- login/landing page
-04- home page topbar
-05- timeline area
-06- messages dropdowns
-07- sidebar widgets
-08- post sharing area
-09- social icons
-10- comment area 
-11- search area
-12- footer
-13- widgets
-14- side panel
-15- short profile widget
-16- svg button styling
-17- 404 error page 
-18- contact page
-19- knowledge base page 
-20- faq's page
-21- photos page
-22- favourit page 
-23- edit basic info page
-24- notification page
-25- message page
-26- loadmore 
-27- responsive header
-28- main menu
-39- blog pages
-40- blog detail
-
-*/
 
 /*login error*/
 #loginError{
@@ -1231,7 +1207,7 @@ header.sticky {
     vertical-align: inherit;
 }
 
-.form-search {
+/*.form-search {
     position: absolute;
     right: -15px;
     top: 42px;
@@ -1239,7 +1215,7 @@ header.sticky {
     opacity: 0;
     visibility: hidden;
 }
-
+*/
 .searched.active .form-search {
     opacity: 1;
     visibility: visible;
@@ -1740,7 +1716,7 @@ header.sticky {
         text-overflow: ellipsis;
         vertical-align: middle;
         white-space: nowrap;
-        font-family: fangsong;
+        /*font-family: fangsong;*/
     }
 
 .sidebar .widget li > a {
@@ -1928,15 +1904,9 @@ form button {
 
 }
 
-/*.friend-name > span {
-    color: #999;
-    float: left;
-    font-size: 12px;
-    text-transform: capitalize;
-    width: 100%;
-}*/
 
-    .friend-name > span {
+
+/*    .friend-name > span {
         color: #999;
         float: left;
         padding: 10px;
@@ -1945,6 +1915,18 @@ form button {
         width: 100%;
         margin: -7px;
     }
+*/
+
+.friend-name > span {
+    color: #999;
+    float: left;
+    padding: 4px;
+    font-size: 12px;
+    text-transform: lowercase;
+    width: 100%;
+    margin: -10px;
+    margin-left: 5px;
+}
 
 .post-meta {
     float: left;
@@ -4273,7 +4255,7 @@ a.add-butn.more-action {
     color: #999;
     font-size: 14px;
     margin-bottom: 20px;
-    text-transform: capitalize;
+   
 }
 
 .basics > li i,

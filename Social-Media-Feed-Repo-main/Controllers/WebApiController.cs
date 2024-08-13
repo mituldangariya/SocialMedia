@@ -37,6 +37,7 @@ namespace SocialMediaApp.Controllers
         /// <param name="currentUserId">The ID of the current user.</param>
         /// <returns>A list of users not friends with the current user, with details on friendship status and request status.</returns>
         /// 
+       
         [BasicAuthentication]
         [HttpGet]
         [Route("GetUserData/{currentUserId}")]
@@ -472,7 +473,7 @@ namespace SocialMediaApp.Controllers
             {
                 try
                 {
-                   var response= methods.AddComment(model);
+                    var response = methods.AddComment(model);
                     return Ok(response);
                 }
                 catch (Exception ex)
@@ -482,6 +483,9 @@ namespace SocialMediaApp.Controllers
             }
             return BadRequest(ModelState);
         }
+
+
+
 
 
         /// <summary>

@@ -13,9 +13,7 @@
 
     loadUserPosts();
     populateUserData(userId);
-    FriendList();
-
-
+    FriendList(userId);
 
     $("#home-element").click(function () {
         $('.loadMore').show();
@@ -28,53 +26,39 @@
         window.location.href = "/Login/Login";
     });
 
-
     $('#timeline-link').click(function () {
         $('#timeline-div').show();
         $('#acceptedFollowerDiv').hide();
         $('#postDiv').hide();
-
-       
         $('#timeline-link').addClass('active');
         $('#followers-Link').removeClass('active');
         $('#post-link').removeClass('active');
-       
     });
 
-
     $('#followers-Link').click(function () {
-        fetchConfirmFriend();
+        FriendList(userId);
         $('#timeline-div').hide();
         $('#acceptedFollowerDiv').show();
         $('#postDiv').hide();
-       
-
         $('#timeline-link').removeClass('active');
         $('#followers-Link').addClass('active');
         $('#post-link').removeClass('active');
-       
-
     });
 
-
-
     $('#post-link').click(function () {
-     
         $('#timeline-div').hide();
         $('#acceptedFollowerDiv').hide();
         $('#postDiv').show();
-       
-
         $('#timeline-link').removeClass('active');
         $('#followers-Link').removeClass('active');
         $('#post-link').addClass('active');
-       
     });
 
-
-
-
-   
+    // Event delegation for dynamically added profile photos
+    $(document).on('click', '.profile-photo', function () {
+        const friendId = $(this).data('friend-id');
+        ShowFriendProfile(friendId);
+    });
 });
 
 function getCookie(cookieName) {
@@ -93,7 +77,6 @@ function getCookie(cookieName) {
     return "";
 }
 
-
 function populateUserData(userId) {
     var authToken = getCookie("authToken");
 
@@ -108,18 +91,30 @@ function populateUserData(userId) {
             var userData = response;
             sessionStorage.setItem('Username', response.FirstName + " " + response.LastName);
             sessionStorage.setItem('ProfilePhoto', userData.ProfilePhoto);
-           
-            $('#UserName').html(userData.FirstName + " " + userData.LastName);
 
+            $('#UserName').html(userData.FirstName + " " + userData.LastName);
             $('#City').html('<i class="fa-solid fa-city"></i> ' + userData.City);
-            $('#PhoneNumber').html('<i class="fa-solid fa-phone"></i> ' + userData.PhoneNumber);
             $('#Email').html('<i class="fa-solid fa-envelope"></i> ' + userData.Email);
-            $('#interestdata').append('<li>' + userData.Interests + ' </li>');
-            $('#BioInfo').append('<li>' + userData.Bio + ' </li>');
+
+            $('#interestdata').empty();
+            $('#BioInfo').empty();
+
+            if (userData.Interests) {
+                var uniqueInterests = Array.from(new Set(userData.Interests.split(','))).map(interest => interest.trim());
+                uniqueInterests.forEach(interest => {
+                    $('#interestdata').append('<li>' + interest + '</li>');
+                });
+            }
+
+            if (userData.Bio) {
+                var uniqueBio = Array.from(new Set(userData.Bio.split(','))).map(bio => bio.trim());
+                uniqueBio.forEach(bioItem => {
+                    $('#BioInfo').append('<li>' + bioItem + '</li>');
+                });
+            }
 
             var profilePhoto = userData.ProfilePhoto ? userData.ProfilePhoto : '~/images/profile.png';
             $('#ProfilePhoto').attr("src", profilePhoto);
-
         },
         error: function (xhr, status, error) {
             console.error("Failed to fetch user data", error);
@@ -127,13 +122,10 @@ function populateUserData(userId) {
     });
 }
 
-
-
 function AddPosts(post) {
     var postHTML = '<li class="post-item" data-post-id="' + post.PostId + '">';
 
     if (post.PostPhoto) {
-        // Check if the PostPhoto field contains a video URL or a photo URL
         if (post.PostPhoto.endsWith('.mp4')) {
             postHTML += '<video width="212" height="212" controls><source src="' + post.PostPhoto + '" type="video/mp4">Your browser does not support the video tag.</video>';
         } else {
@@ -152,12 +144,10 @@ function AddPosts(post) {
     return postElement;
 }
 
-
 function loadUserPosts() {
     var userId = sessionStorage.getItem('UserProfileId');
     var authToken = getCookie("authToken");
 
-   // var userId = getCookie("userId");
     $.ajax({
         url: '/api/WebApi/UserPosts1/' + userId,
         method: 'GET',
@@ -183,9 +173,7 @@ function loadUserPosts() {
 
 
 
-
-function FriendList() {
-    const userId = sessionStorage.getItem('UserProfileId');
+function FriendList(userId) {
     var authToken = getCookie("authToken");
 
     $.ajax({
@@ -195,18 +183,58 @@ function FriendList() {
             xhr.setRequestHeader("Authorization", "Basic " + authToken);
         },
         success: function (data) {
-            var peopleList = $('.friendz-list');
+            console.log('Friend list data:', data); // Debugging statement
+            var peopleList = $('#acceptUserList'); // Make sure this is the correct selector
             peopleList.empty();
-            data.forEach(friend => {
-                if (friend.RequestStatus === 'accepted') {
-                    friendcount++;
-                    nearbyContct.append(GetFriend(friend));
-                }
-            });
-            $('.friendz-list').click(ShowFriendProfile);
+
+            if (Array.isArray(data)) {
+                data.forEach(friend => {
+                    if (friend.RequestStatus === 'accepted' && friend.UserId !== userId) {
+                        peopleList.append(GetFriend(friend));
+                    }
+                });
+            } else {
+                console.error('Unexpected data format:', data); // Debugging statement
+            }
         },
         error: function (error) {
             console.log('Error fetching friend list:', error);
+        }
+    });
+}
+
+function GetFriend(friend) {
+    return `
+        <div class="friend-item" style="display: flex; align-items: center; gap: 10px; padding: 5px; border-bottom: 1px solid #ddd;">
+            <figure style="margin: 0;">
+                <img src="${friend.ProfilePhoto}" class="profile-photo" data-friend-id="${friend.UserId}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer;" alt="Profile Photo" onclick="ShowFriendProfile(${friend.UserId})" />
+            </figure>
+            <span onclick="ShowFriendProfile(${friend.UserId})" style="cursor: pointer;">${friend.FirstName + ' ' + friend.LastName}</span>
+        </div>
+    `;
+}
+
+function ShowFriendProfile(id) {
+    event.preventDefault();
+
+    var userId = id;
+    var authToken = getCookie("authToken");
+
+    $.ajax({
+        url: '/api/WebApi/' + userId,
+        method: "GET",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
+        success: function (response) {
+
+            sessionStorage.setItem('UserProfileId', response.UserId);
+            loadUserPosts();
+            populateUserData(response.UserId);
+            FriendList(response.UserId);
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching user data:", error);
         }
     });
 }
