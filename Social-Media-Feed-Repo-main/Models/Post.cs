@@ -17,6 +17,12 @@ namespace SocialMediaApp.Models
         public Nullable<int> ShareCount { get; set; }
         public string Status { get; set; }
 
+        // Add these properties
+        public string ProfilePhoto { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+       // Add this property
+
 
         public virtual User UserData { get; set; }
 

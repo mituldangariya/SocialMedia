@@ -389,7 +389,7 @@ function AddPost(post) {
     });
 
 
-    
+
 
     var postHTML = `
     <div class="central-meta item">
@@ -429,7 +429,7 @@ function AddPost(post) {
                 </div>
                 <div class="comment-area" style="display: none;">
                     <div class="post-comt-box">
-                        <textarea id="commentTextarea" placeholder="Post your comment" maxlength="60" onchange="commentlenght()"></textarea>
+                        <textarea id="commentTextarea" placeholder="Post your comment" maxlength="80" onchange="commentlenght()"></textarea>
                       <button class="btn-primary" id="Postbtn" style="font-size: 17px;">Comment</button>
 
                         <span id="commenterror" hidden>Please enter a comment.</span>
@@ -444,7 +444,34 @@ function AddPost(post) {
     return postHTML;
 }
 
+function getRelativeTime(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
 
+    if (days > 0) {
+        return `${days} day${days > 1 ? 's' : ''} ago`;
+    } else if (hours > 0) {
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else if (minutes > 0) {
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else {
+        return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
+    }
+}
+
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 document.addEventListener('click', function (event) {
     if (event.target && event.target.id === 'Postbtn') {
@@ -1269,7 +1296,7 @@ function deleteComment(commentId, $commentElement, isReply = false) {
 
 
 
-function FriendList() {
+/*function FriendList() {
     var userId = getCookie("userId");
     var authToken = getCookie("authToken");
 
@@ -1316,6 +1343,88 @@ function FriendList() {
                                 : user.RequestStatus === "accepted"
                                     ? `<button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}">Remove</button>`
                                     : `<button class="btn btn-outline-secondary add-friend-btn" data-user-id="${user.UserId}">Add Friend</button>`
+                        }
+                            </div>
+                        </div>
+                    </li>
+                    `;
+                    peopleList.append(userHTML);
+                });
+
+                // Event bindings for dynamic content
+                $('.add-friend-btn').on('click', function () {
+                    var userId = $(this).data('user-id');
+                    addFriend(userId);
+                });
+
+                $('.remove-friend-btn').on('click', function () {
+                    var userId = $(this).data('user-id');
+                    removeFriend(userId);
+                });
+
+                $('.confirm-friend-btn').on('click', function () {
+                    var userId = $(this).data('user-id');
+                    confirmFriendRequest(userId);
+                });
+            }
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
+*/
+
+function FriendList() {
+    var userId = getCookie("userId");
+    var authToken = getCookie("authToken");
+
+    $.ajax({
+        url: '/api/WebApi/GetUserData/' + userId,
+        method: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
+        success: function (data) {
+            var peopleList = $('.friendz-list');
+            peopleList.empty();
+
+            // Filter out accepted requests
+            var filteredData = data.filter(function (user) {
+                return user.RequestStatus !== "accepted";
+            });
+
+            if (filteredData.length === 0) {
+                peopleList.append('<li>No users found.</li>');
+            } else {
+                filteredData.sort(function (a, b) {
+                    if (a.RequestStatus === 'pending' && b.RequestStatus !== 'pending') {
+                        return -1;
+                    } else if (a.RequestStatus !== 'pending' && b.RequestStatus === 'pending') {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+
+                filteredData.forEach(function (user) {
+                    var userHTML = `
+                    <li>
+                        <div style="display: flex; justify-content: space-between;">
+                            <figure>
+                                <img src="${user.ProfilePhoto}" onclick="ShowFriendProfile(${user.UserId})" class="media-object pull-left" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer;" alt="Profile Photo">
+                            </figure>
+                            <div style="display: inline; cursor: pointer;" onclick="ShowFriendProfile(${user.UserId})">
+                                <i>${user.FirstName} ${user.LastName}</i>
+                                <i hidden>${user.UserId}</i>
+                            </div>
+                            <div style="display: inline;">
+                                ${user.IsFriend == 1 && user.FollowerId == userId
+                            ? `<button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}">Remove</button>`
+                            : user.RequestStatus === "pending"
+                                ? `<button class="btn btn-outline-primary confirm-friend-btn" data-user-id="${user.UserId}">Confirm</button>
+                                           <button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}">Remove</button>`
+                                : `<button class="btn btn-outline-secondary add-friend-btn" data-user-id="${user.UserId}">Add Friend</button>`
                         }
                             </div>
                         </div>

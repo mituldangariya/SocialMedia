@@ -347,6 +347,7 @@ namespace SocialMediaApp.Controllers
         [BasicAuthentication]
         [HttpGet]
         [Route("GetLastPost")]
+
         public IHttpActionResult GetLastPost()
         {
             using (SocialMediaAppEntities post = new SocialMediaAppEntities())
@@ -359,7 +360,7 @@ namespace SocialMediaApp.Controllers
             }
         }
 
-
+        
 
         /// <summary>
         /// Retrieves posts from the user and their friends based on the user's ID.

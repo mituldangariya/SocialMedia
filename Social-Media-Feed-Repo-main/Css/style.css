@@ -22,7 +22,9 @@ body {
     content: "\f141";
     /*margin: 567px;*/
 }
-
+img.post-media.rounded.me-3 {
+    margin: 20px;
+}
 .custom-style {
     background-color: #dc3545; /* Bootstrap danger color */
     color: #fff; /* White text color */

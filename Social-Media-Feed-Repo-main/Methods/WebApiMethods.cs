@@ -13,7 +13,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using System.Data.Entity; // For Include
-       
+
 using System.Net.Mail;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -25,7 +25,7 @@ namespace SocialMediaApp.Methods
     public class WebApiMethods : ApiController
     {
         SocialMediaAppEntities db = new SocialMediaAppEntities();
-      
+
 
         public object GetUserData(int currentUserId)
         {
@@ -137,7 +137,7 @@ namespace SocialMediaApp.Methods
              return null;
          }*/
 
-      
+
         public static User GetUser(string email, string password)
         {
             // Ensure the password is hashed and stored securely in your database
@@ -893,6 +893,56 @@ namespace SocialMediaApp.Methods
             }
         }
 
+
+
+/*        public IEnumerable<Post> GetLastPost()
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
+
+            var posts = new List<Post>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand("GetLastPost", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    try
+                    {
+                        connection.Open();
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var post = new Post
+                                {
+                                    PostId = reader.GetInt32(reader.GetOrdinal("PostId")),
+                                    UserId = reader.IsDBNull(reader.GetOrdinal("UserId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("UserId")),
+                                    PostContent = reader.GetString(reader.GetOrdinal("PostContent")),
+                                    PostPhoto = reader.GetString(reader.GetOrdinal("PostPhoto")),
+                                    PostDate = reader.IsDBNull(reader.GetOrdinal("PostDate")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("PostDate")),
+                                    LikeCount = reader.IsDBNull(reader.GetOrdinal("LikeCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("LikeCount")),
+                                    ShareCount = reader.IsDBNull(reader.GetOrdinal("ShareCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("ShareCount")),
+                                    CommentCount = reader.IsDBNull(reader.GetOrdinal("CommentCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("CommentCount")),
+                                    ProfilePhoto = reader.GetString(reader.GetOrdinal("ProfilePhoto")),
+                                    LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                    FirstName = reader.GetString(reader.GetOrdinal("FirstName"))
+                                };
+                                posts.Add(post);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle exceptions as needed
+                        throw;
+                    }
+                }
+            }
+
+            return posts;
+        }
+*/
 
 
         public List<object> GetUserNotifications(int userId)

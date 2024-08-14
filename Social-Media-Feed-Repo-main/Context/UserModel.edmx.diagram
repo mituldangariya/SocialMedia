@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="df2f396417b84fa7ba3c475db3514be9" Name="Diagram1" ZoomLevel="86">
+      <Diagram DiagramId="df2f396417b84fa7ba3c475db3514be9" Name="Diagram1" ZoomLevel="71">
         <EntityTypeShape EntityType="SocialMediaAppModel.UserData" Width="1.5" PointX="0.75" PointY="2.25" IsExpanded="true" />
         <EntityTypeShape EntityType="SocialMediaAppModel.UserPost" Width="1.5" PointX="3.375" PointY="3.375" IsExpanded="true" />
         <AssociationConnector Association="SocialMediaAppModel.FK__UserPosts__UserI__5DCAEF64" ManuallyRouted="false" />
