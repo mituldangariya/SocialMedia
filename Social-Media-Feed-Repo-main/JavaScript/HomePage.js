@@ -1664,7 +1664,6 @@ function displayNotifications() {
 
 
 
-
 $(document).ready(function () {
     // Click event for notification link
     $('#notificationLink').click(function (event) {

@@ -42,7 +42,9 @@ img.post-media.rounded.me-3 {
         background-color: #c82333; /* Darker shade of red on hover */
     }
 
-
+i.fas.fa-ellipsis-h.more-icon {
+    margin: -7px;
+}
 
 .more-icon {
     color: #333;

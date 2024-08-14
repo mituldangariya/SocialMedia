@@ -895,54 +895,54 @@ namespace SocialMediaApp.Methods
 
 
 
-/*        public IEnumerable<Post> GetLastPost()
-        {
-            string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-            var posts = new List<Post>();
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                using (SqlCommand command = new SqlCommand("GetLastPost", connection))
+        /*        public IEnumerable<Post> GetLastPost()
                 {
-                    command.CommandType = CommandType.StoredProcedure;
+                    string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
 
-                    try
+                    var posts = new List<Post>();
+
+                    using (SqlConnection connection = new SqlConnection(connectionString))
                     {
-                        connection.Open();
-                        using (SqlDataReader reader = command.ExecuteReader())
+                        using (SqlCommand command = new SqlCommand("GetLastPost", connection))
                         {
-                            while (reader.Read())
+                            command.CommandType = CommandType.StoredProcedure;
+
+                            try
                             {
-                                var post = new Post
+                                connection.Open();
+                                using (SqlDataReader reader = command.ExecuteReader())
                                 {
-                                    PostId = reader.GetInt32(reader.GetOrdinal("PostId")),
-                                    UserId = reader.IsDBNull(reader.GetOrdinal("UserId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("UserId")),
-                                    PostContent = reader.GetString(reader.GetOrdinal("PostContent")),
-                                    PostPhoto = reader.GetString(reader.GetOrdinal("PostPhoto")),
-                                    PostDate = reader.IsDBNull(reader.GetOrdinal("PostDate")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("PostDate")),
-                                    LikeCount = reader.IsDBNull(reader.GetOrdinal("LikeCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("LikeCount")),
-                                    ShareCount = reader.IsDBNull(reader.GetOrdinal("ShareCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("ShareCount")),
-                                    CommentCount = reader.IsDBNull(reader.GetOrdinal("CommentCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("CommentCount")),
-                                    ProfilePhoto = reader.GetString(reader.GetOrdinal("ProfilePhoto")),
-                                    LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                                    FirstName = reader.GetString(reader.GetOrdinal("FirstName"))
-                                };
-                                posts.Add(post);
+                                    while (reader.Read())
+                                    {
+                                        var post = new Post
+                                        {
+                                            PostId = reader.GetInt32(reader.GetOrdinal("PostId")),
+                                            UserId = reader.IsDBNull(reader.GetOrdinal("UserId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("UserId")),
+                                            PostContent = reader.GetString(reader.GetOrdinal("PostContent")),
+                                            PostPhoto = reader.GetString(reader.GetOrdinal("PostPhoto")),
+                                            PostDate = reader.IsDBNull(reader.GetOrdinal("PostDate")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("PostDate")),
+                                            LikeCount = reader.IsDBNull(reader.GetOrdinal("LikeCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("LikeCount")),
+                                            ShareCount = reader.IsDBNull(reader.GetOrdinal("ShareCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("ShareCount")),
+                                            CommentCount = reader.IsDBNull(reader.GetOrdinal("CommentCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("CommentCount")),
+                                            ProfilePhoto = reader.GetString(reader.GetOrdinal("ProfilePhoto")),
+                                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                            FirstName = reader.GetString(reader.GetOrdinal("FirstName"))
+                                        };
+                                        posts.Add(post);
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // Handle exceptions as needed
+                                throw;
                             }
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        // Handle exceptions as needed
-                        throw;
-                    }
-                }
-            }
 
-            return posts;
-        }
-*/
+                    return posts;
+                }
+        */
 
 
         public List<object> GetUserNotifications(int userId)
