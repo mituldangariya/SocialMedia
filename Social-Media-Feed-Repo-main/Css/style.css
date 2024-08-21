@@ -67,6 +67,12 @@ i.fas.fa-ellipsis-h.more-icon {
     font-size: 12px;
 }*/
 
+
+
+
+
+
+
 .delete-btn {
     display: none;
     background-color: #f44336;
@@ -556,6 +562,7 @@ p {
     font-size: 13px;
     line-height: 26px;
     color: #8c8b8b;
+   /* margin-left: 12px;*/
 }
 
 a,
@@ -1312,14 +1319,24 @@ header.sticky {
 
 
 
-.timeline-info > ul {
+/*.timeline-info > ul {
     display: inline-block;
     list-style: outside none none;
     margin-bottom: 0;
     padding-left: 20px;
     vertical-align: middle;
     width: 100%;
-}
+}*/
+
+    .timeline-info > ul {
+        display: inline-block;
+        list-style: outside none none;
+        margin-bottom: -15px;
+        padding-left: 32px;
+        vertical-align: middle;
+        width: 100%;
+        margin-top: 15px;
+    }
 
 .timeline-info > ul li {
     display: inline-block;
@@ -1327,16 +1344,19 @@ header.sticky {
     position: relative;
 }
 
-.timeline-info > ul li a {
-    display: inline-block;
-    font-size: 14px;
-    margin-right: 30px;
-    position: relative;
-    line-height: initial;
-    text-transform: capitalize;
-    padding-bottom: 3px;
-    font-weight: 400;
-}
+    .timeline-info > ul li a {
+        display: inline-block;
+        font-size: 14px;
+        margin-right: 30px;
+        position: relative;
+        line-height: initial;
+        text-transform: capitalize;
+        padding-bottom: 3px;
+        font-weight: 400;
+        color: #3a3a3a; /* Default text color */
+        cursor: pointer; /* Show pointer cursor on hover */
+    }
+
 
 .timeline-info > ul li a:last-child {
     margin-right: 0;
@@ -1360,33 +1380,40 @@ header.sticky {
         vertical-align: super;
     }
 
-.timeline-info > ul li a::before {
-    bottom: 0;
-    content: "";
-    height: 1px;
-    left: 0;
-    opacity: 0;
-    position: absolute;
-    transition: all 0.2s linear 0s;
-    visibility: hidden;
-    width: 0;
-}
+    .timeline-info > ul li a::before {
+        bottom: 0;
+        content: "";
+        height: 2px; /* Increased thickness for better visibility */
+        left: 0;
+        opacity: 0;
+        position: absolute;
+        transition: all 0.2s linear 0s;
+        visibility: hidden;
+        width: 0;
+        background-color: #0d0d0d; /* Underline color */
+    }
 
-.timeline-info > ul li a::after {
-    border-bottom: 8px solid;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    bottom: -12px;
-    content: "";
-    left: 50%;
-    position: absolute;
-    transform: translate(-50%);
-    display: none;
-}
 
-.timeline-info > ul li a.active::after {
+    .timeline-info > ul li a::after {
+        border-bottom: 8px solid;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        bottom: -12px;
+        content: "";
+        left: 50%;
+        position: absolute;
+        transform: translate(-50%);
+        display: none;
+    }
+
+/*.timeline-info > ul li a.active::after {
     display: block;
-}
+}*/
+    .timeline-info > ul li a.active, /* Add bold font weight for active link */
+    .timeline-info > ul li a:hover {
+        font-weight: bold;
+        color: #0d0d0d; /* Darker color when active or hovered */
+    }
 
 .timeline-info > ul li a:hover::before {
     opacity: 1;
@@ -3869,11 +3896,12 @@ nav.breadcrumb {
     padding-left: 0;
 }
 
-.photos > li {
+   .photos > li {
     display: inline-block;
-    min-width: 32.3%;
-    width: 32.3%;
-    margin: 0 1.3px;
+    min-width: 29%;
+    width: 29%;
+    /* margin: 0 1.3px; */
+    margin-left: 20px;
 }
 
 .photos > li:hover a img {

@@ -18,7 +18,7 @@
 
     <style>
 
-
+       
 
         .form-group {
             margin-bottom: 15px;
@@ -37,6 +37,7 @@
         .name-input {
             display: block;
             margin-top: 5px;
+
         }
     </style>
     <link rel="icon" href="images/fav.png" type="image/png" sizes="16x16">
@@ -51,6 +52,7 @@
     <script src="~/Scripts/jquery.validate.js"></script>
 
     <script src="~/JavaScript/HomePage.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 
@@ -62,25 +64,7 @@
 <body>
     <div class="theme-layout">
 
-        <div class="responsive-header">
-            <div class="mh-head first Sticky">
-                <span class="mh-btns-left">
-                    <a class="" href="#menu"><i class="fa fa-align-justify"></i></a>
-                </span>
-                <span class="mh-text">
-                    <a href="newsfeed.html" title=""><img src="~/images/logo2.png" alt=""></a>
-                </span>
-                <span class="mh-btns-right">
-                    <a class="fa fa-sliders" href="#shoppingbag"></a>
-                </span>
-            </div>
-            <div class="mh-head second">
-                <form class="mh-form" id="mh-form">
-                    <input placeholder="search" />
-                    <a href="#/" class="fa fa-search"></a>
-                </form>
-            </div>
-        </div><!-- responsive header -->
+        
 
         <div class="topbar stick">
             <div class="logo">
@@ -117,8 +101,23 @@
                                     <img src="" id="ProfilePhoto" alt="">
                                     <form id="uploadForm" enctype="multipart/form-data">
                                         <label for="fileInput" class="fileContainer">
-                                            ChangePhoto
-                                            <input type="file" id="fileInput" onchange="uploadProfilePhoto()" name="fileInput" accept="image/*" />
+
+                                            <div style="cursor: pointer;">
+
+                                               @* <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="black" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user" style="border-radius: 50%; cursor: pointer;">
+                                                    <path d="M20 21V20a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v1"></path>
+                                                    <circle cx="12" cy="7" r="4"></circle>
+                                                </svg>*@
+                                                
+
+                                               
+                                                <img src="~/images/edit-profile-2355451-1983078.svg"style="width: 50px; height: 50px;" />
+
+                                            </div>
+
+
+
+                                            <input type="file" id="fileInput" onchange="uploadProfilePhoto()" name="fileInput" accept="image/*" style="cursor: pointer;" />
                                         </label>
                                        
                                     </form>
@@ -139,7 +138,7 @@
                                         <a class="" id="editinfoLink" title="" data-ripple="">Edit Info</a>
                                         <a class="" id="followersLink" title="" data-ripple="">Friends</a>
                                         <a class="" id="postLink" title="" data-ripple="">Post</a>
-                                        <a class="" id="archieveLink" title="" data-ripple="">Archieve Post</a>
+                                        <a class="" id="archieveLink" title="" data-ripple="">Archived  Post</a>
 
 
                                      </li>
@@ -252,7 +251,7 @@
                                                         <span class="error-message" id="emailError" style="color: red; display: none;">Valid Email is required.</span>
                                                     </div>
 
-                                                    <!-- Gender -->
+                                                   
                                                     <label class="form-group">Gender: </label>
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="gender" id="inlineRadio1" value="Male" required>
@@ -264,7 +263,7 @@
                                                     </div>
                                                     <br />
 
-                                                    <!-- Interests -->
+                                                    
                                                     <label class="form-group">Interests: </label>
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="checkbox" name="Interests" value="Dance">
@@ -308,6 +307,9 @@
                                                 </form>
                                             </div>
                                         </div>
+
+
+
 
                                         <script>
 
@@ -354,6 +356,8 @@
                                             </ul>
                                         </div>
 
+
+
                                         <div id="postDiv" style="display: none;">
                                             <div class="Post-info" id="UserPostDiv">
                                                 <h5 class="f-title"><i class="fa-solid fa-image"></i>Post</h5>
@@ -367,7 +371,7 @@
 
                                         <div id="archieveDiv" style="display: none;">
                                             <div class="archieve-info" id="archieveDiv">
-                                                <h5 class="f-title"><i class="fa-solid fa-box-archive"></i>archieve Photos</h5>
+                                                <h5 class="f-title"><i class="fa-solid fa-box-archive"></i>Archived Photos</h5>
                                                 <ul class="photos">
                                                     <!--load dynamic post-->
                                                 </ul>

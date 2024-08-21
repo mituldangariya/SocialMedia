@@ -188,7 +188,7 @@ function setCookie(name, value, days) {
 }
 
 
-$(document).ready(function () {
+/*$(document).ready(function () {
     // Function to validate email
     function validateEmail(email) {
         const re = /^[^@]+@[^@]+\.[^@]+$/;
@@ -276,7 +276,106 @@ $(document).ready(function () {
         }
     });
 });
+*/
 
+
+$(document).ready(function () {
+    // Function to validate email format
+    function validateEmail(email) {
+        const re = /^[^@]+@[^@]+\.[^@]+$/;
+        return re.test(email);
+    }
+
+    // Function to validate the entire form
+    function validateForm() {
+        let isValid = true;
+
+        // Validate First Name
+        const firstName = $('#TxtFirstName').val().trim();
+        if (!firstName) {
+            $('#firstNameError').text("Please Enter Your First Name.").show();
+            isValid = false;
+        } else if (!/^[a-zA-Z]+$/.test(firstName)) {
+            $('#firstNameError').text("First Name should only contain alphabetic characters.").show();
+            isValid = false;
+        } else {
+            $('#firstNameError').hide();
+        }
+
+        // Validate Last Name
+        const lastName = $('#TxtLastName').val().trim();
+        if (!lastName) {
+            $('#lastNameError').text("Please Enter Your Last Name.").show();
+            isValid = false;
+        } else if (!/^[a-zA-Z]+$/.test(lastName)) {
+            $('#lastNameError').text("Last Name should only contain alphabetic characters.").show();
+            isValid = false;
+        } else {
+            $('#lastNameError').hide();
+        }
+
+        // Validate City
+        const city = $('#TxtCity').val().trim();
+        if (!city) {
+            $('#cityError').text("City is required.").show();
+            isValid = false;
+        } else {
+            $('#cityError').hide();
+        }
+
+        // Validate Email
+        const email = $('#TxtEmail').val().trim();
+        if (!email) {
+            $('#emailError').text("Please Enter A Valid Email.").show();
+            isValid = false;
+        } else if (!validateEmail(email)) {
+            $('#emailError').text("Valid Email is required.").show();
+            isValid = false;
+        } else {
+            $('#emailError').hide();
+        }
+
+        // Validate Phone Number
+        const phoneNumber = $('#TxtPhoneNumber').val().trim();
+        if (!phoneNumber) {
+            $('#phoneError').text("Phone Number is required.").show();
+            isValid = false;
+        } else if (!/^[0-9]{10,12}$/.test(phoneNumber)) {
+            $('#phoneError').text("Phone Number should be 10 to 12 digits long.").show();
+            isValid = false;
+        } else {
+            $('#phoneError').hide();
+        }
+
+       
+
+        return isValid;
+    }
+
+    // Update button click event handler
+    $('#updateButton').click(function () {
+        if (validateForm()) {
+            // Proceed with form submission
+            const formData = {
+                userid: $('#TxtUserId').val(),
+                firstName: $('#TxtFirstName').val(),
+                lastName: $('#TxtLastName').val(),
+                city: $('#TxtCity').val(),
+                email: $('#TxtEmail').val(),
+                phoneNumber: $('#TxtPhoneNumber').val(),
+                birthDate: $('#BirthDate').val(),
+                gender: $('input[name="gender"]:checked').val(),
+                interests: $('input[name="Interests"]:checked').map(function () { return this.value; }).get(),
+                bio: $('#TxtBio').val()
+            };
+
+            console.log('Form Data:', formData); // Log the form data
+
+            // Call the function to update the user profile
+            // Add your AJAX code here to send the data to the server
+        }
+    });
+});
 
 
 function toggleComments(element, postId) {
@@ -321,10 +420,12 @@ function AddPost(post) {
                 </svg>
             </div>
         </div>`;
-        } else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+        } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension)) {
             mediaHTML = `<img src="${post.PostPhoto}" alt="Post Media" height="208" width="200">`;
         }
+
     }
+
 
     // Add styles to hide video controls
     const style = document.createElement('style');
@@ -878,9 +979,10 @@ function ShowReplies(replies) {
         replies.forEach(function (reply) {
             replyHTML += `
             <li class="reply-item">
-                <div class="comet-avatar">
-                    <img src="${reply.ProfilePhoto}" alt="" height="45" width="45">
-                </div>
+              <div class="comet-avatar">
+               <img src="${reply.ProfilePhoto}" alt="" height="45" width="45" onclick="ShowFriendProfile(${reply.UserId})"style="cursor: pointer;">
+              </div>
+
                 <div class="we-comment">
                     <div class="coment-head">
                         <h5>${reply.UserName}</h5>
@@ -935,9 +1037,10 @@ function addCommentReply(replyText, postId, parentCommentId, userId) {
                         var $replyList = $parentComment.find('.reply-list');
                         var replyHTML = `
                         <li class="reply-item">
-                            <div class="comet-avatar">
-                                <img src="${comment.ProfilePhoto}" alt="" height="45" width="45" id="ProfilePhoto">
+                           <div class="comet-avatar">
+                               <img src="${comment.ProfilePhoto}" alt="" height="45" width="45" id="ProfilePhoto" onclick="ShowFriendProfile(${comment.UserId})"style="cursor: pointer;">
                             </div>
+
                             <div class="we-comment">
                                 <div class="coment-head">
                                     <h5>${UserName}</h5>
@@ -1000,8 +1103,9 @@ function loadPostComments(postId, $commentsList) {
                     const commentHtml = `
                     <li data-comment-id="${comment.Id}" data-parent-comment-id="${comment.ParentCommentId}">
                         <div class="comet-avatar">
-                            <img src="${comment.ProfilePhoto}" alt="" height="40" width="40" id="ProfilePhoto">
+                            <img src="${comment.ProfilePhoto}" alt="" height="40" width="40" id="ProfilePhoto" onclick="ShowFriendProfile(${comment.UserId})"style="cursor: pointer;">
                         </div>
+
                         <div class="we-comment">
                             <div class="coment-head">
                                 <h5>${comment.UserName}</h5>
@@ -1119,9 +1223,10 @@ function replieComment(commentId, postId, modalId) {
                     // Construct HTML for the new reply
                     var replyHtml = `
                     <li data-comment-id="${reply.CommentId}">
-                        <div class="comet-avatar">
-                            <img src="${reply.ProfilePhoto}" alt="" height="40" width="40" id="ProfilePhoto">
-                        </div>
+                       <div class="comet-avatar">
+    <img src="${reply.ProfilePhoto}" alt="" height="40" width="40" id="ProfilePhoto" onclick="ShowFriendProfile(${reply.UserId})"style="cursor: pointer;">
+</div>
+
                         <div class="we-comment">
                             <div class="coment-head">
                                 <h5>${reply.UserName}</h5>
@@ -1179,9 +1284,10 @@ function UploadComment() {
                         if (comment) {
                             $form.find('textarea').val('');
                             var commentHTML = `<li>
-                                <div class="comet-avatar">
-                                    <img src="${comment.ProfilePhoto}" alt="" height="45" width="45" id="ProfilePhoto">
-                                </div>
+                             <div class="comet-avatar">
+                                 <img src="${comment.ProfilePhoto}" alt="" height="45" width="45" id="ProfilePhoto" onclick="ShowFriendProfile(${comment.UserId})"style="cursor: pointer;">
+                            </div>
+
                                 <div class="we-comment">
                                     <div class="coment-head">
                                         <h5>${comment.FirstName} ${comment.LastName}</h5>
@@ -1296,84 +1402,7 @@ function deleteComment(commentId, $commentElement, isReply = false) {
 
 
 
-/*function FriendList() {
-    var userId = getCookie("userId");
-    var authToken = getCookie("authToken");
 
-    $.ajax({
-        url: '/api/WebApi/GetUserData/' + userId,
-        method: 'GET',
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authToken);
-        },
-        success: function (data) {
-            var peopleList = $('.friendz-list');
-            peopleList.empty();
-            if (data.length === 0) {
-                peopleList.append('<li>No users found.</li>');
-            } else {
-                data.sort(function (a, b) {
-                    if (a.RequestStatus === 'pending' && b.RequestStatus !== 'pending') {
-                        return -1;
-                    } else if (a.RequestStatus !== 'pending' && b.RequestStatus === 'pending') {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
-                });
-
-                data.forEach(function (user) {
-                    var userHTML = `
-                    <li>
-                        <div style="display: flex;justify-content: space-between;">
-                            <figure>
-                        <img src="${user.ProfilePhoto}" onclick="ShowFriendProfile(${user.UserId})" class="media-object pull-left" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer;" alt="Profile Photo">
-                            </figure>
-                                <div style="display: inline; cursor: pointer;" onclick="ShowFriendProfile(${user.UserId})">
-                                <i>${user.FirstName} ${user.LastName}</i>
-                                <i hidden>${user.UserId}</i>
-                            </div>
-
-                            <div style="display: inline;">
-                             ${user.IsFriend == 1 && user.FollowerId == userId
-                            ? `<button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}">Remove</button>`
-                            : user.RequestStatus === "pending"
-                                ? `<button class="btn btn-outline-primary confirm-friend-btn" data-user-id="${user.UserId}">Confirm</button>
-                                            <button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}">Remove</button>`
-                                : user.RequestStatus === "accepted"
-                                    ? `<button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}">Remove</button>`
-                                    : `<button class="btn btn-outline-secondary add-friend-btn" data-user-id="${user.UserId}">Add Friend</button>`
-                        }
-                            </div>
-                        </div>
-                    </li>
-                    `;
-                    peopleList.append(userHTML);
-                });
-
-                // Event bindings for dynamic content
-                $('.add-friend-btn').on('click', function () {
-                    var userId = $(this).data('user-id');
-                    addFriend(userId);
-                });
-
-                $('.remove-friend-btn').on('click', function () {
-                    var userId = $(this).data('user-id');
-                    removeFriend(userId);
-                });
-
-                $('.confirm-friend-btn').on('click', function () {
-                    var userId = $(this).data('user-id');
-                    confirmFriendRequest(userId);
-                });
-            }
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
-}
-*/
 
 function FriendList() {
     var userId = getCookie("userId");
@@ -1410,24 +1439,25 @@ function FriendList() {
                 filteredData.forEach(function (user) {
                     var userHTML = `
                     <li>
-                        <div style="display: flex; justify-content: space-between;">
-                            <figure>
-                                <img src="${user.ProfilePhoto}" onclick="ShowFriendProfile(${user.UserId})" class="media-object pull-left" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer;" alt="Profile Photo">
+                       <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <figure style="margin-right: 10px;">
+                                <img src="${user.ProfilePhoto}" onclick="ShowFriendProfile(${user.UserId})" class="media-object" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer;" alt="Profile Photo">
                             </figure>
-                            <div style="display: inline; cursor: pointer;" onclick="ShowFriendProfile(${user.UserId})">
-                                <i>${user.FirstName} ${user.LastName}</i>
+                            <div style="flex: 2; cursor: pointer;" onclick="ShowFriendProfile(${user.UserId})">
+                                <div style="font-weight: 400;font-size: 15px;">${user.FirstName} ${user.LastName}</div>
                                 <i hidden>${user.UserId}</i>
                             </div>
-                            <div style="display: inline;">
+                            <div style="display: flex; gap: 5px;">
                                 ${user.IsFriend == 1 && user.FollowerId == userId
-                            ? `<button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}">Remove</button>`
-                            : user.RequestStatus === "pending"
-                                ? `<button class="btn btn-outline-primary confirm-friend-btn" data-user-id="${user.UserId}">Confirm</button>
-                                           <button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}">Remove</button>`
-                                : `<button class="btn btn-outline-secondary add-friend-btn" data-user-id="${user.UserId}">Add Friend</button>`
-                        }
+                                                    ? `<button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}" style="font-size: 11px; padding: 2px 6px; border-radius: 8px; font-weight: 500;">Remove</button>`
+                                                    : user.RequestStatus === "pending"
+                                                        ? `<button class="btn btn-outline-primary confirm-friend-btn" data-user-id="${user.UserId}" style="font-size: 11px; padding: 2px 6px; border-radius: 8px; font-weight: 500;">Confirm</button>
+                                           <button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}" style="font-size: 11px; padding: 2px 6px; border-radius: 8px; font-weight: 500;">Remove</button>`
+                                                        : `<button class="btn btn-outline-secondary add-friend-btn" data-user-id="${user.UserId}" style="font-size: 11px; padding: 1px 3px; border-radius: 8px; font-weight: 500;">Add Friend</button>`
+                                }
                             </div>
                         </div>
+
                     </li>
                     `;
                     peopleList.append(userHTML);
@@ -1640,7 +1670,7 @@ function displayNotifications() {
                                             <source src="${notification.PostPhoto}" type="video/mp4">
                                             Your browser does not support the video tag.
                                         </video>` :
-                            `<img src="${notification.PostPhoto}" alt="Post Photo" class="post-media rounded me-3" width="52" height="52">`) :
+                            `<img src="${notification.PostPhoto}" alt="Post Photo" class="post-media rounded me-3" width="60" height="70">`) :
                         `<p class="post-content d-flex align-items-center justify-content-center rounded bg-light text-center me-3" style="width: 52px; height: 52px; margin: 15px;">
                                         ${notification.PostContent}
                                     </p>`
@@ -1797,7 +1827,7 @@ function populateUserData(userId) {
 
 
 // Update User Profile
-function updateUserInfo() {
+/*function updateUserInfo() {
     const Interests = [];
     const checkboxes = $("input[name='Interests']:checked");
 
@@ -1862,8 +1892,94 @@ function updateUserInfo() {
             console.error('Error checking email:', error);
         }
     });
-}
+}*/
 
+function updateUserInfo() {
+    const Interests = [];
+    const checkboxes = $("input[name='Interests']:checked");
+
+    checkboxes.each(function () {
+        Interests.push($(this).val());
+    });
+
+    var userData = {
+        UserId: $('#TxtUserId').val(),
+        LastName: $('#TxtLastName').val(),
+        FirstName: $('#TxtFirstName').val(),
+        City: $('#TxtCity').val(),
+        Email: $('#TxtEmail').val(),
+        PhoneNumber: $('#TxtPhoneNumber').val(),
+        Bio: $('#TxtBio').val(),
+        UserPassword: $('#TxtUserPassword').val(),
+        Gender: $("input[name='gender']:checked").val(),
+        Interests: Interests.join(', '),
+        BirthDate: $('#BirthDate').val()
+    };
+
+    var userId = userData.UserId;
+    var email = userData.Email;
+    var phoneNumber = userData.PhoneNumber;
+    var authToken = getCookie("authToken");
+
+    // Check if the email is already in use
+    $.ajax({
+        url: '/api/WebApi/CheckEmail',
+        method: 'POST',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authToken);
+        },
+        contentType: 'application/json',
+        data: JSON.stringify({ UserId: userId, Email: email }),
+        success: function (response) {
+            if (response.emailInUse) {
+                $('#emailError').text('Email already entered.').show();
+            } else {
+                // Check if the phone number is already in use, only if it has been changed
+                $.ajax({
+                    url: '/api/WebApi/CheckPhoneNumber',
+                    method: 'POST',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", "Basic " + authToken);
+                    },
+                    contentType: 'application/json',
+                    data: JSON.stringify({ UserId: userId, PhoneNumber: phoneNumber }),
+                    success: function (response) {
+                        if (response.phoneInUse) {
+                            $('#phoneError').text('Phone number already entered.').show();
+                        } else {
+                            // Update user information if email and phone number are not in use
+                            $.ajax({
+                                url: '/api/WebApi/' + userId,
+                                method: 'PUT',
+                                beforeSend: function (xhr) {
+                                    xhr.setRequestHeader("Authorization", "Basic " + authToken);
+                                },
+                                contentType: 'application/json',
+                                data: JSON.stringify(userData),
+                                success: function (response) {
+                                    console.log('User information updated successfully');
+                                    $('#emailError').hide();
+                                    $('#phoneError').hide();
+
+                                    window.location.href = '/Login/HomePage';
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('Error updating user information:', error);
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error checking phone number:', error);
+                    }
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error checking email:', error);
+        }
+    });
+}
 
 
 // change Password
@@ -1962,7 +2078,8 @@ function AddPosts(post) {
         postHTML += '<p>' + post.PostContent + '</p>';
     }
 
-    postHTML += '<span class="post-icon"><i class="fa-regular fa-bookmark"></i></span>';
+    postHTML += '<span class="post-icon" style="cursor: pointer;"><i class="fa-regular fa-bookmark"></i></span>';
+
     postHTML += '</li>';
 
     var postElement = $(postHTML);
@@ -2018,7 +2135,7 @@ function archievepost(post) {
         postHTML += '<p>' + post.PostContent + '</p>';
     }
 
-    postHTML += '<span class="post-icon"><i class="fa-solid fa-bookmark"></i></span>';
+    postHTML += '<span class="post-icon" style="cursor: pointer;"><i class="fa-regular fa-bookmark"></i></span>';
     postHTML += '</li>';
 
     var postElement = $(postHTML);

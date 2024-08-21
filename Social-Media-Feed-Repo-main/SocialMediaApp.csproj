@@ -322,6 +322,7 @@
       <DependentUpon>UserModel.edmx</DependentUpon>
       <LastGenOutput>UserModel.cs</LastGenOutput>
     </Content>
+    <Content Include="Controllers\125115-200.png" />
     <Content Include="Css\AboutPage.css" />
     <Content Include="Css\color.css" />
     <Content Include="Css\Login.css" />
@@ -350,6 +351,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="images\1080x360.jpg" />
     <Content Include="images\10919270.jpg" />
+    <Content Include="images\125115-200.png" />
     <Content Include="images\4315.jpg_wh860.jpg" />
     <Content Include="images\attachment_129933858.jpg" />
     <Content Include="images\axar.jpg" />
@@ -360,6 +362,8 @@
     <Content Include="images\download.png" />
     <Content Include="images\download1.jpg" />
     <Content Include="images\download2.jpg" />
+    <Content Include="images\edit-profile-2355451-1983078.svg" />
+    <Content Include="images\EditProfile.jpg" />
     <Content Include="images\envelop.png" />
     <Content Include="images\faq.png" />
     <Content Include="images\fav.png" />
@@ -376,6 +380,7 @@
     <Content Include="images\pexels-jano-gepiga-110686.jpg" />
     <Content Include="images\pexels-pixabay-268533.jpg" />
     <Content Include="images\pexels-pixabay-462162.jpg" />
+    <Content Include="images\png-transparent-user-profile-computer-icons-profile-heroes-black-silhouette-thumbnail %281%29.png" />
     <Content Include="images\profile-picture.jpeg" />
     <Content Include="images\profile.png" />
     <Content Include="images\profile2.jpg" />

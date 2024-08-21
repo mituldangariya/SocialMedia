@@ -94,7 +94,7 @@ function populateUserData(userId) {
 
             $('#UserName').html(userData.FirstName + " " + userData.LastName);
             $('#City').html('<i class="fa-solid fa-city"></i> ' + userData.City);
-            $('#Email').html('<i class="fa-solid fa-envelope"></i> ' + userData.Email);
+        /*    $('#Email').html('<i class="fa-solid fa-envelope"></i> ' + userData.Email);*/
 
             $('#interestdata').empty();
             $('#BioInfo').empty();

@@ -96,7 +96,7 @@
         });
     };
 
-    window.handleSignup = function () {
+    /*window.handleSignup = function () {
         const name = document.getElementById("Name").value;
         const email = document.getElementById("NewEmail").value;
         const fname = document.getElementById("fName").value;
@@ -148,7 +148,96 @@
                 $("#NewloginError").text("Signup failed. Please try again.");
             }
         });
+    };*/
+
+
+    window.handleSignup = function () {
+        const name = document.getElementById("Name").value;
+        const email = document.getElementById("NewEmail").value;
+        const fname = document.getElementById("fName").value;
+        const confirmPassword = document.getElementById("ConfirmPassword").value;
+        const password = document.getElementById("NewPassword").value;
+
+        // Basic validation
+        if (!fname) {
+            $("#NewloginError").text("Please Enter Your First Name.");
+            return;
+        }
+
+        if (!name) {
+            $("#NewloginError").text("Please Enter Your Last Name.");
+            return;
+        }
+
+        if (!email || !validateEmail(email)) {
+            $("#NewloginError").text("Please Enter A Valid Email.");
+            return;
+        }
+
+        if (!password || !validatePassword(password)) {
+            $("#NewloginError").text("Password must be at least 6 characters long and contain at least one number.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            $("#NewloginError").text("Passwords do not match.");
+            return;
+        }
+
+        // Form data object
+        const formData = {
+            lastName: name,
+            email: email,
+            firstname: fname,
+            userpassword: password
+        };
+
+        // Check if the email is available
+        CheckMail(email, function (isValidEmail, errorMessage) {
+            if (isValidEmail) {
+                // Proceed with the signup if the email is available
+                $.ajax({
+                    url: '/api/WebApi/Register',
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        console.log("Signup successful", response);
+                        window.location.href = "/Login/Login";
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(formData);
+                        console.error("Signup failed", error);
+                        $("#NewloginError").text("Signup failed. Please try again.");
+                    }
+                });
+            } else {
+                // Display the specific error message if email is already in use
+                $("#NewloginError").text(errorMessage);
+            }
+        });
     };
+
+    // CheckMail function to validate email
+    function CheckMail(email, callback) {
+        $.ajax({
+            url: '/api/WebApi/CheckMail',
+            type: 'POST',
+            data: { email: email },
+            success: function (response) {
+                if (response.isAvailable) {
+                    callback(true, ""); // Email is available
+                } else {
+                    callback(false, "Email is already in use by another user. Please use a different email."); // Email is not available
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error checking email", error);
+                callback(false, "An error occurred while checking the email. Please try again."); // Email check failed
+            }
+        });
+    }
+
+
 
     function handleForgotPassword() {
         var email = $('#forgotEmail').val();

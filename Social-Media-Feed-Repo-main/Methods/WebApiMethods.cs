@@ -229,10 +229,43 @@ namespace SocialMediaApp.Methods
             return null; // Returning null if user not found
         }
 
+        /*     public void AddUser(UserData user)
+             {
+                 if (user.Email != null && user.UserPassword != null)
+                 {
+                     var otp = new Random().Next(100000, 999999).ToString();
+                     var passwordReset = new PasswordReset
+                     {
+                         Email = user.Email,
+                         Token = otp,
+                         Created_At = DateTime.UtcNow
+                     };
+
+                     db.PasswordResets.Add(passwordReset);
+                     user.ProfilePhoto = "/postupload/profile.png";
+                     db.UserDatas.Add(user);
+                     db.SaveChanges();
+
+                     SendOtpEmail(user.Email, otp);
+                 }
+                 else
+                 {
+                     throw new ArgumentException("Email and password are required.");
+                 }
+             }*/
+
+
         public void AddUser(UserData user)
         {
             if (user.Email != null && user.UserPassword != null)
             {
+                // Check if email already exists
+                var existingUser = db.UserDatas.FirstOrDefault(u => u.Email == user.Email);
+                if (existingUser != null)
+                {
+                    throw new ArgumentException("This email is already in use by another user. Please use a different email.");
+                }
+
                 var otp = new Random().Next(100000, 999999).ToString();
                 var passwordReset = new PasswordReset
                 {
@@ -253,6 +286,7 @@ namespace SocialMediaApp.Methods
                 throw new ArgumentException("Email and password are required.");
             }
         }
+
 
         public void VerifyOtp(string email, string otp)
         {
@@ -415,7 +449,7 @@ namespace SocialMediaApp.Methods
                 {
                     string fileType = Path.GetExtension(postedFile.FileName).ToLower();
 
-                    if (fileType == ".jpg" || fileType == ".jpeg" || fileType == ".png" || fileType == ".gif")
+                    if (fileType == ".jpg" || fileType == ".jpeg" || fileType == ".png" || fileType == ".gif" || fileType == ".webp")
                     {
                         // Image file
                         string fileName = Path.GetFileName(postedFile.FileName);
@@ -454,6 +488,62 @@ namespace SocialMediaApp.Methods
 
             return "Post added successfully.";
         }
+
+        /* public string AddNewPost(HttpRequest request)
+         {
+             var userId = request.Form["userId"];
+             var postContent = request.Form["PostContent"];
+             string mediaUrl = null;
+
+             if (request.Files.Count > 0)
+             {
+                 var postedFile = request.Files[0];
+                 if (postedFile != null && postedFile.ContentLength > 0)
+                 {
+                     string fileType = Path.GetExtension(postedFile.FileName).ToLower();
+
+                     if (new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" }.Contains(fileType))
+                     {
+                         // Image file
+                         string fileName = Path.GetFileName(postedFile.FileName);
+                         string imagePath = "~/images/" + fileName;
+                         string serverPath = HttpContext.Current.Server.MapPath(imagePath);
+                         postedFile.SaveAs(serverPath);
+                         mediaUrl = VirtualPathUtility.ToAbsolute(imagePath);
+                     }
+                     else if (new[] { ".mp4", ".avi", ".mov", ".wmv" }.Contains(fileType))
+                     {
+                         // Video file
+                         string fileName = Path.GetFileName(postedFile.FileName);
+                         string videoPath = "~/videos/" + fileName;
+                         string serverPath = HttpContext.Current.Server.MapPath(videoPath);
+                         postedFile.SaveAs(serverPath);
+                         mediaUrl = VirtualPathUtility.ToAbsolute(videoPath);
+                     }
+                     else
+                     {
+                         throw new Exception("Unsupported file type. Please upload images or videos.");
+                     }
+                 }
+             }
+
+             var post = new UserPost
+             {
+                 UserId = Convert.ToInt32(userId),
+                 PostContent = postContent,
+                 PostPhoto = mediaUrl,
+                 PostDate = DateTime.Now,
+                 LikeCount = 0,
+                 ShareCount = 0,
+                 CommentCount = 0
+             };
+
+             db.UserPosts.Add(post);
+             db.SaveChanges();
+
+             return "Post added successfully.";
+         }*/
+
 
 
 
@@ -895,55 +985,7 @@ namespace SocialMediaApp.Methods
 
 
 
-        /*        public IEnumerable<Post> GetLastPost()
-                {
-                    string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-                    var posts = new List<Post>();
-
-                    using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        using (SqlCommand command = new SqlCommand("GetLastPost", connection))
-                        {
-                            command.CommandType = CommandType.StoredProcedure;
-
-                            try
-                            {
-                                connection.Open();
-                                using (SqlDataReader reader = command.ExecuteReader())
-                                {
-                                    while (reader.Read())
-                                    {
-                                        var post = new Post
-                                        {
-                                            PostId = reader.GetInt32(reader.GetOrdinal("PostId")),
-                                            UserId = reader.IsDBNull(reader.GetOrdinal("UserId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("UserId")),
-                                            PostContent = reader.GetString(reader.GetOrdinal("PostContent")),
-                                            PostPhoto = reader.GetString(reader.GetOrdinal("PostPhoto")),
-                                            PostDate = reader.IsDBNull(reader.GetOrdinal("PostDate")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("PostDate")),
-                                            LikeCount = reader.IsDBNull(reader.GetOrdinal("LikeCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("LikeCount")),
-                                            ShareCount = reader.IsDBNull(reader.GetOrdinal("ShareCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("ShareCount")),
-                                            CommentCount = reader.IsDBNull(reader.GetOrdinal("CommentCount")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("CommentCount")),
-                                            ProfilePhoto = reader.GetString(reader.GetOrdinal("ProfilePhoto")),
-                                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                                            FirstName = reader.GetString(reader.GetOrdinal("FirstName"))
-                                        };
-                                        posts.Add(post);
-                                    }
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                // Handle exceptions as needed
-                                throw;
-                            }
-                        }
-                    }
-
-                    return posts;
-                }
-        */
-
+       
 
         public List<object> GetUserNotifications(int userId)
         {
