@@ -322,7 +322,6 @@
       <DependentUpon>UserModel.edmx</DependentUpon>
       <LastGenOutput>UserModel.cs</LastGenOutput>
     </Content>
-    <Content Include="Controllers\125115-200.png" />
     <Content Include="Css\AboutPage.css" />
     <Content Include="Css\color.css" />
     <Content Include="Css\Login.css" />

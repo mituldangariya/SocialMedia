@@ -23,7 +23,7 @@ body {
     /*margin: 567px;*/
 }
 img.post-media.rounded.me-3 {
-    margin: 20px;
+    margin: 14px;
 }
 .custom-style {
     background-color: #dc3545; /* Bootstrap danger color */
@@ -87,6 +87,7 @@ i.fas.fa-ellipsis-h.more-icon {
     border-radius: 3px;
     font-size: 12px;
     margin-left: 100px;
+    margin-top: -14px;
 }
 
 

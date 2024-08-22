@@ -27,33 +27,69 @@ namespace SocialMediaApp.Methods
         SocialMediaAppEntities db = new SocialMediaAppEntities();
 
 
+        /* public object GetUserData(int currentUserId)
+         {
+             var usersNotFriends = db.UserDatas
+                 .Where(u => u.UserId != currentUserId)
+                 .Select(user => new
+                 {
+
+                     UserId = user.UserId,
+                     LastName = user.LastName,
+                     FirstName = user.FirstName,
+                     ProfilePhoto = user.ProfilePhoto,
+                     IsFriend = db.UserFriends.Any(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
+                                                        (f.UserId == user.UserId && f.FollowerId == currentUserId)),
+                     RequestStatus = db.UserFriends
+                         .Where(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
+                                     (f.UserId == user.UserId && f.FollowerId == currentUserId))
+                         .Select(f => f.RequestStatus)
+                         .FirstOrDefault(),
+                     FollowerId = db.UserFriends
+                         .Where(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
+                                     (f.UserId == user.UserId && f.FollowerId == currentUserId))
+                         .Select(f => f.FollowerId)
+                         .FirstOrDefault()
+                 }).ToList();
+
+             return usersNotFriends;
+         }*/
+
         public object GetUserData(int currentUserId)
         {
-            var usersNotFriends = db.UserDatas
-                .Where(u => u.UserId != currentUserId)
-                .Select(user => new
-                {
+            var usersNotFriends = new List<object>();
 
-                    UserId = user.UserId,
-                    LastName = user.LastName,
-                    FirstName = user.FirstName,
-                    ProfilePhoto = user.ProfilePhoto,
-                    IsFriend = db.UserFriends.Any(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
-                                                       (f.UserId == user.UserId && f.FollowerId == currentUserId)),
-                    RequestStatus = db.UserFriends
-                        .Where(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
-                                    (f.UserId == user.UserId && f.FollowerId == currentUserId))
-                        .Select(f => f.RequestStatus)
-                        .FirstOrDefault(),
-                    FollowerId = db.UserFriends
-                        .Where(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
-                                    (f.UserId == user.UserId && f.FollowerId == currentUserId))
-                        .Select(f => f.FollowerId)
-                        .FirstOrDefault()
-                }).ToList();
+            using (var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString))
+            {
+                using (var command = new SqlCommand("GetUserData", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@CurrentUserId", currentUserId);
+
+                    connection.Open();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            usersNotFriends.Add(new
+                            {
+                                UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                ProfilePhoto = reader.IsDBNull(reader.GetOrdinal("ProfilePhoto")) ? null : reader.GetString(reader.GetOrdinal("ProfilePhoto")),
+                                IsFriend = reader.GetInt32(reader.GetOrdinal("IsFriend")),
+                                RequestStatus = reader.IsDBNull(reader.GetOrdinal("RequestStatus")) ? (string)null : reader.GetString(reader.GetOrdinal("RequestStatus")),
+                                FollowerId = reader.IsDBNull(reader.GetOrdinal("FollowerId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("FollowerId"))
+                            });
+                        }
+                    }
+                }
+            }
 
             return usersNotFriends;
         }
+
 
         public object UploadProfilePhoto(int userId, HttpRequest httpRequest)
         {
@@ -489,154 +525,197 @@ namespace SocialMediaApp.Methods
             return "Post added successfully.";
         }
 
-        /* public string AddNewPost(HttpRequest request)
-         {
-             var userId = request.Form["userId"];
-             var postContent = request.Form["PostContent"];
-             string mediaUrl = null;
-
-             if (request.Files.Count > 0)
-             {
-                 var postedFile = request.Files[0];
-                 if (postedFile != null && postedFile.ContentLength > 0)
-                 {
-                     string fileType = Path.GetExtension(postedFile.FileName).ToLower();
-
-                     if (new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" }.Contains(fileType))
-                     {
-                         // Image file
-                         string fileName = Path.GetFileName(postedFile.FileName);
-                         string imagePath = "~/images/" + fileName;
-                         string serverPath = HttpContext.Current.Server.MapPath(imagePath);
-                         postedFile.SaveAs(serverPath);
-                         mediaUrl = VirtualPathUtility.ToAbsolute(imagePath);
-                     }
-                     else if (new[] { ".mp4", ".avi", ".mov", ".wmv" }.Contains(fileType))
-                     {
-                         // Video file
-                         string fileName = Path.GetFileName(postedFile.FileName);
-                         string videoPath = "~/videos/" + fileName;
-                         string serverPath = HttpContext.Current.Server.MapPath(videoPath);
-                         postedFile.SaveAs(serverPath);
-                         mediaUrl = VirtualPathUtility.ToAbsolute(videoPath);
-                     }
-                     else
-                     {
-                         throw new Exception("Unsupported file type. Please upload images or videos.");
-                     }
-                 }
-             }
-
-             var post = new UserPost
-             {
-                 UserId = Convert.ToInt32(userId),
-                 PostContent = postContent,
-                 PostPhoto = mediaUrl,
-                 PostDate = DateTime.Now,
-                 LikeCount = 0,
-                 ShareCount = 0,
-                 CommentCount = 0
-             };
-
-             db.UserPosts.Add(post);
-             db.SaveChanges();
-
-             return "Post added successfully.";
-         }*/
 
 
 
+
+
+        /*        public List<object> GetUserPosts(int userId)
+                {
+                    var friendIdsSentRequests = db.UserFriends
+                        .Where(f => f.FollowerId == userId && f.RequestStatus == "accepted")
+                        .Select(f => f.UserId)
+                        .ToList();
+
+                    var friendIdsReceivedRequests = db.UserFriends
+                        .Where(f => f.UserId == userId && f.RequestStatus == "accepted")
+                        .Select(f => f.FollowerId)
+                        .ToList();
+
+                    var friendIds = friendIdsSentRequests.Concat(friendIdsReceivedRequests).ToList();
+                    friendIds.Add(userId);
+
+                    var postsInfo = db.UserPosts
+                         .Where(post => post.Status == null && friendIds.Contains(post.UserId))
+                        .OrderBy(post => post.PostDate)
+                        .Select(post => new
+                        {
+                            PostId = post.PostId,
+                            UserId = post.UserId,
+                            PostContent = post.PostContent,
+                            PostPhoto = post.PostPhoto,
+                            PostDate = post.PostDate,
+                            LikeCount = post.LikeCount,
+                            ShareCount = post.ShareCount,
+                            CommentCount = post.CommentCount,
+                            FirstName = post.UserData.FirstName,
+                            LastName = post.UserData.LastName,
+                            ProfilePhoto = post.UserData.ProfilePhoto,
+                            Status = post.Status,
+                            IsLiked = post.PostLikes.Any(x => x.UserId == userId),
+                            LikeType = post.PostLikes.Select(x => x.LikeType)
+                        })
+                        .ToList();
+
+                    var formattedPostsInfo = postsInfo.Select(post => new
+                    {
+                        PostId = post.PostId,
+                        UserId = post.UserId,
+                        PostContent = post.PostContent,
+                        PostPhoto = post.PostPhoto,
+                        PostDate = FormatPostDate(post.PostDate),
+                        LikeCount = post.LikeCount,
+                        ShareCount = post.ShareCount,
+                        CommentCount = post.CommentCount,
+                        FirstName = post.FirstName,
+                        LastName = post.LastName,
+                        ProfilePhoto = post.ProfilePhoto,
+                        LikeType = post.LikeType,
+                        IsLiked = post.IsLiked,
+                        Status = post.Status,
+                    }).Cast<object>().ToList();
+
+                    return formattedPostsInfo;
+                }
+        */
+
+
+
+
+        /*   private string FormatPostDate(DateTime? postDate)
+           {
+               if (postDate.HasValue)
+               {
+                   TimeSpan timeSincePost = DateTime.Now - postDate.Value;
+                   if (timeSincePost.TotalMinutes < 1)
+                   {
+                       return "just now";
+                   }
+                   else if (timeSincePost.TotalHours < 1)
+                   {
+                       return $"{(int)timeSincePost.TotalMinutes} min ago";
+                   }
+                   else if (timeSincePost.TotalDays < 1)
+                   {
+                       return $"{(int)timeSincePost.TotalHours} h ago";
+                   }
+                   else if (timeSincePost.TotalDays < 30)
+                   {
+                       return $"{(int)timeSincePost.TotalDays} d ago";
+                   }
+                   else
+                   {
+                       return postDate.Value.ToString("MMM dd, yyyy");
+                   }
+               }
+               else
+               {
+                   return string.Empty;
+               }
+           }*/
 
         public List<object> GetUserPosts(int userId)
         {
-            var friendIdsSentRequests = db.UserFriends
-                .Where(f => f.FollowerId == userId && f.RequestStatus == "accepted")
-                .Select(f => f.UserId)
-                .ToList();
+            var postsInfo = new List<object>();
 
-            var friendIdsReceivedRequests = db.UserFriends
-                .Where(f => f.UserId == userId && f.RequestStatus == "accepted")
-                .Select(f => f.FollowerId)
-                .ToList();
-
-            var friendIds = friendIdsSentRequests.Concat(friendIdsReceivedRequests).ToList();
-            friendIds.Add(userId);
-
-            var postsInfo = db.UserPosts
-                 .Where(post => post.Status == null && friendIds.Contains(post.UserId))
-                .OrderBy(post => post.PostDate)
-                .Select(post => new
+            try
+            {
+                using (var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString))
                 {
-                    PostId = post.PostId,
-                    UserId = post.UserId,
-                    PostContent = post.PostContent,
-                    PostPhoto = post.PostPhoto,
-                    PostDate = post.PostDate,
-                    LikeCount = post.LikeCount,
-                    ShareCount = post.ShareCount,
-                    CommentCount = post.CommentCount,
-                    FirstName = post.UserData.FirstName,
-                    LastName = post.UserData.LastName,
-                    ProfilePhoto = post.UserData.ProfilePhoto,
-                    Status = post.Status,
-                    IsLiked = post.PostLikes.Any(x => x.UserId == userId),
-                    LikeType = post.PostLikes.Select(x => x.LikeType)
-                })
-                .ToList();
+                    using (var command = new SqlCommand("GetUserPosts", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@UserId", userId);
+
+                        connection.Open();
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                postsInfo.Add(new
+                                {
+                                    PostId = reader.GetInt32(reader.GetOrdinal("PostId")),
+                                    UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+                                    PostContent = reader.GetString(reader.GetOrdinal("PostContent")),
+                                    PostPhoto = reader.IsDBNull(reader.GetOrdinal("PostPhoto")) ? null : reader.GetString(reader.GetOrdinal("PostPhoto")),
+                                    PostDate = reader.GetDateTime(reader.GetOrdinal("PostDate")),
+                                    LikeCount = reader.GetInt32(reader.GetOrdinal("LikeCount")),
+                                    ShareCount = reader.GetInt32(reader.GetOrdinal("ShareCount")),
+                                    CommentCount = reader.GetInt32(reader.GetOrdinal("CommentCount")),
+                                    FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                    LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                    ProfilePhoto = reader.IsDBNull(reader.GetOrdinal("ProfilePhoto")) ? null : reader.GetString(reader.GetOrdinal("ProfilePhoto")),
+                                    Status = reader.IsDBNull(reader.GetOrdinal("Status")) ? (string)null : reader.GetString(reader.GetOrdinal("Status")),
+                                    IsLiked = reader.GetInt32(reader.GetOrdinal("IsLiked")),
+                                    LikeType = reader.IsDBNull(reader.GetOrdinal("LikeType")) ? (string)null : reader.GetString(reader.GetOrdinal("LikeType"))
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log exception (e.g., using a logging framework)
+                throw new ApplicationException("An error occurred while retrieving posts.", ex);
+            }
 
             var formattedPostsInfo = postsInfo.Select(post => new
             {
-                PostId = post.PostId,
-                UserId = post.UserId,
-                PostContent = post.PostContent,
-                PostPhoto = post.PostPhoto,
-                PostDate = FormatPostDate(post.PostDate),
-                LikeCount = post.LikeCount,
-                ShareCount = post.ShareCount,
-                CommentCount = post.CommentCount,
-                FirstName = post.FirstName,
-                LastName = post.LastName,
-                ProfilePhoto = post.ProfilePhoto,
-                LikeType = post.LikeType,
-                IsLiked = post.IsLiked,
-                Status = post.Status,
+                PostId = post.GetType().GetProperty("PostId").GetValue(post),
+                UserId = post.GetType().GetProperty("UserId").GetValue(post),
+                PostContent = post.GetType().GetProperty("PostContent").GetValue(post),
+                PostPhoto = post.GetType().GetProperty("PostPhoto").GetValue(post),
+                PostDate = FormatPostDate((DateTime)post.GetType().GetProperty("PostDate").GetValue(post)),
+                LikeCount = post.GetType().GetProperty("LikeCount").GetValue(post),
+                ShareCount = post.GetType().GetProperty("ShareCount").GetValue(post),
+                CommentCount = post.GetType().GetProperty("CommentCount").GetValue(post),
+                FirstName = post.GetType().GetProperty("FirstName").GetValue(post),
+                LastName = post.GetType().GetProperty("LastName").GetValue(post),
+                ProfilePhoto = post.GetType().GetProperty("ProfilePhoto").GetValue(post),
+                LikeType = post.GetType().GetProperty("LikeType").GetValue(post),
+                IsLiked = post.GetType().GetProperty("IsLiked").GetValue(post),
+                Status = post.GetType().GetProperty("Status").GetValue(post),
             }).Cast<object>().ToList();
 
             return formattedPostsInfo;
         }
 
-        private string FormatPostDate(DateTime? postDate)
+        private string FormatPostDate(DateTime postDate)
         {
-            if (postDate.HasValue)
+            TimeSpan timeSincePost = DateTime.Now - postDate;
+            if (timeSincePost.TotalMinutes < 1)
             {
-                TimeSpan timeSincePost = DateTime.Now - postDate.Value;
-                if (timeSincePost.TotalMinutes < 1)
-                {
-                    return "just now";
-                }
-                else if (timeSincePost.TotalHours < 1)
-                {
-                    return $"{(int)timeSincePost.TotalMinutes} min ago";
-                }
-                else if (timeSincePost.TotalDays < 1)
-                {
-                    return $"{(int)timeSincePost.TotalHours} h ago";
-                }
-                else if (timeSincePost.TotalDays < 30)
-                {
-                    return $"{(int)timeSincePost.TotalDays} d ago";
-                }
-                else
-                {
-                    return postDate.Value.ToString("MMM dd, yyyy");
-                }
+                return "just now";
+            }
+            else if (timeSincePost.TotalHours < 1)
+            {
+                return $"{(int)timeSincePost.TotalMinutes} min ago";
+            }
+            else if (timeSincePost.TotalDays < 1)
+            {
+                return $"{(int)timeSincePost.TotalHours} h ago";
+            }
+            else if (timeSincePost.TotalDays < 30)
+            {
+                return $"{(int)timeSincePost.TotalDays} d ago";
             }
             else
             {
-                return string.Empty;
+                return postDate.ToString("MMM dd, yyyy");
             }
         }
-
 
 
 
@@ -926,11 +1005,11 @@ namespace SocialMediaApp.Methods
             return formattedPostsInfo;
         }
 
-        private string FormatPostDate(DateTime postDate)
+        /*private string FormatPostDate(DateTime postDate)
         {
             // Implement your date formatting logic here
             return postDate.ToString("yyyy-MM-dd"); // Example format
-        }
+        }*/
 
 
 

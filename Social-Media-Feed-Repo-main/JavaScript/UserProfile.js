@@ -127,7 +127,7 @@ function AddPosts(post) {
 
     if (post.PostPhoto) {
         if (post.PostPhoto.endsWith('.mp4')) {
-            postHTML += '<video width="212" height="212" controls><source src="' + post.PostPhoto + '" type="video/mp4">Your browser does not support the video tag.</video>';
+            postHTML += '<video width="156" height="110" style="margin-bottom: -46px;margin-left: 8px;" controls><source src="' + post.PostPhoto + '" type="video/mp4">Your browser does not support the video tag.</video>';
         } else {
             postHTML += '<img src="' + post.PostPhoto + '" alt="Post photo" height="212" width="212">';
         }

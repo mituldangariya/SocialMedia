@@ -188,95 +188,6 @@ function setCookie(name, value, days) {
 }
 
 
-/*$(document).ready(function () {
-    // Function to validate email
-    function validateEmail(email) {
-        const re = /^[^@]+@[^@]+\.[^@]+$/;
-        return re.test(email);
-    }
-
-    function validateForm() {
-        let isValid = true;
-
-        // Validate First Name
-        const firstName = $('#TxtFirstName').val();
-        if (!firstName) {
-            $('#firstNameError').text("Please Enter Your First Name.").show();
-            isValid = false;
-        } else if (!/^[a-zA-Z]+$/.test(firstName)) {
-            $('#firstNameError').text("First Name should only contain alphabetic characters.").show();
-            isValid = false;
-        } else {
-            $('#firstNameError').hide();
-        }
-
-        // Validate Last Name
-        const lastName = $('#TxtLastName').val();
-        if (!lastName) {
-            $('#lastNameError').text("Please Enter Your Last Name.").show();
-            isValid = false;
-        } else if (!/^[a-zA-Z]+$/.test(lastName)) {
-            $('#lastNameError').text("Last Name should only contain alphabetic characters.").show();
-            isValid = false;
-        } else {
-            $('#lastNameError').hide();
-        }
-
-        // Validate City
-        const city = $('#TxtCity').val();
-        if (!city) {
-            $('#cityError').text("City is required.").show();
-            isValid = false;
-        } else {
-            $('#cityError').hide();
-        }
-
-        // Validate Email
-        const email = $('#TxtEmail').val();
-        if (!email) {
-            $('#emailError').text("Please Enter A Valid Email.").show();
-            isValid = false;
-        } else if (!validateEmail(email)) {
-            $('#emailError').text("Valid Email is required.").show();
-            isValid = false;
-        } else {
-            $('#emailError').hide();
-        }
-
-        // Validate Phone Number
-        const phoneNumber = $('#TxtPhoneNumber').val();
-        if (!phoneNumber) {
-            $('#phoneError').text("Phone Number is required.").show();
-            isValid = false;
-        } else if (!/^[0-9]{10,12}$/.test(phoneNumber)) {
-            $('#phoneError').text("Phone Number should be 10 to 12 digits long.").show();
-            isValid = false;
-        } else {
-            $('#phoneError').hide();
-        }
-
-        // Validate Birth Date
-        const birthDate = $('#BirthDate').val();
-        if (!birthDate) {
-            $('#birthDateError').text("Birth Date is required.").show();
-            isValid = false;
-        } else {
-            $('#birthDateError').hide();
-        }
-
-        return isValid;
-    }
-
-    $('#updateButton').on('click', function () {
-        if (validateForm()) {
-            $('#myForm').submit();
-            window.location.href = '/Login/HomePage';
-        } else {
-            $("#NewloginError").text("Please correct the errors above.");
-        }
-    });
-});
-*/
 
 
 $(document).ready(function () {
@@ -412,12 +323,8 @@ function AddPost(post) {
                 <source src="${post.PostPhoto}" type="video/${fileExtension}">
             </video>
             <div id="videoOverlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center;">
-                <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#000" width="20" height="20" style="display: none; cursor: pointer;">
-                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                </svg>
-                <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#000" width="20" height="20" style="cursor: pointer;">
-                    <path d="M8 5v14l11-7z"/>
-                </svg>
+              
+            
             </div>
         </div>`;
         } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension)) {
@@ -501,7 +408,7 @@ function AddPost(post) {
                 </figure>
                 <div class="friend-name">
                     ${post.UserId == userId ? `<i class="fas fa-ellipsis-h more-icon" data-toggle="tooltip" title="More"></i>` : ''}
-                    <ins onclick="ShowFriendProfile(${post.UserId})" style="cursor: pointer">${post.FirstName} ${post.LastName}</ins>
+                    <ins onclick="ShowFriendProfile(${post.UserId})" style="cursor: pointer;width: fit-content;" >${post.FirstName} ${post.LastName}</ins>
                     <span hidden>${post.UserId}</span>
                     <button class="delete-btn" onClick="deletePost(${post.PostId})"> <i class="fas fa-trash"></i></button>
                     <span>Published: ${post.PostDate}</span>
@@ -1108,7 +1015,8 @@ function loadPostComments(postId, $commentsList) {
 
                         <div class="we-comment">
                             <div class="coment-head">
-                                <h5>${comment.UserName}</h5>
+                              <h5 onclick="ShowFriendProfile(${comment.UserId})"  style="cursor: pointer;">${comment.UserName}</h5>
+
                                 <span hidden>${comment.CommentId}</span>
                                 <span>${comment.CommentDate}</span>
                                     <i class="fa-solid fa-share reply-icon" data-modal-id="${uniqueModalId}" style="cursor: pointer;"></i>
@@ -1224,12 +1132,13 @@ function replieComment(commentId, postId, modalId) {
                     var replyHtml = `
                     <li data-comment-id="${reply.CommentId}">
                        <div class="comet-avatar">
-    <img src="${reply.ProfilePhoto}" alt="" height="40" width="40" id="ProfilePhoto" onclick="ShowFriendProfile(${reply.UserId})"style="cursor: pointer;">
-</div>
+                             <img src="${reply.ProfilePhoto}" alt="" height="40" width="40" id="ProfilePhoto" onclick="ShowFriendProfile(${reply.UserId})"style="cursor: pointer;">
+                        </div>
 
                         <div class="we-comment">
                             <div class="coment-head">
-                                <h5>${reply.UserName}</h5>
+                               <h5 onclick="ShowFriendProfile(${reply.UserId})" style="cursor: pointer;">${reply.UserName}</h5>
+
                                 <span>just now</span>
                             </div>
                             <p>${reply.CommentText}</p>
@@ -1290,7 +1199,7 @@ function UploadComment() {
 
                                 <div class="we-comment">
                                     <div class="coment-head">
-                                        <h5>${comment.FirstName} ${comment.LastName}</h5>
+                                      <h5 onclick="ShowFriendProfile(${comment.UserId})"style="cursor: pointer;"> ${comment.FirstName} ${comment.LastName} </h5>
                                         <span>Just Now</span>
                                         ${comment.UserId == userId ? '<i class="fa-solid fa-share reply-icon" data-modal-id="${uniqueModalId}" style="cursor: pointer;"></i>' : ''}
                                         <div class="comment-options">
@@ -1444,7 +1353,7 @@ function FriendList() {
                                 <img src="${user.ProfilePhoto}" onclick="ShowFriendProfile(${user.UserId})" class="media-object" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer;" alt="Profile Photo">
                             </figure>
                             <div style="flex: 2; cursor: pointer;" onclick="ShowFriendProfile(${user.UserId})">
-                                <div style="font-weight: 400;font-size: 15px;">${user.FirstName} ${user.LastName}</div>
+                                <div style="font-weight: 400;font-size: 15px;margin: 10px;">${user.FirstName} ${user.LastName}</div>
                                 <i hidden>${user.UserId}</i>
                             </div>
                             <div style="display: flex; gap: 5px;">
@@ -1452,7 +1361,7 @@ function FriendList() {
                                                     ? `<button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}" style="font-size: 11px; padding: 2px 6px; border-radius: 8px; font-weight: 500;">Remove</button>`
                                                     : user.RequestStatus === "pending"
                                                         ? `<button class="btn btn-outline-primary confirm-friend-btn" data-user-id="${user.UserId}" style="font-size: 11px; padding: 2px 6px; border-radius: 8px; font-weight: 500;">Confirm</button>
-                                           <button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}" style="font-size: 11px; padding: 2px 6px; border-radius: 8px; font-weight: 500;">Remove</button>`
+                                                           <button class="btn btn-outline-danger remove-friend-btn" data-user-id="${user.UserId}" style="font-size: 11px; padding: 2px 6px; border-radius: 8px; font-weight: 500;">Remove</button>`
                                                         : `<button class="btn btn-outline-secondary add-friend-btn" data-user-id="${user.UserId}" style="font-size: 11px; padding: 1px 3px; border-radius: 8px; font-weight: 500;">Add Friend</button>`
                                 }
                             </div>
@@ -2070,15 +1979,17 @@ function AddPosts(post) {
 
     if (post.PostPhoto) {
         if (post.PostPhoto.endsWith('.mp4')) {
-            postHTML += '<video width="212" height="212" controls><source src="' + post.PostPhoto + '" type="video/mp4">Your browser does not support the video tag.</video>';
+            postHTML += '<span class="post-icon" style="cursor: pointer;"><i class="fa-regular fa-bookmark"></i></span>';
+            postHTML += '<video width="156" height="121"style="margin-bottom: -46px; margin-bottom: 16px;" controls><source src="' + post.PostPhoto + '" type="video/mp4">Your browser does not support the video tag.</video>';
         } else {
+
             postHTML += '<img src="' + post.PostPhoto + '" alt="Post photo" height="212" width="212">';
+            postHTML += '<span class="post-icon" style="cursor: pointer;"><i class="fa-regular fa-bookmark"></i></span>';
         }
     } else if (post.PostContent) {
         postHTML += '<p>' + post.PostContent + '</p>';
     }
 
-    postHTML += '<span class="post-icon" style="cursor: pointer;"><i class="fa-regular fa-bookmark"></i></span>';
 
     postHTML += '</li>';
 
@@ -2127,15 +2038,17 @@ function archievepost(post) {
 
     if (post.PostPhoto) {
         if (post.PostPhoto.endsWith('.mp4')) {
-            postHTML += '<video width="212" height="212" controls><source src="' + post.PostPhoto + '" type="video/mp4">Your browser does not support the video tag.</video>';
+            postHTML += '<span class="post-icon" style="cursor: pointer;"><i class="fa-regular fa-bookmark"></i></span>';
+            postHTML += '<video width="156" height="121"style="margin-bottom: -46px; margin-bottom: 16px;" controls><source src="' + post.PostPhoto + '" type="video/mp4">Your browser does not support the video tag.</video>';
         } else {
             postHTML += '<img src="' + post.PostPhoto + '" alt="Post photo" height="212" width="212">';
+            postHTML += '<span class="post-icon" style="cursor: pointer;"><i class="fa-regular fa-bookmark"></i></span>';
         }
     } else if (post.PostContent) {
         postHTML += '<p>' + post.PostContent + '</p>';
     }
 
-    postHTML += '<span class="post-icon" style="cursor: pointer;"><i class="fa-regular fa-bookmark"></i></span>';
+  
     postHTML += '</li>';
 
     var postElement = $(postHTML);
