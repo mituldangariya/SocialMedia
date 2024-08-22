@@ -1,0 +1,1773 @@
+﻿USE [master]
+GO
+/****** Object:  Database [SocialMediaApp]    Script Date: 8/22/2024 2:38:03 PM ******/
+CREATE DATABASE [SocialMediaApp]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'SocialMediaApp', FILENAME = N'C:\Users\User\SocialMediaApp.mdf' , SIZE = 73728KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'SocialMediaApp_log', FILENAME = N'C:\Users\User\SocialMediaApp_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT
+GO
+ALTER DATABASE [SocialMediaApp] SET COMPATIBILITY_LEVEL = 150
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [SocialMediaApp].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [SocialMediaApp] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET AUTO_CLOSE ON 
+GO
+ALTER DATABASE [SocialMediaApp] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [SocialMediaApp] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [SocialMediaApp] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET  ENABLE_BROKER 
+GO
+ALTER DATABASE [SocialMediaApp] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [SocialMediaApp] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET RECOVERY SIMPLE 
+GO
+ALTER DATABASE [SocialMediaApp] SET  MULTI_USER 
+GO
+ALTER DATABASE [SocialMediaApp] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [SocialMediaApp] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [SocialMediaApp] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [SocialMediaApp] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [SocialMediaApp] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [SocialMediaApp] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+ALTER DATABASE [SocialMediaApp] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [SocialMediaApp] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [SocialMediaApp]
+GO
+/****** Object:  Table [dbo].[EmojiTypes]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[EmojiTypes](
+	[EmojiTypeId] [int] IDENTITY(1,1) NOT NULL,
+	[EmojiName] [varchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[EmojiTypeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Notifications]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Notifications](
+	[NotificationID] [int] IDENTITY(1,1) NOT NULL,
+	[UserID] [int] NULL,
+	[NotificationType] [nvarchar](50) NULL,
+	[NotificationSenderUserID] [int] NULL,
+	[NotificationPostID] [int] NULL,
+	[NotificationText] [nvarchar](max) NULL,
+	[NotificationTimestamp] [datetime] NULL,
+	[NotificationStatus] [nvarchar](50) NULL,
+	[PostPhoto] [varchar](max) NULL,
+	[PostId] [int] NULL,
+	[PostContent] [varchar](max) NULL,
+	[ProfilePhoto] [varchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[NotificationID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PasswordChangeHistory]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PasswordChangeHistory](
+	[ChangeId] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] NULL,
+	[NewPassword] [varchar](max) NOT NULL,
+	[ChangeDate] [datetime] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ChangeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PasswordReset]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PasswordReset](
+	[PasswordId] [int] IDENTITY(1,1) NOT NULL,
+	[Email] [varchar](max) NOT NULL,
+	[Token] [nvarchar](max) NOT NULL,
+	[Created_At] [datetime] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[PasswordId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PostComments]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PostComments](
+	[CommentId] [int] IDENTITY(1,1) NOT NULL,
+	[PostId] [int] NULL,
+	[UserId] [int] NULL,
+	[CommentText] [varchar](max) NULL,
+	[CommentDate] [datetime] NULL,
+	[ParentCommentId] [int] NULL,
+	[IsDeleted] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[CommentId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PostLikeRequests]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PostLikeRequests](
+	[PostLikeRequestId] [int] IDENTITY(1,1) NOT NULL,
+	[PostId] [int] NOT NULL,
+	[UserId] [int] NOT NULL,
+	[LikeType] [nvarchar](50) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[PostLikeRequestId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PostLikes]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PostLikes](
+	[LikeId] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] NULL,
+	[PostId] [int] NULL,
+	[LikeDate] [datetime] NULL,
+	[EmojiTypeId] [int] NULL,
+	[LikeType] [varchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[LikeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[UserData]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[UserData](
+	[UserId] [int] IDENTITY(100,1) NOT NULL,
+	[LastName] [varchar](50) NULL,
+	[FirstName] [varchar](50) NULL,
+	[City] [varchar](255) NULL,
+	[Email] [varchar](50) NULL,
+	[UserPassword] [varchar](50) NULL,
+	[Gender] [varchar](50) NULL,
+	[ProfilePhoto] [varchar](255) NULL,
+	[Interests] [varchar](255) NULL,
+	[PhoneNumber] [varchar](255) NULL,
+	[Bio] [varchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[UserFriends]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[UserFriends](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] NULL,
+	[FollowerId] [int] NULL,
+	[IsFriend] [int] NULL,
+	[RequestStatus] [varchar](20) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[UserPosts]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[UserPosts](
+	[PostId] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] NULL,
+	[PostContent] [varchar](max) NULL,
+	[PostPhoto] [varchar](255) NULL,
+	[PostDate] [datetime] NULL,
+	[LikeCount] [int] NULL,
+	[CommentCount] [int] NULL,
+	[ShareCount] [int] NULL,
+	[Status] [varchar](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[PostId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[Notifications] ON 
+
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1434, 100, N'Like', 102, 54, N'User Virat Kohli liked your post.', CAST(N'2024-08-14T17:02:30.820' AS DateTime), N'unread', N'/images/cat.jpg', NULL, N'#catlovers', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1435, 101, N'Like', 102, 56, N'User Virat Kohli liked your post.', CAST(N'2024-08-14T17:03:01.190' AS DateTime), N'unread', N'/images/austria-6934186_1280 (1).jpg', NULL, N'"Lost in the beauty of Austria''s majestic peaks."', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1436, 101, N'Like', 102, 56, N'User Virat Kohli liked your post.', CAST(N'2024-08-14T17:03:02.373' AS DateTime), N'unread', N'/images/austria-6934186_1280 (1).jpg', NULL, N'"Lost in the beauty of Austria''s majestic peaks."', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1437, 101, N'Like', 102, 56, N'User Virat Kohli liked your post.', CAST(N'2024-08-14T17:03:41.207' AS DateTime), N'unread', N'/images/austria-6934186_1280 (1).jpg', NULL, N'"Lost in the beauty of Austria''s majestic peaks."', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1438, 100, N'Like', 102, 54, N'User Virat Kohli liked your post.', CAST(N'2024-08-14T17:03:45.547' AS DateTime), N'unread', N'/images/cat.jpg', NULL, N'#catlovers', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1439, 103, N'Like', 102, 33, N'User Virat Kohli liked your post.', CAST(N'2024-08-14T17:03:46.983' AS DateTime), N'unread', NULL, NULL, N'#WinterMagic
+#SnowyDays
+', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1440, 101, N'Like', 102, 56, N'User Virat Kohli liked your post.', CAST(N'2024-08-14T17:03:50.930' AS DateTime), N'unread', N'/images/austria-6934186_1280 (1).jpg', NULL, N'"Lost in the beauty of Austria''s majestic peaks."', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1441, 101, N'Like', 102, 56, N'User Virat Kohli liked your post.', CAST(N'2024-08-14T17:03:51.873' AS DateTime), N'unread', N'/images/austria-6934186_1280 (1).jpg', NULL, N'"Lost in the beauty of Austria''s majestic peaks."', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1442, 101, N'Like', 102, 56, N'User Virat Kohli liked your post.', CAST(N'2024-08-14T17:04:44.950' AS DateTime), N'unread', N'/images/austria-6934186_1280 (1).jpg', NULL, N'"Lost in the beauty of Austria''s majestic peaks."', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1443, 107, N'Like', 100, 64, N'User Rinku Patel liked your post.', CAST(N'2024-08-14T18:05:47.130' AS DateTime), N'unread', N'/images/GRRDK5RXYAAs_sH.jpg', NULL, N'"India''s 4th star in @T20WorldCup inspires dreams and hope."
+
+#congratulations#cricket', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1444, 104, N'Like', 100, 62, N'User Rinku Patel liked your post.', CAST(N'2024-08-14T18:05:49.393' AS DateTime), N'unread', N'/images/pexels-photo-1405761.jpg', NULL, N'"Coffee is always a good idea. 
+#CoffeeLover #MorningRitual"', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1445, 105, N'Like', 100, 59, N'User Rinku Patel liked your post.', CAST(N'2024-08-14T18:05:51.333' AS DateTime), N'unread', N'/images/rahul-dravid-t20-world-cup.jpg', NULL, N'Yesss!! Finally we did it.
+At the stroke of the midnight hour, when the world sleeps, India awakes with #T20WorldCup', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1446, 104, N'Like', 101, 62, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T09:55:17.760' AS DateTime), N'unread', N'/images/pexels-photo-1405761.jpg', NULL, N'"Coffee is always a good idea. 
+#CoffeeLover #MorningRitual"', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1447, 105, N'Like', 101, 59, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T09:55:20.480' AS DateTime), N'unread', N'/images/rahul-dravid-t20-world-cup.jpg', NULL, N'Yesss!! Finally we did it.
+At the stroke of the midnight hour, when the world sleeps, India awakes with #T20WorldCup', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1448, 106, N'Like', 101, 57, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T09:55:22.927' AS DateTime), N'unread', N'/images/pngtree-d-illustration-of-a-cricket-stadium-with-a-front-view-and-image_3857836.jpg', NULL, N'cricket it''s not just a game, it''s an emotion', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1449, 101, N'Like', 101, 56, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T09:55:56.863' AS DateTime), N'unread', N'/images/austria-6934186_1280 (1).jpg', NULL, N'"Lost in the beauty of Austria''s majestic peaks."', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1450, 100, N'Like', 101, 54, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T09:55:59.647' AS DateTime), N'unread', N'/images/cat.jpg', NULL, N'#catlovers', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1451, 103, N'Like', 101, 33, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T09:56:01.047' AS DateTime), N'unread', NULL, NULL, N'#WinterMagic
+#SnowyDays
+', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1452, 106, N'Like', 106, 57, N'User Suresh Raina liked your post.', CAST(N'2024-08-21T09:56:49.870' AS DateTime), N'unread', N'/images/pngtree-d-illustration-of-a-cricket-stadium-with-a-front-view-and-image_3857836.jpg', NULL, N'cricket it''s not just a game, it''s an emotion', N'/postupload/sea-8344717_960_720.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1453, 104, N'Like', 101, 62, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T09:57:07.210' AS DateTime), N'unread', N'/images/pexels-photo-1405761.jpg', NULL, N'"Coffee is always a good idea. 
+#CoffeeLover #MorningRitual"', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1454, 100, N'Like', 101, 54, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T09:57:11.723' AS DateTime), N'unread', N'/images/cat.jpg', NULL, N'#catlovers', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1455, 104, N'Like', 101, 9, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T09:57:14.483' AS DateTime), N'unread', NULL, NULL, N'#nature', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1456, 104, N'Like', 101, 8, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T09:57:16.573' AS DateTime), N'unread', NULL, NULL, N'#friends', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1457, 101, N'Like', 101, 7, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T09:57:18.430' AS DateTime), N'unread', NULL, NULL, N'#photooftheday', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1458, 101, N'Like', 106, 7, N'User Suresh Raina liked your post.', CAST(N'2024-08-21T10:06:29.313' AS DateTime), N'unread', NULL, NULL, N'#photooftheday', N'/postupload/sea-8344717_960_720.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1459, 105, N'Like', 107, 59, N'User Ms Dhoni liked your post.', CAST(N'2024-08-21T10:06:47.050' AS DateTime), N'unread', N'/images/rahul-dravid-t20-world-cup.jpg', NULL, N'Yesss!! Finally we did it.
+At the stroke of the midnight hour, when the world sleeps, India awakes with #T20WorldCup', N'/postupload/BkIjtFXR_400x400.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1460, 101, N'Like', 107, 56, N'User Ms Dhoni liked your post.', CAST(N'2024-08-21T10:06:49.630' AS DateTime), N'unread', N'/images/austria-6934186_1280 (1).jpg', NULL, N'"Lost in the beauty of Austria''s majestic peaks."', N'/postupload/BkIjtFXR_400x400.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1461, 101, N'Like', 107, 7, N'User Ms Dhoni liked your post.', CAST(N'2024-08-21T10:06:53.147' AS DateTime), N'unread', NULL, NULL, N'#photooftheday', N'/postupload/BkIjtFXR_400x400.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1462, 101, N'Like', 102, 56, N'User Virat Kohli liked your post.', CAST(N'2024-08-21T10:07:34.687' AS DateTime), N'unread', N'/images/austria-6934186_1280 (1).jpg', NULL, N'"Lost in the beauty of Austria''s majestic peaks."', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1463, 105, N'Like', 102, 59, N'User Virat Kohli liked your post.', CAST(N'2024-08-21T10:36:18.190' AS DateTime), N'unread', N'/images/rahul-dravid-t20-world-cup.jpg', NULL, N'Yesss!! Finally we did it.
+At the stroke of the midnight hour, when the world sleeps, India awakes with #T20WorldCup', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1464, 100, N'Like', 102, 54, N'User Virat Kohli liked your post.', CAST(N'2024-08-21T10:36:23.870' AS DateTime), N'unread', N'/images/cat.jpg', NULL, N'#catlovers', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1465, 104, N'Like', 102, 62, N'User Virat Kohli liked your post.', CAST(N'2024-08-21T11:15:12.430' AS DateTime), N'unread', N'/images/pexels-photo-1405761.jpg', NULL, N'"Coffee is always a good idea. 
+#CoffeeLover #MorningRitual"', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1466, 103, N'Like', 103, 65, N'User Yash  Dayal liked your post.', CAST(N'2024-08-21T11:38:29.427' AS DateTime), N'unread', N'/images/winter-landscape-2995987_1280.jpg', NULL, N'#WinterMagic #SnowyDays', N'/postupload/images (3).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1467, 103, N'Like', 101, 65, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T11:38:47.907' AS DateTime), N'unread', N'/images/winter-landscape-2995987_1280.jpg', NULL, N'#WinterMagic #SnowyDays', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1468, 103, N'Comment', 101, 65, N'User Rohit Sharma commented on your post.', CAST(N'2024-08-21T11:40:41.730' AS DateTime), N'unread', N'/images/winter-landscape-2995987_1280.jpg', NULL, N'#WinterMagic #SnowyDays', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1469, 103, N'Comment', 102, 65, N'User Virat Kohli commented on your post.', CAST(N'2024-08-21T11:42:08.470' AS DateTime), N'unread', N'/images/winter-landscape-2995987_1280.jpg', NULL, N'#WinterMagic #SnowyDays', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1470, 103, N'Like', 102, 65, N'User Virat Kohli liked your post.', CAST(N'2024-08-21T11:42:12.970' AS DateTime), N'unread', N'/images/winter-landscape-2995987_1280.jpg', NULL, N'#WinterMagic #SnowyDays', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1471, 1110, N'Like', 1110, 79, N'User yuzy  chahal liked your post.', CAST(N'2024-08-21T12:34:35.650' AS DateTime), N'unread', N'/images/pexels-photo-259780.jpeg', NULL, N'finding peace and beauty in the simple moments of village life.#RuralBeauty #SimpleLiving #VillageVibes', N'/postupload/profile.png')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1472, 1110, N'Like', 107, 79, N'User Ms Dhoni liked your post.', CAST(N'2024-08-21T12:36:09.263' AS DateTime), N'unread', N'/images/pexels-photo-259780.jpeg', NULL, N'finding peace and beauty in the simple moments of village life.#RuralBeauty #SimpleLiving #VillageVibes', N'/postupload/BkIjtFXR_400x400.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1473, 1110, N'Comment', 107, 79, N'User Ms Dhoni commented on your post.', CAST(N'2024-08-21T12:36:16.257' AS DateTime), N'unread', N'/images/pexels-photo-259780.jpeg', NULL, N'finding peace and beauty in the simple moments of village life.#RuralBeauty #SimpleLiving #VillageVibes', N'/postupload/BkIjtFXR_400x400.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1474, 107, N'Comment', 107, 64, N'User Ms Dhoni commented on your post.', CAST(N'2024-08-21T12:46:30.470' AS DateTime), N'unread', N'/images/GRRDK5RXYAAs_sH.jpg', NULL, N'"India''s 4th star in @T20WorldCup inspires dreams and hope."
+
+#congratulations#cricket', N'/postupload/BkIjtFXR_400x400.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1475, 107, N'Comment', 1110, 64, N'User Yuzy  Chahal commented on your post.', CAST(N'2024-08-21T12:46:55.150' AS DateTime), N'unread', N'/images/GRRDK5RXYAAs_sH.jpg', NULL, N'"India''s 4th star in @T20WorldCup inspires dreams and hope."
+
+#congratulations#cricket', N'/postupload/profile.png')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1476, 103, N'Comment', 1110, 65, N'User Yuzy  Chahal commented on your post.', CAST(N'2024-08-21T12:49:15.277' AS DateTime), N'unread', N'/images/winter-landscape-2995987_1280.jpg', NULL, N'#WinterMagic #SnowyDays', N'/postupload/profile.png')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1477, 104, N'Like', 101, 62, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T13:59:28.757' AS DateTime), N'unread', N'/images/pexels-photo-1405761.jpg', NULL, N'Coffee is always a good idea. 
+#CoffeeLover #MorningRitual', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1478, 100, N'Like', 101, 54, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T14:02:09.063' AS DateTime), N'unread', N'/images/cat.jpg', NULL, N'#catlovers', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1479, 102, N'Like', 101, 80, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T14:21:42.760' AS DateTime), N'unread', NULL, NULL, N'haskdsa', N'/postupload/111741230.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1480, 101, N'Like', 101, 81, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T17:41:22.607' AS DateTime), N'unread', N'/images/sea-7394353_1280.jpg', NULL, N'The sea is calling, and I must go.
+#OceanCall #BeachBound #SeaLovers.', N'/postupload/images (5).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1481, 104, N'Like', 104, 82, N'User Shivam  Dube liked your post.', CAST(N'2024-08-21T17:50:35.317' AS DateTime), N'unread', N'/images/cat-2151382_1280.jpg', NULL, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/postupload/Shivam-Dube-Biography.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1482, 101, N'Like', 101, 85, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T18:04:01.130' AS DateTime), N'unread', N'/images/landscape-8487906_1280.jpg', NULL, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', N'/postupload/images (5).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1483, 104, N'Like', 101, 82, N'User Rohit Sharma liked your post.', CAST(N'2024-08-21T18:04:03.230' AS DateTime), N'unread', N'/images/cat-2151382_1280.jpg', NULL, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/postupload/images (5).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1484, 101, N'Comment', 102, 85, N'User Virat Kohli commented on your post.', CAST(N'2024-08-22T09:44:46.120' AS DateTime), N'unread', N'/images/landscape-8487906_1280.jpg', NULL, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', N'/postupload/licensed-image.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1485, 101, N'Comment', 105, 85, N'User Rahul   Dravid commented on your post.', CAST(N'2024-08-22T09:45:54.530' AS DateTime), N'unread', N'/images/landscape-8487906_1280.jpg', NULL, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', N'/postupload/images (1).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1486, 101, N'Comment', 103, 85, N'User Yash  Dayal commented on your post.', CAST(N'2024-08-22T09:47:18.940' AS DateTime), N'unread', N'/images/landscape-8487906_1280.jpg', NULL, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', N'/postupload/images (3).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1487, 101, N'Comment', 101, 85, N'User Rohit Sharma commented on your post.', CAST(N'2024-08-22T09:48:04.277' AS DateTime), N'unread', N'/images/landscape-8487906_1280.jpg', NULL, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', N'/postupload/images (5).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1488, 101, N'Comment', 101, 85, N'User Rohit Sharma commented on your post.', CAST(N'2024-08-22T09:48:32.270' AS DateTime), N'unread', N'/images/landscape-8487906_1280.jpg', NULL, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', N'/postupload/images (5).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1489, 101, N'Like', 103, 85, N'User Yash  Dayal liked your post.', CAST(N'2024-08-22T09:48:44.190' AS DateTime), N'unread', N'/images/landscape-8487906_1280.jpg', NULL, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', N'/postupload/images (3).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1490, 104, N'Comment', 101, 82, N'User Rohit Sharma commented on your post.', CAST(N'2024-08-22T09:53:23.403' AS DateTime), N'unread', N'/images/cat-2151382_1280.jpg', NULL, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/postupload/images (5).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1491, 104, N'Comment', 103, 82, N'User Yash  Dayal commented on your post.', CAST(N'2024-08-22T09:54:58.490' AS DateTime), N'unread', N'/images/cat-2151382_1280.jpg', NULL, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/postupload/images (3).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1492, 104, N'Comment', 103, 82, N'User Yash  Dayal commented on your post.', CAST(N'2024-08-22T09:55:09.117' AS DateTime), N'unread', N'/images/cat-2151382_1280.jpg', NULL, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/postupload/images (3).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1493, 104, N'Comment', 100, 82, N'User Rinku Patel commented on your post.', CAST(N'2024-08-22T09:56:54.033' AS DateTime), N'unread', N'/images/cat-2151382_1280.jpg', NULL, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1494, 104, N'Comment', 100, 82, N'User Rinku Patel commented on your post.', CAST(N'2024-08-22T09:57:17.020' AS DateTime), N'unread', N'/images/cat-2151382_1280.jpg', NULL, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1495, 104, N'Comment', 107, 82, N'User Ms Dhoni commented on your post.', CAST(N'2024-08-22T09:58:33.283' AS DateTime), N'unread', N'/images/cat-2151382_1280.jpg', NULL, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/postupload/BkIjtFXR_400x400.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1496, 101, N'Comment', 104, 81, N'User Shivam  Dube commented on your post.', CAST(N'2024-08-22T10:00:46.787' AS DateTime), N'unread', N'/images/sea-7394353_1280.jpg', NULL, N'The sea is calling, and I must go.
+#OceanCall #BeachBound #SeaLovers.', N'/postupload/Shivam-Dube-Biography.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1497, 101, N'Like', 104, 81, N'User Shivam  Dube liked your post.', CAST(N'2024-08-22T10:02:14.820' AS DateTime), N'unread', N'/images/sea-7394353_1280.jpg', NULL, N'The sea is calling, and I must go.
+#OceanCall #BeachBound #SeaLovers.', N'/postupload/Shivam-Dube-Biography.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1498, 101, N'Comment', 104, 81, N'User Shivam  Dube commented on your post.', CAST(N'2024-08-22T10:03:22.480' AS DateTime), N'unread', N'/images/sea-7394353_1280.jpg', NULL, N'The sea is calling, and I must go.
+#OceanCall #BeachBound #SeaLovers.', N'/postupload/Shivam-Dube-Biography.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1499, 101, N'Comment', 101, 81, N'User Rohit Sharma commented on your post.', CAST(N'2024-08-22T10:03:55.967' AS DateTime), N'unread', N'/images/sea-7394353_1280.jpg', NULL, N'The sea is calling, and I must go.
+#OceanCall #BeachBound #SeaLovers.', N'/postupload/images (5).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1500, 101, N'Comment', 101, 81, N'User Rohit Sharma commented on your post.', CAST(N'2024-08-22T10:04:09.050' AS DateTime), N'unread', N'/images/sea-7394353_1280.jpg', NULL, N'The sea is calling, and I must go.
+#OceanCall #BeachBound #SeaLovers.', N'/postupload/images (5).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1501, 104, N'Like', 104, 82, N'User Shivam  Dube liked your post.', CAST(N'2024-08-22T10:05:33.160' AS DateTime), N'unread', N'/images/cat-2151382_1280.jpg', NULL, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/postupload/Shivam-Dube-Biography.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1502, 103, N'Like', 104, 65, N'User Shivam  Dube liked your post.', CAST(N'2024-08-22T10:05:36.280' AS DateTime), N'unread', N'/images/winter-landscape-2995987_1280.jpg', NULL, N'#WinterMagic #SnowyDays', N'/postupload/Shivam-Dube-Biography.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1503, 107, N'Like', 104, 64, N'User Shivam  Dube liked your post.', CAST(N'2024-08-22T10:05:39.643' AS DateTime), N'unread', N'/images/GRRDK5RXYAAs_sH.jpg', NULL, N'"India''s 4th star in @T20WorldCup inspires dreams and hope."
+
+#congratulations#cricket', N'/postupload/Shivam-Dube-Biography.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1504, 101, N'Like', 101, 85, N'User Rohit Sharma liked your post.', CAST(N'2024-08-22T10:23:43.467' AS DateTime), N'unread', N'/images/landscape-8487906_1280.jpg', NULL, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', N'/postupload/images (5).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1505, 104, N'Like', 101, 82, N'User Rohit Sharma liked your post.', CAST(N'2024-08-22T10:24:02.793' AS DateTime), N'unread', N'/images/cat-2151382_1280.jpg', NULL, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/postupload/images (5).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1506, 100, N'Like', 100, 87, N'User Rinku Patel liked your post.', CAST(N'2024-08-22T10:45:28.687' AS DateTime), N'unread', N'/videos/186115-877653483_tiny.mp4', NULL, N'beach vibes only', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1507, 101, N'Like', 100, 85, N'User Rinku Patel liked your post.', CAST(N'2024-08-22T10:47:34.220' AS DateTime), N'unread', N'/images/landscape-8487906_1280.jpg', NULL, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1508, 104, N'Like', 100, 82, N'User Rinku Patel liked your post.', CAST(N'2024-08-22T10:47:40.177' AS DateTime), N'unread', N'/images/cat-2151382_1280.jpg', NULL, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1509, 101, N'Like', 100, 81, N'User Rinku Patel liked your post.', CAST(N'2024-08-22T10:47:41.750' AS DateTime), N'unread', N'/images/sea-7394353_1280.jpg', NULL, N'The sea is calling, and I must go.
+#OceanCall #BeachBound #SeaLovers.', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1510, 103, N'Like', 100, 65, N'User Rinku Patel liked your post.', CAST(N'2024-08-22T10:47:43.690' AS DateTime), N'unread', N'/images/winter-landscape-2995987_1280.jpg', NULL, N'#WinterMagic #SnowyDays', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1511, 107, N'Like', 100, 64, N'User Rinku Patel liked your post.', CAST(N'2024-08-22T10:47:46.493' AS DateTime), N'unread', N'/images/GRRDK5RXYAAs_sH.jpg', NULL, N'"India''s 4th star in @T20WorldCup inspires dreams and hope."
+
+#congratulations#cricket', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1512, 104, N'Like', 100, 62, N'User Rinku Patel liked your post.', CAST(N'2024-08-22T10:47:49.230' AS DateTime), N'unread', N'/images/pexels-photo-1405761.jpg', NULL, N'Coffee is always a good idea. 
+#CoffeeLover #MorningRitual', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1513, 105, N'Like', 100, 59, N'User Rinku Patel liked your post.', CAST(N'2024-08-22T10:47:51.240' AS DateTime), N'unread', N'/images/rahul-dravid-t20-world-cup.jpg', NULL, N'Yesss!! Finally we did it.
+At the stroke of the midnight hour, when the world sleeps, India awakes with #T20WorldCup', N'/postupload/RinkuSingh_Ireland_vs_India.jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1514, 100, N'Like', 101, 87, N'User Rohit Sharma liked your post.', CAST(N'2024-08-22T11:21:45.780' AS DateTime), N'unread', N'/videos/186115-877653483_tiny.mp4', NULL, N'beach vibes only', N'/postupload/images (5).jpg')
+INSERT [dbo].[Notifications] ([NotificationID], [UserID], [NotificationType], [NotificationSenderUserID], [NotificationPostID], [NotificationText], [NotificationTimestamp], [NotificationStatus], [PostPhoto], [PostId], [PostContent], [ProfilePhoto]) VALUES (1515, 100, N'Comment', 101, 87, N'User Rohit Sharma commented on your post.', CAST(N'2024-08-22T13:57:00.813' AS DateTime), N'unread', N'/videos/186115-877653483_tiny.mp4', NULL, N'beach vibes only', N'/postupload/images (5).jpg')
+SET IDENTITY_INSERT [dbo].[Notifications] OFF
+GO
+SET IDENTITY_INSERT [dbo].[PasswordChangeHistory] ON 
+
+INSERT [dbo].[PasswordChangeHistory] ([ChangeId], [UserId], [NewPassword], [ChangeDate]) VALUES (1, 100, N'rinku123', CAST(N'2024-08-05T15:17:49.283' AS DateTime))
+INSERT [dbo].[PasswordChangeHistory] ([ChangeId], [UserId], [NewPassword], [ChangeDate]) VALUES (2, 103, N'yash123', CAST(N'2024-08-05T16:28:26.643' AS DateTime))
+INSERT [dbo].[PasswordChangeHistory] ([ChangeId], [UserId], [NewPassword], [ChangeDate]) VALUES (3, 103, N'yash1234', CAST(N'2024-08-05T16:30:30.747' AS DateTime))
+INSERT [dbo].[PasswordChangeHistory] ([ChangeId], [UserId], [NewPassword], [ChangeDate]) VALUES (4, 100, N'rinku12', CAST(N'2024-08-08T10:19:15.620' AS DateTime))
+SET IDENTITY_INSERT [dbo].[PasswordChangeHistory] OFF
+GO
+SET IDENTITY_INSERT [dbo].[PasswordReset] ON 
+
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (1, N'rinku@gmail.com', N'321989', CAST(N'2024-07-31T12:30:35.573' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (2, N'rinku@gmail.com', N'988478', CAST(N'2024-07-31T12:30:43.440' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (3, N'rinku@gmail.com', N'49c2d542-4b21-49c9-b396-06165b55f93a', CAST(N'2024-08-01T11:15:55.737' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (4, N'rinku@gmail.com', N'75dc6238-efec-4aa0-9d0e-508fb788ba6d', CAST(N'2024-08-01T11:16:11.280' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (5, N'Test@gmail.com', N'985861', CAST(N'2024-08-02T08:52:30.723' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (6, N'rinku@gmail.com', N'4fd9aefb-7b2b-4a77-85e6-e4b57aa2852e', CAST(N'2024-08-05T15:05:10.407' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (7, N'rinku1@gmail.com', N'b02b8627-4f8b-467b-a5ce-0fe04f829ce5', CAST(N'2024-08-05T15:05:59.107' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (8, N'rinku1@gmail.com', N'e48f9c65-42b5-4c4c-ab63-a2267f39390f', CAST(N'2024-08-05T15:07:23.000' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (9, N'rinku1@gmail.com', N'e8f8eb07-f5dd-480e-af7a-1cb5b89af24c', CAST(N'2024-08-05T15:07:50.337' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (10, N'rinku1@gmail.com', N'90c2eefa-f4b1-4109-90bd-11de5c64de3f', CAST(N'2024-08-05T15:12:47.443' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (11, N'rinku1@gmail.com', N'4ed9ef3a-7199-4af9-b768-1c7bcd30b025', CAST(N'2024-08-05T15:13:23.213' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (12, N'rinku1@gmail.com', N'3e26be18-9d17-48a7-bef7-444833f03c4a', CAST(N'2024-08-05T15:15:18.600' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (14, N'rinku1@gmail.com', N'e97299cb-3910-44f3-8c26-c9052edb67e9', CAST(N'2024-08-05T15:20:20.883' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (15, N'yash@gmail.com', N'324025', CAST(N'2024-08-05T10:04:35.813' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (18, N'shivam@gmail.com', N'724886', CAST(N'2024-08-06T05:02:49.237' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (19, N'rahul@gmail.com', N'308247', CAST(N'2024-08-06T05:28:55.703' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (20, N'demo@gmail.com', N'142182', CAST(N'2024-08-07T05:07:13.247' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (21, N'demo@gmail.com', N'142182', CAST(N'2024-08-07T05:07:13.247' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (1021, N'ritesh@gmail.com', N'668356', CAST(N'2024-08-12T11:28:39.810' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (1022, N'rinku1@gmail.com', N'65a0e6c9-aa72-4b74-b1e1-9765095f19fd', CAST(N'2024-08-13T14:38:34.847' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (1023, N'rinku1@gmail.com', N'213891', CAST(N'2024-08-21T05:52:41.257' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (1024, N'rinku1@gmail.com', N'625152', CAST(N'2024-08-21T05:52:43.510' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (1025, N'rohit@gmail.com', N'408874', CAST(N'2024-08-21T05:57:20.310' AS DateTime))
+INSERT [dbo].[PasswordReset] ([PasswordId], [Email], [Token], [Created_At]) VALUES (1026, N'yuzy@gmail.com', N'172093', CAST(N'2024-08-21T06:03:21.023' AS DateTime))
+SET IDENTITY_INSERT [dbo].[PasswordReset] OFF
+GO
+SET IDENTITY_INSERT [dbo].[PostComments] ON 
+
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (1, 25, 100, N'ssss', CAST(N'2024-08-12T12:48:40.853' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (2, 25, 100, N'hyy', CAST(N'2024-08-12T12:50:06.870' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (3, 25, 100, N'hyyyy', CAST(N'2024-08-12T12:58:35.267' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (4, 25, 100, N'sss', CAST(N'2024-08-12T12:59:13.147' AS DateTime), 3, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (5, 25, 100, N'ddd', CAST(N'2024-08-12T13:01:56.987' AS DateTime), 4, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (6, 25, 100, N'hyyy', CAST(N'2024-08-12T13:48:10.180' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (7, 25, 100, N'gfff', CAST(N'2024-08-12T13:48:25.387' AS DateTime), 3, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (8, 25, 100, N'hiii', CAST(N'2024-08-12T13:49:34.710' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (9, 25, 100, N'dddd', CAST(N'2024-08-12T13:51:29.727' AS DateTime), 3, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (10, 25, 100, N'dddd', CAST(N'2024-08-12T13:51:29.737' AS DateTime), 3, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (11, 14, 100, N'ssss', CAST(N'2024-08-12T13:51:49.927' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (12, 14, 100, N'ddd', CAST(N'2024-08-12T13:51:55.850' AS DateTime), 11, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (13, 25, 100, N'ffff', CAST(N'2024-08-12T15:54:22.677' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (14, 25, 104, N'hiiii', CAST(N'2024-08-12T17:02:44.863' AS DateTime), 9, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (15, 25, 104, N'hello', CAST(N'2024-08-12T17:03:35.197' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (16, 29, 104, N'hy rinku', CAST(N'2024-08-12T17:10:09.357' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (17, 29, 104, N'hyyy', CAST(N'2024-08-12T17:20:12.510' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (18, 29, 104, N'hyyyy', CAST(N'2024-08-12T17:25:43.583' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (19, 29, 104, N'rerfuejhfrejfhrejfhrujfh', CAST(N'2024-08-12T17:28:54.713' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (20, 29, 104, N'dsfdfd', CAST(N'2024-08-12T17:31:55.580' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (21, 29, 103, N'sssss', CAST(N'2024-08-12T18:15:04.770' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (22, 9, 100, N'hyy', CAST(N'2024-08-13T10:02:19.783' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (23, 29, 100, N'j', CAST(N'2024-08-13T10:08:07.003' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (24, 29, 100, N'dddd', CAST(N'2024-08-13T10:31:12.137' AS DateTime), 21, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (25, 29, 105, N'hello rinku', CAST(N'2024-08-13T12:44:22.930' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (26, 33, 100, N'dsssdd', CAST(N'2024-08-13T18:15:15.253' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (27, 54, 101, N'cutie cat', CAST(N'2024-08-14T11:57:35.967' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (28, 56, 101, N'such a beautiful escape', CAST(N'2024-08-14T12:10:00.020' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (29, 56, 105, N'such a beautiful escape rohit
+
+', CAST(N'2024-08-14T12:10:41.500' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (30, 56, 101, N'Haha, Rahul sir, these peaks are so stunning they might just have their own fan club', CAST(N'2024-08-14T12:13:20.063' AS DateTime), 29, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (31, 59, 101, N'congratulations finally you did it.', CAST(N'2024-08-14T12:19:22.663' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (32, 59, 105, N'thanks rohit', CAST(N'2024-08-14T12:20:58.937' AS DateTime), 31, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (33, 59, 102, N'Congratulations to the team for their hard work, determination, and spirit. ', CAST(N'2024-08-14T12:28:58.060' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (34, 56, 102, N'such incredible views RohitBhai', CAST(N'2024-08-14T12:30:05.467' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (35, 62, 102, N'coffee the reason I have friends. ', CAST(N'2024-08-14T12:50:23.967' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (36, 59, 104, N'congratulations all', CAST(N'2024-08-14T12:51:39.507' AS DateTime), 32, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (37, 57, 101, N'absolutely   cricket isn’t just a game!', CAST(N'2024-08-14T13:01:13.073' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (38, 64, 101, N'thank you mahibhai', CAST(N'2024-08-14T14:07:01.573' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (39, 62, 107, N'yeee!!coffeelover ', CAST(N'2024-08-14T14:15:12.817' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (40, 56, 107, N'stunning view! where was this taken?', CAST(N'2024-08-14T14:25:14.957' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (41, 54, 107, N'so cute cat', CAST(N'2024-08-14T15:12:50.557' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (42, 64, 107, N'most welcome brother', CAST(N'2024-08-14T15:21:19.370' AS DateTime), 38, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (43, 62, 101, N'good friend with coffee', CAST(N'2024-08-14T15:29:45.030' AS DateTime), 35, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (44, 56, 103, N'so good pic', CAST(N'2024-08-14T16:21:16.407' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (45, 64, 100, N'congratulations ', CAST(N'2024-08-14T16:24:34.893' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (46, 64, 101, N'congratulations team', CAST(N'2024-08-14T16:37:44.903' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (47, 64, 104, N'congratulations team ind', CAST(N'2024-08-14T16:53:41.673' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (48, 64, 104, N'congratulations', CAST(N'2024-08-14T16:55:27.040' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (49, 65, 101, N'Magic in every snowfall.', CAST(N'2024-08-21T11:40:41.703' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (50, 65, 102, N'Snowy delight!', CAST(N'2024-08-21T11:42:08.447' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (51, 79, 107, N'incredible view', CAST(N'2024-08-21T12:36:16.243' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (52, 64, 107, N'congratulations', CAST(N'2024-08-21T12:46:30.457' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (53, 64, 1110, N'congratulations', CAST(N'2024-08-21T12:46:55.140' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (54, 65, 1110, N'perfect view, so serene', CAST(N'2024-08-21T12:49:15.260' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (55, 85, 102, N'amazing the beauty of nature captured perfectly', CAST(N'2024-08-22T09:44:46.003' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (56, 85, 105, N'beautiful this picture radiates peace and tranquility', CAST(N'2024-08-22T09:45:54.530' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (57, 85, 103, N'stunning view! you’ve truly captured nature’s beauty', CAST(N'2024-08-22T09:47:18.940' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (58, 85, 101, N'thanks', CAST(N'2024-08-22T09:48:04.270' AS DateTime), 55, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (59, 85, 101, N'Thank you', CAST(N'2024-08-22T09:48:32.270' AS DateTime), 56, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (60, 82, 101, N'too cute for words!', CAST(N'2024-08-22T09:53:23.403' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (61, 82, 103, N']heart-melting cuteness! ', CAST(N'2024-08-22T09:54:58.490' AS DateTime), NULL, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (62, 82, 103, N'heart-melting cuteness! ', CAST(N'2024-08-22T09:55:09.117' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (63, 82, 100, N'so sweet! ', CAST(N'2024-08-22T09:56:54.030' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (64, 82, 100, N'yeeheee!!', CAST(N'2024-08-22T09:57:17.017' AS DateTime), 60, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (65, 82, 107, N'pure cuteness!', CAST(N'2024-08-22T09:58:33.283' AS DateTime), 62, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (66, 81, 104, N'ocean dreams are real!', CAST(N'2024-08-22T10:00:46.773' AS DateTime), NULL, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (67, 81, 104, N'yes absolutely  right', CAST(N'2024-08-22T10:03:22.477' AS DateTime), 66, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (68, 81, 101, N'absolutely right', CAST(N'2024-08-22T10:03:55.960' AS DateTime), 66, 0)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (69, 81, 101, N'yeee', CAST(N'2024-08-22T10:04:09.050' AS DateTime), 68, 1)
+INSERT [dbo].[PostComments] ([CommentId], [PostId], [UserId], [CommentText], [CommentDate], [ParentCommentId], [IsDeleted]) VALUES (70, 87, 101, N'so funny videos', CAST(N'2024-08-22T13:57:00.360' AS DateTime), NULL, 0)
+SET IDENTITY_INSERT [dbo].[PostComments] OFF
+GO
+SET IDENTITY_INSERT [dbo].[PostLikes] ON 
+
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (6, 100, 1, CAST(N'2024-08-05T10:34:35.173' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (8, 101, 2, CAST(N'2024-08-05T11:29:50.990' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (11, 101, 3, CAST(N'2024-08-05T13:46:29.140' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (12, 100, 3, CAST(N'2024-08-05T15:53:09.167' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (14, 100, 5, CAST(N'2024-08-05T18:25:01.153' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (15, 100, 6, CAST(N'2024-08-05T18:27:30.717' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (16, 101, 6, CAST(N'2024-08-06T09:55:20.947' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (17, 101, 5, CAST(N'2024-08-06T10:04:13.353' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (23, 104, 6, CAST(N'2024-08-06T10:34:06.650' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (26, 105, 9, CAST(N'2024-08-06T11:01:41.037' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (31, 104, 10, CAST(N'2024-08-06T11:18:47.977' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (34, 105, 6, CAST(N'2024-08-06T11:39:43.097' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (35, 105, 3, CAST(N'2024-08-06T11:40:32.213' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (36, 105, 2, CAST(N'2024-08-06T11:41:55.130' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (37, 105, 12, CAST(N'2024-08-06T11:44:49.057' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (39, 105, 13, CAST(N'2024-08-06T11:52:34.230' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (40, 105, 14, CAST(N'2024-08-06T11:58:02.000' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (41, 104, 11, CAST(N'2024-08-06T12:05:54.040' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (42, 104, 8, CAST(N'2024-08-06T12:18:00.330' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (44, 100, 7, CAST(N'2024-08-07T12:52:20.527' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1047, 100, 9, CAST(N'2024-08-07T14:24:36.937' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1051, 102, 16, CAST(N'2024-08-08T10:53:11.920' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1056, 100, 20, CAST(N'2024-08-08T15:17:19.513' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1060, 100, 11, CAST(N'2024-08-08T17:22:08.857' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1062, 100, 22, CAST(N'2024-08-09T09:46:36.157' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1063, 100, 22, CAST(N'2024-08-09T09:46:36.187' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1064, 105, 22, CAST(N'2024-08-09T11:22:16.067' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1069, 100, 14, CAST(N'2024-08-12T11:07:34.310' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1070, 100, 10, CAST(N'2024-08-12T11:07:48.657' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1072, 104, 29, CAST(N'2024-08-12T17:19:46.383' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1074, 104, 25, CAST(N'2024-08-12T17:33:11.417' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1075, 100, 29, CAST(N'2024-08-12T17:59:41.200' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1076, 100, 25, CAST(N'2024-08-12T18:00:15.857' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1077, 103, 29, CAST(N'2024-08-12T18:14:57.083' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1078, 100, 21, CAST(N'2024-08-13T14:56:03.183' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1079, 103, 31, CAST(N'2024-08-13T16:58:39.353' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1080, 100, 51, CAST(N'2024-08-13T18:24:46.753' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1081, 100, 50, CAST(N'2024-08-13T18:24:48.797' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1090, 107, 9, CAST(N'2024-08-14T14:19:54.480' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1091, 107, 62, CAST(N'2024-08-14T14:19:58.957' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1093, 107, 8, CAST(N'2024-08-14T14:20:04.220' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1095, 107, 64, CAST(N'2024-08-14T14:27:44.857' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1096, 101, 31, CAST(N'2024-08-14T16:13:59.560' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1099, 103, 56, CAST(N'2024-08-14T16:19:29.787' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1101, 101, 64, CAST(N'2024-08-14T16:39:49.450' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1107, 104, 62, CAST(N'2024-08-14T16:47:06.747' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1108, 104, 59, CAST(N'2024-08-14T16:47:08.313' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1110, 104, 54, CAST(N'2024-08-14T16:56:25.453' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1118, 102, 33, CAST(N'2024-08-14T17:03:46.980' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1126, 101, 59, CAST(N'2024-08-21T09:55:20.477' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1127, 101, 57, CAST(N'2024-08-21T09:55:22.923' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1128, 101, 56, CAST(N'2024-08-21T09:55:56.860' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1130, 101, 33, CAST(N'2024-08-21T09:56:01.047' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1131, 106, 57, CAST(N'2024-08-21T09:56:49.870' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1134, 101, 9, CAST(N'2024-08-21T09:57:14.480' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1135, 101, 8, CAST(N'2024-08-21T09:57:16.573' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1136, 101, 7, CAST(N'2024-08-21T09:57:18.430' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1137, 106, 7, CAST(N'2024-08-21T10:06:29.313' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1138, 107, 59, CAST(N'2024-08-21T10:06:47.050' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1139, 107, 56, CAST(N'2024-08-21T10:06:49.630' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1140, 107, 7, CAST(N'2024-08-21T10:06:53.143' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1141, 102, 56, CAST(N'2024-08-21T10:07:34.683' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1142, 102, 59, CAST(N'2024-08-21T10:36:17.873' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1143, 102, 54, CAST(N'2024-08-21T10:36:23.870' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1144, 102, 62, CAST(N'2024-08-21T11:15:12.387' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1145, 103, 65, CAST(N'2024-08-21T11:38:29.390' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1146, 101, 65, CAST(N'2024-08-21T11:38:47.907' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1147, 102, 65, CAST(N'2024-08-21T11:42:12.953' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1148, 1110, 79, CAST(N'2024-08-21T12:34:35.593' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1149, 107, 79, CAST(N'2024-08-21T12:36:09.247' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1150, 101, 62, CAST(N'2024-08-21T13:59:28.703' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1151, 101, 54, CAST(N'2024-08-21T14:02:09.050' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1152, 101, 80, CAST(N'2024-08-21T14:21:42.747' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1153, 101, 81, CAST(N'2024-08-21T17:41:22.560' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1157, 103, 85, CAST(N'2024-08-22T09:48:44.160' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1158, 104, 81, CAST(N'2024-08-22T10:02:14.803' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1159, 104, 82, CAST(N'2024-08-22T10:05:33.160' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1160, 104, 65, CAST(N'2024-08-22T10:05:36.280' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1161, 104, 64, CAST(N'2024-08-22T10:05:39.640' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1162, 101, 85, CAST(N'2024-08-22T10:23:43.427' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1163, 101, 82, CAST(N'2024-08-22T10:24:02.790' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1164, 100, 87, CAST(N'2024-08-22T10:45:28.210' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1165, 100, 85, CAST(N'2024-08-22T10:47:34.203' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1166, 100, 82, CAST(N'2024-08-22T10:47:40.173' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1167, 100, 81, CAST(N'2024-08-22T10:47:41.750' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1168, 100, 65, CAST(N'2024-08-22T10:47:43.677' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1169, 100, 64, CAST(N'2024-08-22T10:47:46.493' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1170, 100, 62, CAST(N'2024-08-22T10:47:49.230' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1171, 100, 59, CAST(N'2024-08-22T10:47:51.240' AS DateTime), NULL, NULL)
+INSERT [dbo].[PostLikes] ([LikeId], [UserId], [PostId], [LikeDate], [EmojiTypeId], [LikeType]) VALUES (1172, 101, 87, CAST(N'2024-08-22T11:21:45.493' AS DateTime), NULL, NULL)
+SET IDENTITY_INSERT [dbo].[PostLikes] OFF
+GO
+SET IDENTITY_INSERT [dbo].[UserData] ON 
+
+INSERT [dbo].[UserData] ([UserId], [LastName], [FirstName], [City], [Email], [UserPassword], [Gender], [ProfilePhoto], [Interests], [PhoneNumber], [Bio]) VALUES (100, N'Patel', N'Rinku', N'Rajkot', N'rinku1@gmail.com', N'rinku12', N'Male', N'/postupload/RinkuSingh_Ireland_vs_India.jpg', N'Dance, singing, Drawing', N'8521479632', N'Cricketer')
+INSERT [dbo].[UserData] ([UserId], [LastName], [FirstName], [City], [Email], [UserPassword], [Gender], [ProfilePhoto], [Interests], [PhoneNumber], [Bio]) VALUES (101, N'Sharma', N'Rohit', N'Bansod, Nagpur', N'rohit@gmail.com', N'rohit1234', N'Male', N'/postupload/images (5).jpg', N'Dance, singing, Drawing, Acting', N'8521479631', N'We are born to be real, not perfect.')
+INSERT [dbo].[UserData] ([UserId], [LastName], [FirstName], [City], [Email], [UserPassword], [Gender], [ProfilePhoto], [Interests], [PhoneNumber], [Bio]) VALUES (102, N'Kohli', N'Virat', N'Delhi', N'virat@gmail.com', N'virat@123', N'Male', N'/postupload/licensed-image.jpg', N'Dance, Acting', N'8521425024', N'')
+INSERT [dbo].[UserData] ([UserId], [LastName], [FirstName], [City], [Email], [UserPassword], [Gender], [ProfilePhoto], [Interests], [PhoneNumber], [Bio]) VALUES (103, N'Dayal', N'Yash ', N'Jamnagar', N'yash@gmail.com', N'yash1234', N'Male', N'/postupload/images (3).jpg', N'Dance, singing, Acting', N'8521479630', N'Professional cricketer ')
+INSERT [dbo].[UserData] ([UserId], [LastName], [FirstName], [City], [Email], [UserPassword], [Gender], [ProfilePhoto], [Interests], [PhoneNumber], [Bio]) VALUES (104, N'Dube', N'Shivam ', N'Rajkot', N'shivam@gmail.com', N'shivam123', N'Male', N'/postupload/Shivam-Dube-Biography.jpg', N'Drawing, Painting', N'', N' Test Cricketer')
+INSERT [dbo].[UserData] ([UserId], [LastName], [FirstName], [City], [Email], [UserPassword], [Gender], [ProfilePhoto], [Interests], [PhoneNumber], [Bio]) VALUES (105, N' Dravid', N'Rahul ', NULL, N'rahul@gmail.com', N'rahul123', NULL, N'/postupload/images (1).jpg', NULL, NULL, NULL)
+INSERT [dbo].[UserData] ([UserId], [LastName], [FirstName], [City], [Email], [UserPassword], [Gender], [ProfilePhoto], [Interests], [PhoneNumber], [Bio]) VALUES (106, N'Raina', N'Suresh', N'West Bengal', N'suresh@gmail.com', N'suresh123', N'Male', N'/postupload/sea-8344717_960_720.jpg', N'Dance, Painting', N'8521479635', N'')
+INSERT [dbo].[UserData] ([UserId], [LastName], [FirstName], [City], [Email], [UserPassword], [Gender], [ProfilePhoto], [Interests], [PhoneNumber], [Bio]) VALUES (107, N'Dhoni', N'Ms', N'Ranchi, Bihar ', N'ms@gmail.com', N'msd123', N'Male', N'/postupload/BkIjtFXR_400x400.jpg', N'Dance, singing', N'', N'captain cool')
+INSERT [dbo].[UserData] ([UserId], [LastName], [FirstName], [City], [Email], [UserPassword], [Gender], [ProfilePhoto], [Interests], [PhoneNumber], [Bio]) VALUES (1106, N'patel', N'ritesh', NULL, N'ritesh@gmail.com', N'ritesh123', NULL, N'/postupload/profile.png', NULL, NULL, NULL)
+INSERT [dbo].[UserData] ([UserId], [LastName], [FirstName], [City], [Email], [UserPassword], [Gender], [ProfilePhoto], [Interests], [PhoneNumber], [Bio]) VALUES (1110, N'Chahal', N'Yuzy ', N' Gurugram.', N'yuzy@gmail.com', N'yuzy123', N'Male', N'/postupload/images (4).jpg', N'singing', N'78965412300', N'Athlete Indian Cricketer  | Rajasthan Royals |')
+SET IDENTITY_INSERT [dbo].[UserData] OFF
+GO
+SET IDENTITY_INSERT [dbo].[UserFriends] ON 
+
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (10, 104, 105, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (25, 101, 100, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (42, 100, 104, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (46, 100, 105, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (48, 102, 100, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (49, 101, 102, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (51, 105, 101, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (53, 105, 102, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (54, 104, 102, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (55, 103, 102, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (56, 106, 101, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (57, 104, 101, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (59, 101, 107, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (60, 104, 107, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (65, 105, 107, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (67, 103, 101, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (68, 104, 103, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (69, 1110, 103, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (70, 107, 1110, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (83, 1110, 1106, 2, N'accepted')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (86, 102, 107, 1, N'pending')
+INSERT [dbo].[UserFriends] ([Id], [UserId], [FollowerId], [IsFriend], [RequestStatus]) VALUES (88, 103, 100, 2, N'accepted')
+SET IDENTITY_INSERT [dbo].[UserFriends] OFF
+GO
+SET IDENTITY_INSERT [dbo].[UserPosts] ON 
+
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (1, 100, N'#MegaTreePlantation', NULL, CAST(N'2024-07-31T18:08:04.620' AS DateTime), 1, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (2, 100, N'#HarGharTrianga', NULL, CAST(N'2024-08-02T17:23:01.733' AS DateTime), 2, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (3, 100, N'##olympics2024', NULL, CAST(N'2024-08-05T12:23:59.380' AS DateTime), 3, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (4, 101, N'	#SaripodhaaSanivaaramTrailer', N'/images/olympic-rings-1-1024x680.jpeg', CAST(N'2024-08-05T12:26:56.010' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (5, 101, N'#2024olympics', NULL, CAST(N'2024-08-05T17:58:48.837' AS DateTime), 2, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (6, 100, N'#followme', N'/images/olympic-rings-1-1024x680.jpeg', CAST(N'2024-08-05T18:27:15.107' AS DateTime), 4, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (7, 101, N'#photooftheday', NULL, CAST(N'2024-08-06T10:06:52.307' AS DateTime), 4, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (8, 104, N'#friends', NULL, CAST(N'2024-08-06T10:52:17.383' AS DateTime), 3, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (9, 104, N'#nature', NULL, CAST(N'2024-08-06T10:55:10.603' AS DateTime), 4, 1, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (10, 105, N'#fashion', NULL, CAST(N'2024-08-06T11:06:15.773' AS DateTime), 2, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (11, 105, N'#Yesss!! Finally we did it.
+
+At the stroke of the midnight hour, when the world sleeps, India awakes with #T20WorldCup', N'/images/rahul-dravid-t20-world-cup.jpeg', CAST(N'2024-08-06T11:37:26.640' AS DateTime), 2, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (12, 100, N'#motivation', NULL, CAST(N'2024-08-06T11:44:39.977' AS DateTime), 1, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (13, 103, N'sign up for Arcadia Power & get $25 off your next elec. bill: https://arcadiapower.com/nathan85001', NULL, CAST(N'2024-08-06T11:52:23.787' AS DateTime), 1, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (14, 103, N'#lifestyle', N'/images/olympic-rings-1-1024x680.jpeg', CAST(N'2024-08-06T11:57:54.633' AS DateTime), 2, 2, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (15, 100, N'#design', NULL, CAST(N'2024-08-07T17:17:54.990' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (16, 100, N'#artoftheday
+
+Source: Top 100 Instagram Hashtags of 2024 (Ultimate Hashtag Guide) (https://www.instafollowers.co/blog/100-top-instagram-hashtags)', NULL, CAST(N'2024-08-07T17:25:21.427' AS DateTime), 1, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (17, 100, N'#yummy#lifestyle', N'/videos/197898-905833761_tiny.mp4', CAST(N'2024-08-08T09:58:38.953' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (18, 100, N'lifegoals', N'/videos/197898-905833761_tiny (1).mp4', CAST(N'2024-08-08T09:59:43.683' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (19, 100, N'#lifestyle', N'/videos/197898-905833761_tiny (1).mp4', CAST(N'2024-08-08T14:06:59.173' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (20, 100, N'"likeforlike" https://blog.hubspot.com/marketing/instagram-hashtags', NULL, CAST(N'2024-08-08T15:17:13.967' AS DateTime), 1, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (21, 100, N'#motivation
+#success', NULL, CAST(N'2024-08-08T15:44:49.417' AS DateTime), 1, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (22, 100, N'#tech
+#ai
+#innovation', NULL, CAST(N'2024-08-08T15:49:17.057' AS DateTime), 2, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (23, 100, N'#business
+#cybersecurity', NULL, CAST(N'2024-08-09T15:10:12.663' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (24, 100, N'#education
+#learning
+#studyabroad', NULL, CAST(N'2024-08-09T16:37:56.350' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (25, 100, N'#samsung
+#iphone', NULL, CAST(N'2024-08-09T16:39:29.677' AS DateTime), 2, 5, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (26, 100, N'#education', NULL, CAST(N'2024-08-09T17:25:34.850' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (27, 100, N'#trending
+#student
+#stockmarket', NULL, CAST(N'2024-08-09T17:27:07.803' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (28, 100, N'#software,#coding
+#engineering', N'/images/Screenshot 2024-08-08 141322.png', CAST(N'2024-08-09T17:44:59.940' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (29, 100, N'#celebration
+#grateful', NULL, CAST(N'2024-08-12T17:09:19.617' AS DateTime), 3, 4, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (30, 100, N'#coding
+#engineering', NULL, CAST(N'2024-08-13T15:03:06.703' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (31, 103, N'#Fluffy
+#Purrfect', NULL, CAST(N'2024-08-13T16:48:42.270' AS DateTime), 2, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (32, 103, N'#nature
+#artist
+#style', NULL, CAST(N'2024-08-13T16:57:02.437' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (33, 103, N'#WinterMagic
+#SnowyDays
+', NULL, CAST(N'2024-08-13T17:00:59.123' AS DateTime), 2, 1, 0, N'2')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (34, 103, N'#Ocean
+#RoadTrip', NULL, CAST(N'2024-08-13T17:04:44.840' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (35, 103, N'#Explore
+#Adventure', NULL, CAST(N'2024-08-13T17:10:34.647' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (36, 103, N'#coffeeculture
+#coffeegram', NULL, CAST(N'2024-08-13T17:10:47.343' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (37, 103, N'#Poolside
+#Camping', NULL, CAST(N'2024-08-13T17:14:25.630' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (38, 104, N'#SpringFashion
+#SpringStyle
+#SpringFlowers', NULL, CAST(N'2024-08-13T17:22:37.823' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (39, 104, N'#Autumn
+#Fall
+#Leaves', NULL, CAST(N'2024-08-13T17:23:15.500' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (40, 104, N'#GoodVibes
+#Poolside', NULL, CAST(N'2024-08-13T17:29:33.460' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (41, 104, N'#makeup#beauty
+', NULL, CAST(N'2024-08-13T17:29:55.433' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (42, 104, N'#motivationalspeaker
+#successquotes', NULL, CAST(N'2024-08-13T17:31:22.863' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (43, 104, N'#coffeecommunity
+#coffeeplease', NULL, CAST(N'2024-08-13T17:33:37.113' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (44, 104, N'#ecotourism
+#outdooradventures', NULL, CAST(N'2024-08-13T17:33:59.517' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (45, 104, N'#amazing
+#bliss', NULL, CAST(N'2024-08-13T17:38:50.110' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (46, 104, N'#SummerVibes
+#Summertime', NULL, CAST(N'2024-08-13T17:40:03.080' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (47, 100, N'#lifequotes', NULL, CAST(N'2024-08-13T17:41:53.750' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (48, 100, N'#Heatwave
+#Ocean', NULL, CAST(N'2024-08-13T18:05:14.477' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (49, 100, N'#motivationalquotes,#inspiration', NULL, CAST(N'2024-08-13T18:06:04.207' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (50, 100, N'#loveyourself ', NULL, CAST(N'2024-08-13T18:07:31.690' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (51, 100, N'#catlovers', N'/images/cat.jpeg', CAST(N'2024-08-13T18:11:14.137' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (52, 100, N'#HarGharTrianga', NULL, CAST(N'2024-08-13T18:11:54.927' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (53, 100, N'#style#nature', NULL, CAST(N'2024-08-14T09:44:56.167' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (54, 100, N'#catlovers', N'/images/cat.jpg', CAST(N'2024-08-14T11:05:16.607' AS DateTime), 1, 2, 0, NULL)
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (55, 101, N'#harghartiranga2024', N'/images/images (2).jpg', CAST(N'2024-08-14T11:11:53.240' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (56, 101, N'"Lost in the beauty of Austria''s majestic peaks."', N'/images/austria-6934186_1280 (1).jpg', CAST(N'2024-08-14T11:19:51.870' AS DateTime), 3, 5, 0, NULL)
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (57, 106, N'cricket it''s not just a game, it''s an emotion', N'/images/pngtree-d-illustration-of-a-cricket-stadium-with-a-front-view-and-image_3857836.jpg', CAST(N'2024-08-14T11:28:22.947' AS DateTime), 1, 1, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (59, 105, N'Yesss!! Finally we did it.
+At the stroke of the midnight hour, when the world sleeps, India awakes with #T20WorldCup', N'/images/rahul-dravid-t20-world-cup.jpg', CAST(N'2024-08-14T12:07:20.467' AS DateTime), 3, 4, 0, NULL)
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (60, 104, N'Learn, Practice 
+#whistlepodu???? #tataipl', NULL, CAST(N'2024-08-14T12:41:44.453' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (62, 104, N'Coffee is always a good idea. 
+#CoffeeLover #MorningRitual', N'/images/pexels-photo-1405761.jpg', CAST(N'2024-08-14T12:48:28.997' AS DateTime), 1, 3, 0, NULL)
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (63, 107, N'Every star added to the Team India jersey inspires our nation’s starry-eyed children to move one step closer to their dreams. India gets the 4th star, our second in 
+@T20WorldCup', NULL, CAST(N'2024-08-14T14:03:40.460' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (64, 107, N'"India''s 4th star in @T20WorldCup inspires dreams and hope."
+
+#congratulations#cricket', N'/images/GRRDK5RXYAAs_sH.jpg', CAST(N'2024-08-14T14:04:35.210' AS DateTime), 1, 4, 0, NULL)
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (65, 103, N'#WinterMagic #SnowyDays', N'/images/winter-landscape-2995987_1280.jpg', CAST(N'2024-08-21T11:38:24.430' AS DateTime), 5, 3, 0, NULL)
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (66, 1110, N'chasing sunsets and dreams.#SunsetMagic#GoldenHour', N'/images/pexels-photo-87812.webp', CAST(N'2024-08-21T12:01:46.047' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (79, 1110, N'finding peace and beauty in the simple moments of village life.#RuralBeauty #SimpleLiving #VillageVibes', N'/images/pexels-photo-259780.jpeg', CAST(N'2024-08-21T12:34:26.177' AS DateTime), 2, 1, 0, NULL)
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (80, 102, N'haskdsa', NULL, CAST(N'2024-08-21T14:21:37.487' AS DateTime), 1, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (81, 101, N'The sea is calling, and I must go.
+#OceanCall #BeachBound #SeaLovers.', N'/images/sea-7394353_1280.jpg', CAST(N'2024-08-21T17:41:18.470' AS DateTime), 3, 2, 0, NULL)
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (82, 104, N'I''m not lazy, I''m just on energy-saving mode.
+#LazyCat #CatNap #EnergySaver', N'/images/cat-2151382_1280.jpg', CAST(N'2024-08-21T17:50:30.363' AS DateTime), 3, 4, 0, NULL)
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (83, 101, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', N'/images/sea-7394353_1280.jpg', CAST(N'2024-08-21T17:51:29.897' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (84, 101, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', NULL, CAST(N'2024-08-21T17:51:47.953' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (85, 101, N'Exploring the wild and finding serenity in every corner.
+#WildernessExploration #FindSerenity #NatureEscape', N'/images/landscape-8487906_1280.jpg', CAST(N'2024-08-21T17:52:02.063' AS DateTime), 3, 5, 0, NULL)
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (87, 100, N'beach vibes only', N'/videos/186115-877653483_tiny.mp4', CAST(N'2024-08-22T10:33:47.727' AS DateTime), 2, 1, 0, NULL)
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (88, 101, N'hello', N'/videos/186115-877653483_tiny.mp4', CAST(N'2024-08-22T10:48:41.100' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (89, 101, N'sunset', N'/images/landscape-8487906_1280.jpg', CAST(N'2024-08-22T10:49:15.100' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (90, 100, N'sunset', N'/images/sea-7394353_1280.jpg', CAST(N'2024-08-22T11:29:05.180' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (91, 100, N'sunset', N'/images/landscape-8487906_1280.jpg', CAST(N'2024-08-22T11:51:42.700' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (92, 101, N'seatpost', N'/images/sea-7394353_1280.jpg', CAST(N'2024-08-22T14:10:55.007' AS DateTime), 0, 0, 0, N'1')
+INSERT [dbo].[UserPosts] ([PostId], [UserId], [PostContent], [PostPhoto], [PostDate], [LikeCount], [CommentCount], [ShareCount], [Status]) VALUES (93, 101, N'seat', N'/images/sea-7394353_1280.jpg', CAST(N'2024-08-22T14:13:41.863' AS DateTime), 0, 0, 0, N'1')
+SET IDENTITY_INSERT [dbo].[UserPosts] OFF
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__EmojiTyp__685D93738FC89D94]    Script Date: 8/22/2024 2:38:03 PM ******/
+ALTER TABLE [dbo].[EmojiTypes] ADD UNIQUE NONCLUSTERED 
+(
+	[EmojiName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Notifications] ADD  DEFAULT (getdate()) FOR [NotificationTimestamp]
+GO
+ALTER TABLE [dbo].[Notifications] ADD  DEFAULT ('unread') FOR [NotificationStatus]
+GO
+ALTER TABLE [dbo].[PostLikes] ADD  DEFAULT (getdate()) FOR [LikeDate]
+GO
+ALTER TABLE [dbo].[UserFriends] ADD  DEFAULT ('pending') FOR [RequestStatus]
+GO
+ALTER TABLE [dbo].[UserPosts] ADD  DEFAULT (getdate()) FOR [PostDate]
+GO
+ALTER TABLE [dbo].[Notifications]  WITH CHECK ADD FOREIGN KEY([UserID])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[Notifications]  WITH CHECK ADD FOREIGN KEY([UserID])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[Notifications]  WITH CHECK ADD FOREIGN KEY([UserID])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[Notifications]  WITH CHECK ADD FOREIGN KEY([UserID])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[Notifications]  WITH CHECK ADD FOREIGN KEY([UserID])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[Notifications]  WITH CHECK ADD FOREIGN KEY([UserID])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[Notifications]  WITH CHECK ADD  CONSTRAINT [FK_Notifications_PostPhoto] FOREIGN KEY([PostId])
+REFERENCES [dbo].[UserPosts] ([PostId])
+GO
+ALTER TABLE [dbo].[Notifications] CHECK CONSTRAINT [FK_Notifications_PostPhoto]
+GO
+ALTER TABLE [dbo].[PasswordChangeHistory]  WITH CHECK ADD FOREIGN KEY([UserId])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[PostComments]  WITH CHECK ADD FOREIGN KEY([PostId])
+REFERENCES [dbo].[UserPosts] ([PostId])
+GO
+ALTER TABLE [dbo].[PostComments]  WITH CHECK ADD FOREIGN KEY([UserId])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[PostComments]  WITH CHECK ADD  CONSTRAINT [FK_ParentCommentId_CommentId] FOREIGN KEY([ParentCommentId])
+REFERENCES [dbo].[PostComments] ([CommentId])
+GO
+ALTER TABLE [dbo].[PostComments] CHECK CONSTRAINT [FK_ParentCommentId_CommentId]
+GO
+ALTER TABLE [dbo].[PostLikeRequests]  WITH CHECK ADD FOREIGN KEY([PostId])
+REFERENCES [dbo].[UserPosts] ([PostId])
+GO
+ALTER TABLE [dbo].[PostLikeRequests]  WITH CHECK ADD FOREIGN KEY([UserId])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[PostLikes]  WITH CHECK ADD FOREIGN KEY([PostId])
+REFERENCES [dbo].[UserPosts] ([PostId])
+GO
+ALTER TABLE [dbo].[PostLikes]  WITH CHECK ADD FOREIGN KEY([UserId])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[PostLikes]  WITH CHECK ADD  CONSTRAINT [FK_PostLikes_EmojiTypes] FOREIGN KEY([EmojiTypeId])
+REFERENCES [dbo].[EmojiTypes] ([EmojiTypeId])
+GO
+ALTER TABLE [dbo].[PostLikes] CHECK CONSTRAINT [FK_PostLikes_EmojiTypes]
+GO
+ALTER TABLE [dbo].[UserFriends]  WITH CHECK ADD FOREIGN KEY([FollowerId])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[UserFriends]  WITH CHECK ADD FOREIGN KEY([UserId])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[UserPosts]  WITH CHECK ADD FOREIGN KEY([UserId])
+REFERENCES [dbo].[UserData] ([UserId])
+GO
+ALTER TABLE [dbo].[UserFriends]  WITH CHECK ADD CHECK  (([RequestStatus]='rejected' OR [RequestStatus]='accepted' OR [RequestStatus]='pending'))
+GO
+/****** Object:  StoredProcedure [dbo].[AddArchievePost]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[AddArchievePost]
+    @Id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    UPDATE UserPosts
+    SET Status = '2'
+    WHERE PostId = @Id;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[AddComment]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[AddComment]
+    @PostId INT,
+    @UserId INT,
+    @CommentText NVARCHAR(MAX),
+    @ParentCommentId INT = NULL -- Assuming ParentCommentId is nullable
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @CommentDate DATETIME = GETDATE();
+    DECLARE @IsDeleted BIT = 0;
+
+    -- Start a transaction
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        -- Insert the comment
+        INSERT INTO PostComments (PostId, UserId, CommentText, CommentDate, ParentCommentId, IsDeleted)
+        VALUES (@PostId, @UserId, @CommentText, @CommentDate, @ParentCommentId, @IsDeleted);
+
+        -- Update the comment count in the UserPosts table
+        UPDATE UserPosts
+        SET CommentCount = CommentCount + 1
+        WHERE PostId = @PostId;
+
+        -- Commit the transaction
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        -- Rollback the transaction in case of error
+        ROLLBACK TRANSACTION;
+        -- You can raise an error or handle it as needed
+        THROW;
+    END CATCH;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[AddCommentSP]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[AddCommentSP]
+    @PostId INT,
+    @UserId INT,
+    @CommentText NVARCHAR(MAX),
+    @CommentDate DATETIME
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO PostComments (PostId, UserId, CommentText, CommentDate)
+    VALUES (@PostId, @UserId, @CommentText, @CommentDate);
+
+    UPDATE UserPosts
+    SET CommentCount = CommentCount + 1
+    WHERE PostId = @PostId;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[AddFriendProcedure]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[AddFriendProcedure]
+    @UserId INT,
+    @FollowerId INT
+AS
+BEGIN
+    DECLARE @CurrentUserId INT;
+    SET @CurrentUserId = @FollowerId;
+
+    -- Check if the user is trying to add themselves as a friend
+    IF @UserId = @CurrentUserId
+    BEGIN
+        RAISERROR ('You cannot add yourself as a friend.', 16, 1);
+        RETURN;
+    END;
+
+    -- Check if friendship already exists
+    IF EXISTS (
+        SELECT 1
+        FROM UserFriends
+        WHERE (UserId = @CurrentUserId AND FollowerId = @UserId)
+            OR (UserId = @UserId AND FollowerId = @CurrentUserId)
+    )
+    BEGIN
+        RAISERROR ('Friendship already exists.', 16, 1);
+        RETURN;
+    END;
+
+    -- Add friendship
+    INSERT INTO UserFriends (UserId, FollowerId, IsFriend, RequestStatus)
+    VALUES (@CurrentUserId, @UserId, 1, 'pending');
+
+    RETURN;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[AddFriendsp]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[AddFriendsp]
+    @UserId INT,
+    @FollowerId INT
+AS
+BEGIN
+    DECLARE @CurrentUserId INT;
+    SET @CurrentUserId = @FollowerId;
+
+    -- Check if the user is trying to add themselves as a friend
+    IF @UserId = @CurrentUserId
+    BEGIN
+        RAISERROR ('You cannot add yourself as a friend.', 16, 1);
+        RETURN;
+    END;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Check if friendship already exists
+        IF EXISTS (
+            SELECT 1
+            FROM UserFriends
+            WHERE (UserId = @CurrentUserId AND FollowerId = @UserId)
+                OR (UserId = @UserId AND FollowerId = @CurrentUserId)
+        )
+        BEGIN
+            RAISERROR ('Friendship already exists.', 16, 1);
+            RETURN;
+        END;
+
+        -- Add friendship
+        INSERT INTO UserFriends (UserId, FollowerId, IsFriend, RequestStatus)
+        VALUES (@CurrentUserId, @UserId, 1, 'pending');
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+        DECLARE @ErrorMessage NVARCHAR(4000);
+        DECLARE @ErrorSeverity INT;
+        DECLARE @ErrorState INT;
+
+        SELECT
+            @ErrorMessage = ERROR_MESSAGE(),
+            @ErrorSeverity = ERROR_SEVERITY(),
+            @ErrorState = ERROR_STATE();
+
+        RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+        RETURN;
+    END CATCH;
+
+    RETURN;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[AddPost]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[AddPost]
+    @UserId INT,
+    @PostContent NVARCHAR(MAX),
+    @PostPhoto NVARCHAR(MAX),
+    @PostDate DATETIME,
+    @LikeCount INT,
+    @ShareCount INT,
+    @CommentCount INT
+AS
+BEGIN
+    INSERT INTO UserPosts (UserId, PostContent, PostPhoto, PostDate, LikeCount, ShareCount, CommentCount)
+    VALUES (@UserId, @PostContent, @PostPhoto, @PostDate, @LikeCount, @ShareCount, @CommentCount);
+END
+GO
+/****** Object:  StoredProcedure [dbo].[CheckEmail]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[CheckEmail]
+    @UserId INT,
+    @Email NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @Email IS NULL OR LTRIM(RTRIM(@Email)) = ''
+    BEGIN
+        -- Invalid email
+        SELECT 'Invalid email' AS ResultMessage;
+        RETURN;
+    END
+
+    DECLARE @ExistingUserId INT;
+    SELECT @ExistingUserId = UserId
+    FROM UserData
+    WHERE Email = @Email;
+
+    IF (@ExistingUserId IS NULL)
+    BEGIN
+        -- Email not in use
+        SELECT 0 AS EmailInUse;
+    END
+    ELSE IF (@ExistingUserId = @UserId)
+    BEGIN
+        -- Email belongs to the same user
+        SELECT 0 AS EmailInUse;
+    END
+    ELSE
+    BEGIN
+        -- Email already in use by another user
+        SELECT 1 AS EmailInUse;
+    END;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[CheckPhoneNumber]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[CheckPhoneNumber]
+    @UserId INT,
+    @PhoneNumber NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF (@PhoneNumber IS NULL OR LTRIM(RTRIM(@PhoneNumber)) = '')
+    BEGIN
+        SELECT 'Invalid phone number' AS Result;
+        RETURN;
+    END
+
+    -- Check if the phone number is in use by any user other than the current user
+    DECLARE @ExistingUserId INT;
+    SELECT @ExistingUserId = UserId
+    FROM UserData
+    WHERE PhoneNumber = @PhoneNumber;
+
+    IF (@ExistingUserId IS NULL)
+    BEGIN
+        -- Phone number not in use
+        SELECT 0 AS PhoneInUse;
+    END
+    ELSE IF (@ExistingUserId = @UserId)
+    BEGIN
+        -- Phone number belongs to the same user
+        SELECT 0 AS PhoneInUse;
+    END
+    ELSE
+    BEGIN
+        -- Phone number already in use by another user
+        SELECT 1 AS PhoneInUse;
+    END;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[DeleteComment]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[DeleteComment]
+    @commentId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Declare variables
+    DECLARE @postId INT;
+    DECLARE @deletedCommentsCount INT;
+
+    BEGIN TRY
+        -- Begin a transaction
+        BEGIN TRANSACTION;
+
+        -- Retrieve the postId for the given commentId
+        SELECT @postId = PostId
+        FROM PostComments
+        WHERE CommentId = @commentId;
+
+        -- Check if the comment exists
+        IF (@postId IS NOT NULL)
+        BEGIN
+            -- Count the number of comments to be marked as deleted
+            SET @deletedCommentsCount = (
+                SELECT COUNT(*)
+                FROM PostComments
+                WHERE CommentId = @commentId
+                   OR ParentCommentId = @commentId
+                   AND IsDeleted = 0
+            );
+
+            -- Mark the main comment and its child comments as deleted
+            UPDATE PostComments
+            SET IsDeleted = 1
+            WHERE CommentId = @commentId
+               OR ParentCommentId = @commentId;
+
+            -- Decrease the comment count for the post by the number of newly deleted comments
+            UPDATE UserPosts
+            SET CommentCount = CommentCount - @deletedCommentsCount
+            WHERE PostId = @postId;
+
+            -- Commit the transaction
+            COMMIT TRANSACTION;
+        END
+        ELSE
+        BEGIN
+            -- Rollback the transaction if the comment does not exist
+            ROLLBACK TRANSACTION;
+            RAISERROR('Comment does not exist or has already been deleted.', 16, 1);
+        END
+    END TRY
+    BEGIN CATCH
+        -- Rollback the transaction in case of error
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        -- Re-throw the error
+        THROW;
+    END CATCH;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[DeletePost]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[DeletePost]
+    @Id INT
+AS
+BEGIN
+    UPDATE UserPosts
+    SET Status = '1'
+    WHERE PostId = @Id;
+
+    IF @@ROWCOUNT > 0
+        SELECT 'Success' AS Status
+    ELSE
+        SELECT 'Post Not Found' AS Status;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[ForgotPasswordSP]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[ForgotPasswordSP]
+    @Email NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @UserId INT;
+
+    -- Find the user by email
+    SELECT @UserId = UserId FROM UserData WHERE Email = @Email;
+
+    -- If user not found, return
+    IF @UserId IS NULL
+    BEGIN
+        RETURN 1; -- User not found
+    END
+
+    -- Generate a token
+    DECLARE @Token NVARCHAR(255);
+    SET @Token = NEWID();
+
+    -- Save the token in the database
+    INSERT INTO PasswordResets (Email, Token, Created_At) VALUES (@Email, @Token, GETDATE());
+
+    -- Send reset password email (you may implement this part separately)
+
+    -- Return success
+    RETURN 0;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetLastComment]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetLastComment]
+AS
+BEGIN
+   SELECT TOP 1 PC.*, UD.ProfilePhoto ,UD.FirstName, UD.LastName
+FROM PostComments PC
+INNER JOIN UserData UD ON PC.UserId = UD.UserId
+ORDER BY PC.CommentId DESC;
+
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[GetLastPost]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetLastPost]
+AS
+BEGIN
+    SELECT TOP 1
+	up.PostId, 
+	up.UserId, 
+	up.PostContent, 
+	up.PostPhoto, 
+	up.PostDate, 
+	up.LikeCount, 
+	up.ShareCount, 
+	up.CommentCount, 
+	ud.ProfilePhoto, 
+	ud.LastName, 
+	ud.FirstName
+    FROM UserPosts AS up
+
+    INNER JOIN UserData AS ud ON up.UserID = ud.UserId
+    ORDER BY PostId DESC;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetLastPostForUser]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetLastPostForUser]
+    @UserId INT
+AS
+BEGIN
+    SELECT TOP 1
+        up.PostId,
+        up.UserId,
+        up.PostContent,
+        up.PostPhoto,
+        up.PostDate,
+        up.LikeCount,
+        up.ShareCount,
+        up.CommentCount,
+        ud.ProfilePhoto,
+        ud.LastName,
+        ud.FirstName
+    FROM
+        UserPosts AS up
+        INNER JOIN UserData AS ud ON up.UserID = ud.UserId
+    WHERE
+        up.UserID = @UserId
+    ORDER BY
+        up.PostId DESC;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetNotifications]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetNotifications]
+AS
+BEGIN
+    SELECT *
+    FROM Notifications
+    ORDER BY NotificationTimestamp DESC; -- Order notifications by timestamp in descending order
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetPostCommentsSP]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetPostCommentsSP]
+    @PostId INT
+AS
+BEGIN
+    SELECT
+        pc.CommentId,
+        pc.CommentText,
+        pc.CommentDate,
+        CONCAT(u.FirstName, ' ', u.LastName) AS UserName,
+        u.ProfilePhoto
+    FROM
+        PostComments pc
+    INNER JOIN
+        UserData u ON pc.UserId = u.UserId
+    WHERE
+        pc.PostId = @PostId;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetUser]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUser]
+    @Email NVARCHAR(100),
+    @Password NVARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        UserId,
+        LastName,
+        FirstName,
+        City,
+        Email,
+        UserPassword,
+        Gender,
+        ProfilePhoto,
+        Interests,
+        PhoneNumber,
+        Bio
+    FROM UserData
+    WHERE Email = @Email AND UserPassword = @Password;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetUserById]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUserById]
+    @UserId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        UserId,
+        LastName,
+        FirstName,
+        City,
+        Email,
+        UserPassword,
+        Gender,
+        ProfilePhoto,
+        Interests,
+        PhoneNumber,
+        Bio
+        -- Add more columns if needed
+    FROM
+        UserData
+    WHERE
+        UserId = @UserId;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetUserData]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUserData]
+    @CurrentUserId INT
+AS
+BEGIN
+    SELECT 
+        u.UserId,
+        u.LastName,
+        u.FirstName,
+        u.ProfilePhoto,
+        CASE 
+            WHEN uf.UserId IS NOT NULL THEN 1
+            ELSE 0
+        END AS IsFriend,
+        uf.RequestStatus,
+        uf.FollowerId
+    FROM UserData u
+    LEFT JOIN UserFriends uf ON (uf.UserId = @CurrentUserId AND uf.FollowerId = u.UserId)
+                            OR (uf.UserId = u.UserId AND uf.FollowerId = @CurrentUserId)
+    WHERE u.UserId != @CurrentUserId;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetUserDataSp]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUserDataSp]
+    @CurrentUserId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        u.UserId,
+        u.LastName,
+        u.FirstName,
+        u.ProfilePhoto,
+        IsFriend = 
+            CASE 
+                WHEN EXISTS (SELECT 1 FROM UserFriends WHERE (UserId = @CurrentUserId AND FollowerId = u.UserId) OR (UserId = u.UserId AND FollowerId = @CurrentUserId)) THEN 1
+                ELSE 0
+            END,
+        RequestStatus = (
+            SELECT TOP 1 RequestStatus 
+            FROM UserFriends 
+            WHERE (UserId = @CurrentUserId AND FollowerId = u.UserId) OR (UserId = u.UserId AND FollowerId = @CurrentUserId)
+        ),
+        FollowerId = (
+            SELECT TOP 1 FollowerId 
+            FROM UserFriends 
+            WHERE (UserId = @CurrentUserId AND FollowerId = u.UserId) OR (UserId = u.UserId AND FollowerId = @CurrentUserId)
+        )
+    FROM 
+        UserData u
+    WHERE 
+        u.UserId != @CurrentUserId;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetUserNotifications]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUserNotifications]
+    @userId INT
+AS
+BEGIN
+    SELECT 
+        n.NotificationText,
+        n.NotificationTimestamp,
+        n.PostId,
+        p.PostPhoto,
+        p.PostContent,
+        u.ProfilePhoto
+    FROM Notifications n
+    INNER JOIN UserPosts p ON n.NotificationPostID = p.PostId
+    INNER JOIN UserData u ON n.NotificationSenderUserID = u.UserId
+    WHERE n.UserID = @userId
+    ORDER BY n.NotificationTimestamp DESC; -- Order notifications by timestamp in descending order
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetUserPosts]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUserPosts]
+    @UserId INT
+AS
+BEGIN
+    SELECT 
+        p.PostId,
+        p.UserId,
+        p.PostContent,
+        p.PostPhoto,
+        p.PostDate,
+        p.LikeCount,
+        p.ShareCount,
+        p.CommentCount,
+        ud.FirstName,
+        ud.LastName,
+        ud.ProfilePhoto,
+        p.Status,
+        CASE 
+            WHEN pl.UserId IS NOT NULL THEN 1
+            ELSE 0
+        END AS IsLiked,
+        pl.LikeType
+    FROM UserPosts p
+    INNER JOIN UserData ud ON p.UserId = ud.UserId
+    LEFT JOIN PostLikes pl ON p.PostId = pl.PostId AND pl.UserId = @UserId
+    WHERE p.Status IS NULL 
+    AND (p.UserId = @UserId 
+        OR EXISTS (
+            SELECT 1 
+            FROM UserFriends uf 
+            WHERE (uf.UserId = @UserId AND uf.FollowerId = p.UserId AND uf.RequestStatus = 'accepted') 
+            OR (uf.FollowerId = @UserId AND uf.UserId = p.UserId AND uf.RequestStatus = 'accepted')
+        ))
+    ORDER BY p.PostDate;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[LikePost]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[LikePost]
+    @PostId INT,
+    @UserId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @IsLiked BIT;
+
+    -- Check if the post exists
+    IF EXISTS (SELECT 1 FROM UserPosts WHERE PostId = @PostId)
+    BEGIN
+        -- Check if the user has already liked the post
+        IF NOT EXISTS (SELECT 1 FROM PostLikes WHERE PostId = @PostId AND UserId = @UserId)
+        BEGIN
+            -- User hasn't liked the post, so add a new like
+            INSERT INTO PostLikes (PostId, UserId, LikeDate)
+            VALUES (@PostId, @UserId, GETDATE());
+
+            -- Increment like count of the post
+            UPDATE UserPosts
+            SET LikeCount = LikeCount + 1
+            WHERE PostId = @PostId;
+
+            SET @IsLiked = 1; -- User has liked the post
+        END
+        ELSE
+        BEGIN
+            -- User has already liked the post, so remove the like
+            DELETE FROM PostLikes
+            WHERE PostId = @PostId AND UserId = @UserId;
+
+            -- Decrement like count of the post
+            UPDATE UserPosts
+            SET LikeCount = LikeCount - 1
+            WHERE PostId = @PostId;
+
+            SET @IsLiked = 0; -- User has unliked the post
+        END
+
+        -- Return updated like count and isLiked status
+        SELECT LikeCount, @IsLiked AS isLiked
+        FROM UserPosts
+        WHERE PostId = @PostId;
+    END
+    ELSE
+    BEGIN
+        -- Post not found
+        SELECT -1 AS LikeCount, CAST(NULL AS BIT) AS isLiked;
+    END
+END
+GO
+/****** Object:  StoredProcedure [dbo].[RemoveArchievePost]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[RemoveArchievePost]
+    @Id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    UPDATE UserPosts
+    SET Status = NULL
+    WHERE PostId = @Id;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_GetUserById]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_GetUserById]
+    @UserId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        UserId,
+        LastName,
+        FirstName,
+        City,
+        Email,
+        UserPassword,
+        Gender,
+        ProfilePhoto,
+        Interests,
+        PhoneNumber,
+        Bio
+        -- Add more columns if needed
+    FROM
+        UserData
+    WHERE
+        UserId = @UserId;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[UpdateUserInfo]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[UpdateUserInfo]
+    @UserId INT,
+    @FirstName NVARCHAR(50),
+    @LastName NVARCHAR(50),
+    @City NVARCHAR(50),
+    @UserPassword NVARCHAR(50),
+    @Email NVARCHAR(100),
+    @Gender NVARCHAR(10),
+    @Interests NVARCHAR(MAX),
+    @PhoneNumber NVARCHAR(20),
+    @Bio NVARCHAR(MAX)
+AS
+BEGIN
+    UPDATE UserData
+    SET 
+        FirstName = @FirstName,
+        LastName = @LastName,
+        City = @City,
+        UserPassword = @UserPassword,
+        Email = @Email,
+        Gender = @Gender,
+        Interests = @Interests,
+        PhoneNumber = @PhoneNumber,
+        Bio = @Bio
+    WHERE UserId = @UserId;
+
+    IF @@ROWCOUNT > 0
+        SELECT 'Success' AS Status;
+    ELSE
+        SELECT 'User not found' AS Status;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[UpdateUserProfilePhoto]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[UpdateUserProfilePhoto]
+    @UserId INT,
+    @ProfilePhoto NVARCHAR(255) -- Assuming ProfilePhoto is stored as NVARCHAR in the database
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE UserData
+    SET ProfilePhoto = @ProfilePhoto
+    WHERE UserId = @UserId;
+END
+GO
+/****** Object:  Trigger [dbo].[trg_PostCommentNotification]    Script Date: 8/22/2024 2:38:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_PostCommentNotification]
+ON [dbo].[PostComments]
+AFTER INSERT
+AS
+BEGIN
+    INSERT INTO Notifications (UserID, NotificationType, NotificationSenderUserID, NotificationPostID, NotificationText, ProfilePhoto, PostContent, PostPhoto)
+    SELECT
+        p.UserId AS UserID,  -- The user receiving the notification
+        'Comment' AS NotificationType,
+        pc.UserId AS NotificationSenderUserID,  -- The user who commented
+        pc.PostId AS NotificationPostID,
+        'User ' + u.FirstName + ' ' + u.LastName + ' commented on your post.' AS NotificationText,
+        u.ProfilePhoto AS ProfilePhoto,
+        p.PostContent AS PostContent,
+        p.PostPhoto AS PostPhoto
+    FROM inserted pc
+    INNER JOIN UserPosts p ON pc.PostId = p.PostId
+    INNER JOIN UserData u ON pc.UserId = u.UserId;
+END;
+GO
+ALTER TABLE [dbo].[PostComments] ENABLE TRIGGER [trg_PostCommentNotification]
+GO
+/****** Object:  Trigger [dbo].[trg_PostLikeNotification]    Script Date: 8/22/2024 2:38:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE  TRIGGER [dbo].[trg_PostLikeNotification]
+ON [dbo].[PostLikes]
+AFTER INSERT
+AS
+BEGIN
+    INSERT INTO Notifications (UserID, NotificationType, NotificationSenderUserID, NotificationPostID, NotificationText, ProfilePhoto, PostContent, PostPhoto)
+    SELECT
+        p.UserId AS UserID,  -- User who will receive the notification
+        'Like' AS NotificationType,
+        i.UserId AS NotificationSenderUserID,  -- User who liked the post
+        i.PostId AS NotificationPostID,
+        'User ' + u.FirstName + ' ' + u.LastName + ' liked your post.' AS NotificationText,
+        u.ProfilePhoto AS ProfilePhoto,
+        p.PostContent AS PostContent,
+        p.PostPhoto AS PostPhoto
+    FROM inserted i
+    INNER JOIN UserPosts p ON i.PostId = p.PostId
+    INNER JOIN UserData u ON i.UserId = u.UserId
+    INNER JOIN UserData p_user ON p.UserId = p_user.UserId; -- Ensure correct user is selected
+END;
+GO
+ALTER TABLE [dbo].[PostLikes] ENABLE TRIGGER [trg_PostLikeNotification]
+GO
+USE [master]
+GO
+ALTER DATABASE [SocialMediaApp] SET  READ_WRITE 
+GO
