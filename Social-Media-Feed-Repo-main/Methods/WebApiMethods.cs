@@ -27,33 +27,7 @@ namespace SocialMediaApp.Methods
         SocialMediaAppEntities db = new SocialMediaAppEntities();
 
 
-        /* public object GetUserData(int currentUserId)
-         {
-             var usersNotFriends = db.UserDatas
-                 .Where(u => u.UserId != currentUserId)
-                 .Select(user => new
-                 {
-
-                     UserId = user.UserId,
-                     LastName = user.LastName,
-                     FirstName = user.FirstName,
-                     ProfilePhoto = user.ProfilePhoto,
-                     IsFriend = db.UserFriends.Any(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
-                                                        (f.UserId == user.UserId && f.FollowerId == currentUserId)),
-                     RequestStatus = db.UserFriends
-                         .Where(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
-                                     (f.UserId == user.UserId && f.FollowerId == currentUserId))
-                         .Select(f => f.RequestStatus)
-                         .FirstOrDefault(),
-                     FollowerId = db.UserFriends
-                         .Where(f => (f.UserId == currentUserId && f.FollowerId == user.UserId) ||
-                                     (f.UserId == user.UserId && f.FollowerId == currentUserId))
-                         .Select(f => f.FollowerId)
-                         .FirstOrDefault()
-                 }).ToList();
-
-             return usersNotFriends;
-         }*/
+        
 
         public object GetUserData(int currentUserId)
         {
@@ -130,48 +104,7 @@ namespace SocialMediaApp.Methods
             throw new Exception("No file uploaded or file is empty");
         }
 
-        /* public User GetUser(string email, string password)
-         {
-             string connectionString = ConfigurationManager.ConnectionStrings["SocialMediaAppADO"].ConnectionString;
-
-             using (SqlConnection connection = new SqlConnection(connectionString))
-             {
-                 connection.Open();
-
-                 using (SqlCommand command = new SqlCommand("GetUser", connection))
-                 {
-                     command.CommandType = CommandType.StoredProcedure;
-
-                     command.Parameters.AddWithValue("@Email", email);
-                     command.Parameters.AddWithValue("@Password", password);
-
-                     using (SqlDataReader reader = command.ExecuteReader())
-                     {
-                         if (reader.Read())
-                         {
-                             var userInfo = new User
-                             {
-                                 UserId = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
-                                 LastName = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
-                                 FirstName = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
-                                 City = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
-                                 Email = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
-                                 UserPassword = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
-                                 Gender = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
-                                 ProfilePhoto = reader.IsDBNull(7) ? string.Empty : reader.GetString(7),
-                                 Interests = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
-                                 PhoneNumber = reader.IsDBNull(9) ? string.Empty : reader.GetString(9),
-                                 Bio = reader.IsDBNull(10) ? string.Empty : reader.GetString(10)
-                             };
-
-                             return userInfo;
-                         }
-                     }
-                 }
-             }
-
-             return null;
-         }*/
+        
 
 
         public static User GetUser(string email, string password)
@@ -265,30 +198,7 @@ namespace SocialMediaApp.Methods
             return null; // Returning null if user not found
         }
 
-        /*     public void AddUser(UserData user)
-             {
-                 if (user.Email != null && user.UserPassword != null)
-                 {
-                     var otp = new Random().Next(100000, 999999).ToString();
-                     var passwordReset = new PasswordReset
-                     {
-                         Email = user.Email,
-                         Token = otp,
-                         Created_At = DateTime.UtcNow
-                     };
-
-                     db.PasswordResets.Add(passwordReset);
-                     user.ProfilePhoto = "/postupload/profile.png";
-                     db.UserDatas.Add(user);
-                     db.SaveChanges();
-
-                     SendOtpEmail(user.Email, otp);
-                 }
-                 else
-                 {
-                     throw new ArgumentException("Email and password are required.");
-                 }
-             }*/
+        
 
 
         public void AddUser(UserData user)
@@ -530,99 +440,12 @@ namespace SocialMediaApp.Methods
 
 
 
-        /*        public List<object> GetUserPosts(int userId)
-                {
-                    var friendIdsSentRequests = db.UserFriends
-                        .Where(f => f.FollowerId == userId && f.RequestStatus == "accepted")
-                        .Select(f => f.UserId)
-                        .ToList();
-
-                    var friendIdsReceivedRequests = db.UserFriends
-                        .Where(f => f.UserId == userId && f.RequestStatus == "accepted")
-                        .Select(f => f.FollowerId)
-                        .ToList();
-
-                    var friendIds = friendIdsSentRequests.Concat(friendIdsReceivedRequests).ToList();
-                    friendIds.Add(userId);
-
-                    var postsInfo = db.UserPosts
-                         .Where(post => post.Status == null && friendIds.Contains(post.UserId))
-                        .OrderBy(post => post.PostDate)
-                        .Select(post => new
-                        {
-                            PostId = post.PostId,
-                            UserId = post.UserId,
-                            PostContent = post.PostContent,
-                            PostPhoto = post.PostPhoto,
-                            PostDate = post.PostDate,
-                            LikeCount = post.LikeCount,
-                            ShareCount = post.ShareCount,
-                            CommentCount = post.CommentCount,
-                            FirstName = post.UserData.FirstName,
-                            LastName = post.UserData.LastName,
-                            ProfilePhoto = post.UserData.ProfilePhoto,
-                            Status = post.Status,
-                            IsLiked = post.PostLikes.Any(x => x.UserId == userId),
-                            LikeType = post.PostLikes.Select(x => x.LikeType)
-                        })
-                        .ToList();
-
-                    var formattedPostsInfo = postsInfo.Select(post => new
-                    {
-                        PostId = post.PostId,
-                        UserId = post.UserId,
-                        PostContent = post.PostContent,
-                        PostPhoto = post.PostPhoto,
-                        PostDate = FormatPostDate(post.PostDate),
-                        LikeCount = post.LikeCount,
-                        ShareCount = post.ShareCount,
-                        CommentCount = post.CommentCount,
-                        FirstName = post.FirstName,
-                        LastName = post.LastName,
-                        ProfilePhoto = post.ProfilePhoto,
-                        LikeType = post.LikeType,
-                        IsLiked = post.IsLiked,
-                        Status = post.Status,
-                    }).Cast<object>().ToList();
-
-                    return formattedPostsInfo;
-                }
-        */
+        
 
 
 
 
-        /*   private string FormatPostDate(DateTime? postDate)
-           {
-               if (postDate.HasValue)
-               {
-                   TimeSpan timeSincePost = DateTime.Now - postDate.Value;
-                   if (timeSincePost.TotalMinutes < 1)
-                   {
-                       return "just now";
-                   }
-                   else if (timeSincePost.TotalHours < 1)
-                   {
-                       return $"{(int)timeSincePost.TotalMinutes} min ago";
-                   }
-                   else if (timeSincePost.TotalDays < 1)
-                   {
-                       return $"{(int)timeSincePost.TotalHours} h ago";
-                   }
-                   else if (timeSincePost.TotalDays < 30)
-                   {
-                       return $"{(int)timeSincePost.TotalDays} d ago";
-                   }
-                   else
-                   {
-                       return postDate.Value.ToString("MMM dd, yyyy");
-                   }
-               }
-               else
-               {
-                   return string.Empty;
-               }
-           }*/
+        
 
         public List<object> GetUserPosts(int userId)
         {
